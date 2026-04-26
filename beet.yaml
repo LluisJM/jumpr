@@ -1,0 +1,23 @@
+output: build
+
+require:
+  - bolt
+  - bolt_expressions
+
+name: Jumpr
+
+data_pack:
+  pack_format: 101
+  load:
+    - src
+  zipped: false
+
+resource_pack:
+  pack_format: 84
+  load:
+    - src
+  zipped: false
+
+pipeline:
+  - build
+  - mecha
