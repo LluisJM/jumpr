@@ -7,17 +7,23 @@ require:
 name: Jumpr
 
 data_pack:
+  name: JumprDP
   pack_format: 101
   load:
     - src
   zipped: false
 
 resource_pack:
+  name: resources
   pack_format: 84
   load:
     - src
   zipped: false
 
 pipeline:
-  - build
+  - plugins.timer
   - mecha
+
+meta:
+  bolt:
+    entrypoint: "*"

@@ -1,0 +1,33 @@
+from bolt_expressions import Scoreboard
+
+Scoreboard.add_objective("timer")
+Scoreboard.add_objective("game_settings")
+
+timer = Scoreboard.objective("timer")
+settings = Scoreboard.objective("game_settings")
+
+def start(seconds: int, minutes: int = 0):
+    timer["$running"] = 1
+    timer["$cs"] = 0
+    timer["$sec"] = seconds
+    timer["$min"] = minutes
+
+function jumpr:timer/start_from_config:
+    start(settings["$round_length.sec"], settings["$round_length.min"])
+
+function jumpr:timer/tick:
+    if timer["$running"] == 1:
+        timer["$cs"] -= 1
+    
+    if timer["$cs"] < 0:
+        timer["$cs"] = 99
+        timer["$sec"] -= 1
+        if timer["$sec"] < 0:
+            timer["$sec"] = 59
+            timer["$min"] -= 0
+            if timer["$min"] < 0:
+                timer["$min"] = 0
+                function jumpr:timer/stop
+
+function jumpr:timer/stop:
+    timer["$running"] = 0
