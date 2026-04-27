@@ -23,6 +23,7 @@ resource_pack:
 pipeline:
   - plugins.timer
   - mecha
+  - build
 
 meta:
   bolt:
