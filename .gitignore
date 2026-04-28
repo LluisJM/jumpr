@@ -1,3 +1,10 @@
+# Minecraft world
+world/session.lock
+world/uid.dat
+world/players/**
+world/logs/**
+world/crash-reports/**
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
