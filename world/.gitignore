@@ -1,0 +1,10 @@
+# Minecraft world ignores
+session.lock
+uid.dat
+*.log
+*.tmp
+*.bak
+
+# Player-specific data (optional)
+player/data/
+advancements/
