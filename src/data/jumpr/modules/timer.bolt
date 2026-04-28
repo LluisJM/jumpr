@@ -1,4 +1,5 @@
 from bolt_expressions import Scoreboard
+from libs.text_components import score
 
 Scoreboard.add_objective("timer")
 Scoreboard.add_objective("game_settings")
@@ -8,26 +9,57 @@ settings = Scoreboard.objective("game_settings")
 
 def start(seconds: int, minutes: int = 0):
     timer["$running"] = 1
-    timer["$cs"] = 0
+    timer["$ticks"] = 0
+    timer["$ds"] = 0
     timer["$sec"] = seconds
     timer["$min"] = minutes
 
 function jumpr:timer/start_from_config:
     start(settings["$round_length.sec"], settings["$round_length.min"])
 
+function jumpr:timer/start_debug:
+    start(5, 0)
+
 function jumpr:timer/tick:
     if timer["$running"] == 1:
-        timer["$cs"] -= 1
+        timer["$ticks"] += 1
     
-    if timer["$cs"] < 0:
-        timer["$cs"] = 99
-        timer["$sec"] -= 1
-        if timer["$sec"] < 0:
-            timer["$sec"] = 59
-            timer["$min"] -= 0
-            if timer["$min"] < 0:
-                timer["$min"] = 0
-                function jumpr:timer/stop
+        if timer["$ticks"] % 2 == 0:
+            timer["$ds"] -= 1
+            if timer["$ds"] < 0:
+                timer["$sec"] -= 1
+                timer["$ds"] = 9
+                if timer["$sec"] < 0:
+                    timer["$min"] -= 1
+                    timer["$sec"] = 59
+                    if timer["$min"] < 0:
+                        function jumpr:timer/stop
+    
+    function jumpr:timer/display
+        
 
 function jumpr:timer/stop:
     timer["$running"] = 0
+    timer["$ds"] = 0
+    timer["$sec"] = 0
+    timer["$min"] = 0
+
+function jumpr:timer/display:
+    if timer["$sec"] <= 9:
+        text = [
+            score("$min", "timer"),
+            ":0",
+            score("$sec", "timer"),
+            ".",
+            score("$ds", "timer")
+        ]
+        title @a actionbar text
+    else:
+        text = [
+            score("$min", "timer"),
+            ":",
+            score("$sec", "timer"),
+            ".",
+            score("$ds", "timer")
+        ]
+        title @a actionbar text

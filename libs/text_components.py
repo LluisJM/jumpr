@@ -26,3 +26,11 @@ def translated(ctx: Context, key: str, text: str = None, inserted: list[str] = [
         "fallback": "{text if text else "<TRANSLATION MISSING>"}",
         "with": {inserted}
     }}"""
+
+def score(name: str, objective: str):
+    return {
+        "score": {
+            "name": name,
+            "objective": objective
+        }
+    }
