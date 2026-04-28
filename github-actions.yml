@@ -1,2 +1,20 @@
-- name: Minecraft package world
-  uses: aksiome/minecraft-package@v0.0.3
+name: Release
+on:
+  push:
+    tags:
+      - '*'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Package
+        id: package
+        uses: aksiome/minecraft-package@master
+        with:
+          source: path/to/my_world
+          target: my_compressed_world.zip
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ steps.package.outputs.archive }}
