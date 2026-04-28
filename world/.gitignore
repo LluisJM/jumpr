@@ -6,5 +6,5 @@ uid.dat
 *.bak
 
 # Player-specific data (optional)
-player/data/
+players/data/
 advancements/
