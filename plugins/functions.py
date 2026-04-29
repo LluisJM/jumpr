@@ -14,3 +14,4 @@ def beet_default(ctx: Context):
     ctx.data["minecraft:tick"] = FunctionTag({
         "values": tick_functions
     })
+    debug(__name__, f'created "minecraft:tick" function tag with {tick_functions.__len__()} entries')

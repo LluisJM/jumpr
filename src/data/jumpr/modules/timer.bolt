@@ -1,65 +1,64 @@
-from bolt_expressions import Scoreboard
+from bolt_expressions import Scoreboard, ScoreSource
 from libs.text_components import score
 
 Scoreboard.add_objective("timer")
-Scoreboard.add_objective("game_settings")
 
 timer = Scoreboard.objective("timer")
 settings = Scoreboard.objective("game_settings")
 
-def start(seconds: int, minutes: int = 0):
+ticks = timer["$ticks"]
+min = timer["$min"]
+sec = timer["$sec"]
+ds = timer["$ds"]
+
+running = timer["$running"]
+
+def set(ticks: ScoreSource, _sec: int, _min: int = 0):
+    ticks = (_min * 20 * 60) + (_sec * 20)
+
+def start(_sec: int, _min: int = 0):
     timer["$running"] = 1
-    timer["$ticks"] = 0
-    timer["$ds"] = 0
-    timer["$sec"] = seconds
-    timer["$min"] = minutes
+    set(timer["$ticks"], _sec, _min)
 
-function jumpr:timer/start_from_config:
-    start(settings["$round_length.sec"], settings["$round_length.min"])
+def format(ticks: ScoreSource, min: ScoreSource, sec: ScoreSource, ds: ScoreSource):
+    min = (ticks - (ticks % (20*60))) / (20*60)
+    sec = (ticks - (ticks % 20) - (min*20*60)) / 20
+    ds = (ticks - (ticks % 2) - (min*20*60) - (sec*20)) / 2
 
-function jumpr:timer/start_debug:
-    start(5, 0)
+function jumpr:timer/set/from_settings:
+    running = 1
+    ticks = settings["$round_length"]
+
+function jumpr:timer/start/debug:
+    start(10, 1)
 
 function jumpr:timer/tick:
-    if timer["$running"] == 1:
-        timer["$ticks"] += 1
-    
-        if timer["$ticks"] % 2 == 0:
-            timer["$ds"] -= 1
-            if timer["$ds"] < 0:
-                timer["$sec"] -= 1
-                timer["$ds"] = 9
-                if timer["$sec"] < 0:
-                    timer["$min"] -= 1
-                    timer["$sec"] = 59
-                    if timer["$min"] < 0:
-                        function jumpr:timer/stop
+    format(ticks, min, sec, ds)
+
+    if running == 1:
+        if ticks <= 0:
+            function jumpr:timer/stop
+        else:
+            ticks -= 1
     
     function jumpr:timer/display
-        
 
 function jumpr:timer/stop:
-    timer["$running"] = 0
-    timer["$ds"] = 0
-    timer["$sec"] = 0
-    timer["$min"] = 0
+    as @a at @s anchored eyes:
+        playsound minecraft:ui.button.click master @s ~ ~ ~ 0.5 1.8
+    running = 0
+    ticks = 0
 
 function jumpr:timer/display:
-    if timer["$sec"] <= 9:
-        text = [
-            score("$min", "timer"),
-            ":0",
-            score("$sec", "timer"),
-            ".",
-            score("$ds", "timer")
-        ]
+    text = [
+        score("$min", "timer"),
+        ":",
+        score("$sec", "timer"),
+        ".",
+        score("$ds", "timer")
+    ]
+    if sec > 9:
         title @a actionbar text
     else:
-        text = [
-            score("$min", "timer"),
-            ":",
-            score("$sec", "timer"),
-            ".",
-            score("$ds", "timer")
-        ]
+        text.insert(2, "0")
         title @a actionbar text
