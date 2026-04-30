@@ -1,0 +1,14 @@
+from bolt_expressions import Scoreboard, ScoreSource
+
+Scoreboard.add_objective("settings")
+
+settings = Scoreboard.objective("game_settings")
+
+round_length = settings["$round_length"]
+max_rounds = settings["$max_rounds"]
+build_items = settings["$build_items"]
+
+function jumpr:settings/load_default:
+    round_length = 20*60*2
+    max_rounds = 5
+    build_items = 3

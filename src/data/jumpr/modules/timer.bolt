@@ -26,11 +26,18 @@ def format(ticks: ScoreSource, min: ScoreSource, sec: ScoreSource, ds: ScoreSour
     ds = (ticks - (ticks % 2) - (min*20*60) - (sec*20)) / 2
 
 function jumpr:timer/set/from_settings:
-    running = 1
     ticks = settings["$round_length"]
 
-function jumpr:timer/start/debug:
-    start(10, 1)
+function jumpr:timer/start:
+    running = 1
+
+function jumpr:timer/stop:
+    as @a at @s anchored eyes:
+        playsound minecraft:ui.button.click master @s ~ ~ ~ 0.5 1.8
+    running = 0
+
+function jumpr:timer/reset:
+    ticks = 0
 
 function jumpr:timer/tick:
     format(ticks, min, sec, ds)
@@ -42,12 +49,6 @@ function jumpr:timer/tick:
             ticks -= 1
     
     function jumpr:timer/display
-
-function jumpr:timer/stop:
-    as @a at @s anchored eyes:
-        playsound minecraft:ui.button.click master @s ~ ~ ~ 0.5 1.8
-    running = 0
-    ticks = 0
 
 function jumpr:timer/display:
     text = [

@@ -1,7 +1,7 @@
 from beet import Context, Language
 from libs.debugger import debug
 
-def translated(ctx: Context, key: str, text: str = None, inserted: list[str] = []) -> str:
+def translated(ctx: Context, key: str, text: str = None, inserted: list[str] = []) -> dict:
     lang_body = {}
     namespace = ctx.project_name.casefold()
     key = f"{namespace}.{key}"
@@ -21,13 +21,13 @@ def translated(ctx: Context, key: str, text: str = None, inserted: list[str] = [
         msg += f'; file has now {lang_body.__len__()} entry/ies'
         debug(__name__, msg)
 
-    return f"""{{
-        "translate": {key},
-        "fallback": "{text if text else "<TRANSLATION MISSING>"}",
-        "with": {inserted}
-    }}"""
+    return {
+        "translate": key,
+        "fallback": text if text else "<TRANSLATION MISSING>",
+        "with": inserted
+    }
 
-def score(name: str, objective: str):
+def score(name: str, objective: str) -> dict:
     return {
         "score": {
             "name": name,
