@@ -1,0 +1,41 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:ladder",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "translate": "item.ladder.description",
+                  "fallback": "Climb to the top with these!",
+                  "with": [
+                    ""
+                  ],
+                  "color": "gray",
+                  "italic": false
+                }
+              ],
+              "mode": "append"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": 10
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": {
+                "keep_through_phase": false
+              }
+            }
+          ]
+        }
+      ],
+      "functions": []
+    }
+  ]
+}

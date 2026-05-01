@@ -9,6 +9,6 @@ max_rounds = settings["$max_rounds"]
 build_items = settings["$build_items"]
 
 function jumpr:settings/load_default:
-    round_length = 20*60*2
+    round_length = 20*30
     max_rounds = 5
     build_items = 3

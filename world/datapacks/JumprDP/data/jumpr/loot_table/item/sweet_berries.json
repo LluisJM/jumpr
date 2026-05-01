@@ -1,0 +1,41 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:sweet_berries",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "translate": "item.sweet_berries.description",
+                  "fallback": "Place them or eat them; your choice.",
+                  "with": [
+                    ""
+                  ],
+                  "color": "gray",
+                  "italic": false
+                }
+              ],
+              "mode": "append"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": 3
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": {
+                "keep_through_phase": false
+              }
+            }
+          ]
+        }
+      ],
+      "functions": []
+    }
+  ]
+}

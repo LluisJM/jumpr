@@ -1,3 +1,3 @@
-scoreboard players remove $min timer 1
-scoreboard players set $sec timer 59
-execute if score $min timer matches ..-1 run function jumpr:timer/stop
+execute store success score $5z74kaidjvz25_70 bolt.expr.temp if score $ticks timer matches ..0
+execute unless score $5z74kaidjvz25_70 bolt.expr.temp matches 0 run function jumpr:timer/stop
+execute if score $5z74kaidjvz25_70 bolt.expr.temp matches 0 run scoreboard players remove $ticks timer 1

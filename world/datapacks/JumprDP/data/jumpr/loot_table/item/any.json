@@ -1,0 +1,303 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:yellow_concrete",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "translate": "item.Building Block.description",
+                  "fallback": "Just a building block.",
+                  "with": [
+                    ""
+                  ],
+                  "color": "gray",
+                  "italic": false
+                }
+              ],
+              "mode": "append"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": 5
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": {
+                "keep_through_phase": false
+              }
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "translate": "item.building_block.name",
+                "fallback": "Building Block",
+                "with": [
+                  ""
+                ]
+              },
+              "target": "item_name",
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:gold_ingot",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "translate": "item.Coin.description",
+                  "fallback": "Bring this to the finish line during the running phase to score extra points.",
+                  "with": [
+                    ""
+                  ],
+                  "color": "gray",
+                  "italic": false
+                }
+              ],
+              "mode": "append"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": 1
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": {
+                "keep_through_phase": false
+              }
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "translate": "item.coin.name",
+                "fallback": "Coin",
+                "with": [
+                  ""
+                ]
+              },
+              "target": "item_name",
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:lava_bucket",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "translate": "item.lava_bucket.description",
+                  "fallback": "That's pretty hot.",
+                  "with": [
+                    ""
+                  ],
+                  "color": "gray",
+                  "italic": false
+                }
+              ],
+              "mode": "append"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": 1
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": {
+                "keep_through_phase": false
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:scaffolding",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "translate": "item.scaffolding.description",
+                  "fallback": "Better than dirt?",
+                  "with": [
+                    ""
+                  ],
+                  "color": "gray",
+                  "italic": false
+                }
+              ],
+              "mode": "append"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": 5
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": {
+                "keep_through_phase": false
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:pufferfish_bucket",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "translate": "item.Mr Puffer.description",
+                  "fallback": "A very respectable pufferfish.",
+                  "with": [
+                    ""
+                  ],
+                  "color": "gray",
+                  "italic": false
+                }
+              ],
+              "mode": "append"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": 1
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": {
+                "keep_through_phase": false
+              }
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "translate": "item.mr_puffer.name",
+                "fallback": "Mr Puffer",
+                "with": [
+                  ""
+                ]
+              },
+              "target": "item_name",
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:baked_potato",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "translate": "item.baked_potato.description",
+                  "fallback": "Yummy.",
+                  "with": [
+                    ""
+                  ],
+                  "color": "gray",
+                  "italic": false
+                },
+                {
+                  "translate": "jumpr.item.keep_through_phase.description",
+                  "fallback": "This item is kept after build phase is over.",
+                  "with": [
+                    ""
+                  ],
+                  "color": "gray",
+                  "italic": false
+                }
+              ],
+              "mode": "append"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": 3
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": {
+                "keep_through_phase": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:sweet_berries",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "translate": "item.sweet_berries.description",
+                  "fallback": "Place them or eat them; your choice.",
+                  "with": [
+                    ""
+                  ],
+                  "color": "gray",
+                  "italic": false
+                }
+              ],
+              "mode": "append"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": 3
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": {
+                "keep_through_phase": false
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:ladder",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "translate": "item.ladder.description",
+                  "fallback": "Climb to the top with these!",
+                  "with": [
+                    ""
+                  ],
+                  "color": "gray",
+                  "italic": false
+                }
+              ],
+              "mode": "append"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": 10
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": {
+                "keep_through_phase": false
+              }
+            }
+          ]
+        }
+      ],
+      "functions": []
+    }
+  ]
+}

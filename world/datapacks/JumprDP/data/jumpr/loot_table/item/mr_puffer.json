@@ -1,0 +1,53 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:pufferfish_bucket",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "translate": "item.Mr Puffer.description",
+                  "fallback": "A very respectable pufferfish.",
+                  "with": [
+                    ""
+                  ],
+                  "color": "gray",
+                  "italic": false
+                }
+              ],
+              "mode": "append"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": 1
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": {
+                "keep_through_phase": false
+              }
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "translate": "item.mr_puffer.name",
+                "fallback": "Mr Puffer",
+                "with": [
+                  ""
+                ]
+              },
+              "target": "item_name",
+              "conditions": []
+            }
+          ]
+        }
+      ],
+      "functions": []
+    }
+  ]
+}

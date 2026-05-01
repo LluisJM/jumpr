@@ -36,6 +36,8 @@ function jumpr:timer/stop:
         playsound minecraft:ui.button.click master @s ~ ~ ~ 0.5 1.8
     running = 0
 
+    function jumpr:game/start_next_phase
+
 function jumpr:timer/reset:
     ticks = 0
 
@@ -47,8 +49,6 @@ function jumpr:timer/tick:
             function jumpr:timer/stop
         else:
             ticks -= 1
-    
-    function jumpr:timer/display
 
 function jumpr:timer/display:
     text = [

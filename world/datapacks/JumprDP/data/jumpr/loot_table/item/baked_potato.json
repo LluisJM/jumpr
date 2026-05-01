@@ -1,0 +1,50 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:baked_potato",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "translate": "item.baked_potato.description",
+                  "fallback": "Yummy.",
+                  "with": [
+                    ""
+                  ],
+                  "color": "gray",
+                  "italic": false
+                },
+                {
+                  "translate": "jumpr.item.keep_through_phase.description",
+                  "fallback": "This item is kept after build phase is over.",
+                  "with": [
+                    ""
+                  ],
+                  "color": "gray",
+                  "italic": false
+                }
+              ],
+              "mode": "append"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": 3
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": {
+                "keep_through_phase": true
+              }
+            }
+          ]
+        }
+      ],
+      "functions": []
+    }
+  ]
+}

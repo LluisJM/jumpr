@@ -1,0 +1,123 @@
+from bolt_expressions import Scoreboard
+from libs.text_components import translated, score
+from enum import Enum
+
+Scoreboard.add_objective("game_data")
+Scoreboard.add_objective("points")
+Scoreboard.add_objective("round_deaths", "deathCount")
+
+data = Scoreboard.objective("game_data")
+points = Scoreboard.objective("points")
+round_deaths = Scoreboard.objective("round_deaths")
+timer = Scoreboard.objective("timer")
+
+phase = data["$phase"]
+
+IDLE = 0
+COUNTDOWN = 1
+RUN = 2
+FINISH = 3
+BUILD = 4
+
+function jumpr:game/start_next_phase:
+    phase += 1
+    if phase > BUILD:
+        phase = COUNTDOWN
+    
+    def countdown():
+        timer["$ticks"] = 20 * 5
+        function jumpr:timer/start
+
+    title @a times 0.1s 2s 0.5s
+
+    if phase == COUNTDOWN:
+        countdown()
+
+    if phase == RUN:
+        title @a title translated("jumpr.game.phase.run.start", "Run!", formatting={"color": "green"})
+        function jumpr:timer/set/from_settings
+        function jumpr:timer/start
+        tag @a remove finished
+        round_deaths["@a"].reset()
+    
+    if phase == FINISH:
+        title @a actionbar ""
+        title @a title translated("jumpr.game.phase.run.end", "Round over!", formatting={"color": "green"})
+        tellraw @a[tag=!finished] translated("jumpr.game.phase.run.end.not_finished", "You didn't finish this round!", formatting={"color":"red"})
+        countdown()
+
+    if phase == BUILD:
+        title @a title translated("jumpr.game.phase.build.start", "Build Phase", formatting={"color": "yellow"})
+        tellraw @a translated("jumpr.game.phase.build.description", 
+            "Build obstacles using the items given to you to stop the other players from reaching the end.",
+            formatting={"color": "gray"})
+        for i in range(5):
+            loot give @a loot jumpr:item/any
+
+function jumpr:game/tick:
+    if phase == COUNTDOWN:
+        title @a times 0s 2s 0s
+        for i in range(1, 6):
+            if timer["$ticks"] == i * 20:
+                color = "yellow"
+                if i <= 3:
+                    color = "red"
+                
+                title @a title {
+                    "text": f"{i}",
+                    "color": color
+                }
+
+                pitch = 2.0 - (i * 0.1)
+                as @a at @s anchored eyes:
+                    playsound minecraft:ui.button.click master @s ~ ~ ~ 0.5 pitch
+
+    if phase == RUN:
+        function jumpr:timer/display
+        as @a[tag=!finished] at @s if block ~ ~-1 ~ minecraft:lodestone:
+            function jumpr:game/player_finish
+        unless entity @a[tag=!finished]:
+            function jumpr:game/start_next_phase
+    
+    if phase == BUILD:
+        unless entity @a[nbt={Inventory:[{components:{"minecraft:custom_data":{"keep_through_phase": 0b}}}]}]:
+            function jumpr:game/start_next_phase
+
+function jumpr:game/player_finish:
+    def msg(formatted_timer: str):
+        tellraw @a translated("jumpr.game.player_finish", "%s finished with %s left!", 
+            [{"selector": "@s", "color": "white"}, formatted_timer], 
+            {"color": "green"})
+    
+    def add_points(count: int, reason: str, formatted_reason: str):
+        tellraw @a [
+            {
+                "text": f"     +{count}p → ",
+                "color": "gray"
+            },
+            translated(f"jumpr.game.player_finish.points.{reason}", formatted_reason)
+        ]
+
+    formatted_timer = [
+        {"text": "", "color": "white"},
+        score("$min", "timer"),
+        ":",
+        score("$sec", "timer"),
+        ".",
+        score("$ds", "timer")
+    ]
+    if timer["$sec"] > 9:
+        msg(formatted_timer)
+    else:
+        formatted_timer.insert(2, "0")
+        msg(formatted_timer)
+
+    add_points(1, "finished", "Finished")
+
+    unless entity @a[tag=finished]:
+        add_points(2, "first", "Finished 1st")
+    
+    if not round_deaths["@s"] > 0:
+        add_points(5, "no_deaths", "No deaths")
+
+    tag @s add finished

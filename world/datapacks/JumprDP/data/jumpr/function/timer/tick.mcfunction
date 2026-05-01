@@ -1,2 +1,27 @@
-execute if score $running timer matches 1 run function jumpr:timer/tick/nested_execute_3
-function jumpr:timer/display
+scoreboard players operation $i0 bolt.expr.temp = $ticks timer
+scoreboard players operation $i0 bolt.expr.temp %= $1200 bolt.expr.const
+scoreboard players operation $min timer = $ticks timer
+scoreboard players operation $min timer -= $i0 bolt.expr.temp
+scoreboard players operation $min timer /= $1200 bolt.expr.const
+scoreboard players operation $i0 bolt.expr.temp = $ticks timer
+scoreboard players operation $i0 bolt.expr.temp %= $20 bolt.expr.const
+scoreboard players operation $sec timer = $ticks timer
+scoreboard players operation $sec timer -= $i0 bolt.expr.temp
+scoreboard players operation $i1 bolt.expr.temp = $min timer
+scoreboard players operation $i1 bolt.expr.temp *= $20 bolt.expr.const
+scoreboard players operation $i1 bolt.expr.temp *= $60 bolt.expr.const
+scoreboard players operation $sec timer -= $i1 bolt.expr.temp
+scoreboard players operation $sec timer /= $20 bolt.expr.const
+scoreboard players operation $i0 bolt.expr.temp = $ticks timer
+scoreboard players operation $i0 bolt.expr.temp %= $2 bolt.expr.const
+scoreboard players operation $ds timer = $ticks timer
+scoreboard players operation $ds timer -= $i0 bolt.expr.temp
+scoreboard players operation $i1 bolt.expr.temp = $min timer
+scoreboard players operation $i1 bolt.expr.temp *= $20 bolt.expr.const
+scoreboard players operation $i1 bolt.expr.temp *= $60 bolt.expr.const
+scoreboard players operation $ds timer -= $i1 bolt.expr.temp
+scoreboard players operation $i2 bolt.expr.temp = $sec timer
+scoreboard players operation $i2 bolt.expr.temp *= $20 bolt.expr.const
+scoreboard players operation $ds timer -= $i2 bolt.expr.temp
+scoreboard players operation $ds timer /= $2 bolt.expr.const
+execute if score $running timer matches 1 run function jumpr:timer/tick/nested_execute_0

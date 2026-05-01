@@ -21,9 +21,12 @@ resource_pack:
   zipped: false
 
 pipeline:
+  - plugins.custom_items
+  - plugins.debug_bolt
   - bolt
   - mecha
   - plugins.functions
+  - libs.text_components
 
 meta:
   bolt:

@@ -1,31 +1,29 @@
 from beet import Context, Language
 from libs.debugger import debug
 
-def translated(ctx: Context, key: str, text: str = None, inserted: list[str] = []) -> dict:
-    lang_body = {}
-    namespace = ctx.project_name.casefold()
-    key = f"{namespace}.{key}"
+import re
 
-    if f"{namespace}:en_us" in ctx.assets.languages:
-        lang_body = ctx.assets.languages[f"{namespace}:en_us"]._content
-    
-    if not key in lang_body:
-        lang_body.setdefault(key, text if text else "<TRANSLATION MISSING>")
+translation_keys: dict[str, str] = {}
+TRANSLATION_MISSING = "<TRANSLATION MISSING>"
 
-        ctx.assets[f"{namespace}:en_us"] = Language(lang_body)
-        msg = ""
-        if text:
-            msg += f'added translation key "{key}" with value: "{text}"'
-        else:
-            msg += f'added translation key "{key}" with missing value'
-        msg += f'; file has now {lang_body.__len__()} entry/ies'
-        debug(__name__, msg)
+def to_snake_case(string):
+    string = re.sub(r'(?<=[a-z])(?=[A-Z])|[^a-zA-Z]', ' ', string).strip().replace(' ', '_')
+    return ''.join(string.lower())
 
-    return {
+def translated(key: str, text: str = None, inserted: list[str] = [""], formatting: dict = {}) -> dict:
+    if key not in translation_keys:
+        translation_keys.setdefault(key, text if text else TRANSLATION_MISSING)
+        debug(__name__, f'added translation key "{key}", with value "{text}" to queue')
+
+
+    to_return = {
         "translate": key,
-        "fallback": text if text else "<TRANSLATION MISSING>",
+        "fallback": text if text else TRANSLATION_MISSING,
         "with": inserted
     }
+    to_return.update(formatting)
+
+    return to_return
 
 def score(name: str, objective: str) -> dict:
     return {
@@ -34,3 +32,22 @@ def score(name: str, objective: str) -> dict:
             "objective": objective
         }
     }
+
+def beet_default(ctx: Context):
+    debug(__name__, "running library", True)
+    namespace = ctx.project_name.casefold()
+    lang_file = f"{namespace}:en_us"
+
+    lang_body = {}
+    if lang_file in ctx.assets.languages:
+        lang_body = ctx.assets.languages[lang_file]._content
+    
+    lang_body.update(translation_keys)
+    ctx.assets[lang_file] = Language(lang_body)
+
+    missing_translations = 0
+    for key in lang_body:
+        if lang_body[key] == TRANSLATION_MISSING:
+            missing_translations += 1
+
+    debug(__name__, f"created language file with {lang_body.__len__()} keys, {missing_translations} of those missing a translation")
