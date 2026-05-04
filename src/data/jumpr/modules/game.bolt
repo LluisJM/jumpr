@@ -23,6 +23,15 @@ RUN = 2
 FINISH = 3
 BUILD = 4
 
+function jumpr:game/load:
+    def create_team(id: str, name: str, color: str, prefix: str):
+        team add id name
+        team modify id color color
+        team modify id prefix prefix
+    
+    create_team("build_phase.done", "Done", "green", "✔ ")
+    create_team("build_phase.not_done", "Not Done", "red", "❌ ")
+
 function jumpr:game/start_next_phase:
     phase += 1
     if phase > BUILD:
@@ -35,6 +44,9 @@ function jumpr:game/start_next_phase:
     title @a times 0.1s 2s 0.5s
 
     if phase == COUNTDOWN:
+        team empty build_phase.done
+        team empty build_phase.not_done
+        gamemode adventure @a
         countdown()
         tp @a @n[tag=level.start]
         as @e[tag=level.start] at @s:
@@ -59,6 +71,9 @@ function jumpr:game/start_next_phase:
         countdown()
 
     if phase == BUILD:
+        team join build_phase.not_done @a
+        gamemode survival @a
+        attribute @s minecraft:block_break_speed base set 0
         tag @a remove done
         title @a title translated("jumpr.game.phase.build.start", "Build Phase", formatting={"color": "yellow"})
         tellraw @a translated("jumpr.game.phase.build.description", 
@@ -135,18 +150,27 @@ function jumpr:game/tick:
 
     if phase == BUILD:
         lock_items()
+        clear @a minecraft:bucket
+
+        as @a[tag=!done]:
+            if entity @s[nbt=!{Inventory:[{components:{"minecraft:custom_data":{"keep_through_phase": 0b}}}]}]:
+                if entity @s[tag=ensured_items]:
+                    tag @s add done
+                    team join build_phase.done @s
+                    tellraw @s translated("jumpr.game.build_phase.done", "%s is done!", [{"selector": "@s"}], {"color": "green"})
+                tag @s add ensured_items
+            if entity @s[nbt={Inventory:[{components:{"minecraft:custom_data":{"keep_through_phase": 0b}}}]}]:
+                tag @s remove ensured_items
         
         unless entity @a[nbt={Inventory:[{components:{"minecraft:custom_data":{"keep_through_phase": 0b}}}]}]:
-            if temp["$checked_for_items"] == 1:
+            if temp["$checked_for_items"] == 20:
                 function jumpr:game/start_next_phase
                 temp["$checked_for_items"].reset()
             else:
-                temp["$checked_for_items"] = 1
+                temp["$checked_for_items"] += 1
         if entity @a[nbt={Inventory:[{components:{"minecraft:custom_data":{"keep_through_phase": 0b}}}]}]:
             temp["$checked_for_items"].reset()
-        as @a[nbt=!{Inventory:[{components:{"minecraft:custom_data":{"keep_through_phase": 0b}}}]}, tag=!done]:
-            tag @s add done
-            tellraw @s translated("jumpr.game.build_phase.done", "%s is done!", [{"selector": "@s"}], {"color": "green"})
+        
 
         
 

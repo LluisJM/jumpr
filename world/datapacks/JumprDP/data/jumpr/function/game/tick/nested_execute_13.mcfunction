@@ -1,3 +1,3 @@
-execute as @e[type=minecraft:item] run function jumpr:game/tick/nested_execute_10
-execute unless entity @a[nbt={Inventory: [{components: {"minecraft:custom_data": {keep_through_phase: 0b}}}]}] run function jumpr:game/tick/nested_execute_12
-execute if entity @a[nbt={Inventory: [{components: {"minecraft:custom_data": {keep_through_phase: 0b}}}]}] run scoreboard players reset $checked_for_items temp
+tag @s add done
+team join build_phase.done @s
+tellraw @s {translate: "jumpr.game.build_phase.done", fallback: "%s is done!", with: [{selector: "@s"}], color: "green"}

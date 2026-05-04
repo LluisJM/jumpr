@@ -8,3 +8,4 @@ uid.dat
 # Player-specific data (optional)
 /players/
 /advancements/
+/generated/

@@ -1,3 +1,2 @@
-execute store success score $3gooidkub8jev_40 bolt.expr.temp if score $checked_for_items temp matches 1
-execute unless score $3gooidkub8jev_40 bolt.expr.temp matches 0 run function jumpr:game/tick/nested_execute_11
-execute if score $3gooidkub8jev_40 bolt.expr.temp matches 0 run scoreboard players set $checked_for_items temp 1
+execute if entity @s[nbt={Item: {components: {"minecraft:custom_data": {coin: 1b}}}}] run data modify entity @s PickupDelay set value 200
+execute unless entity @s[nbt={Item: {components: {"minecraft:custom_data": {coin: 1b}}}}] run function jumpr:game/tick/nested_execute_11
