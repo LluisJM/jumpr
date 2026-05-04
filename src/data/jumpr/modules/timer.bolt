@@ -16,10 +16,6 @@ running = timer["$running"]
 def set(ticks: ScoreSource, _sec: int, _min: int = 0):
     ticks = (_min * 20 * 60) + (_sec * 20)
 
-def start(_sec: int, _min: int = 0):
-    timer["$running"] = 1
-    set(timer["$ticks"], _sec, _min)
-
 def format(ticks: ScoreSource, min: ScoreSource, sec: ScoreSource, ds: ScoreSource):
     min = (ticks - (ticks % (20*60))) / (20*60)
     sec = (ticks - (ticks % 20) - (min*20*60)) / 20

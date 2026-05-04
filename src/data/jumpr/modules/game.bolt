@@ -1,15 +1,19 @@
-from bolt_expressions import Scoreboard
+from bolt_expressions import Scoreboard, Data
 from libs.text_components import translated, score
 from enum import Enum
 
 Scoreboard.add_objective("game_data")
 Scoreboard.add_objective("points")
 Scoreboard.add_objective("round_deaths", "deathCount")
+Scoreboard.add_objective("temp")
 
 data = Scoreboard.objective("game_data")
 points = Scoreboard.objective("points")
 round_deaths = Scoreboard.objective("round_deaths")
+temp = Scoreboard.objective("temp")
+
 timer = Scoreboard.objective("timer")
+settings = Scoreboard.objective("game_settings")
 
 phase = data["$phase"]
 
@@ -39,6 +43,8 @@ function jumpr:game/start_next_phase:
         function jumpr:timer/start
         tag @a remove finished
         round_deaths["@a"].reset()
+        as @e[type=item]:
+            Data.entity("@s").PickupDelay = 0
     
     if phase == FINISH:
         title @a actionbar ""
@@ -51,10 +57,35 @@ function jumpr:game/start_next_phase:
         tellraw @a translated("jumpr.game.phase.build.description", 
             "Build obstacles using the items given to you to stop the other players from reaching the end.",
             formatting={"color": "gray"})
-        for i in range(5):
-            loot give @a loot jumpr:item/any
+        
+        temp["$items_to_give"] = settings["$build_items"]
+        function jumpr:game/build_phase/give_items
+
+function jumpr:game/build_phase/give_items:
+    def give_items(selector: str):
+        loot give @a loot jumpr:item/any
+    
+    if settings["$share_items"] == 1:
+        give_items("@a")
+    else:
+        as @a:
+            give_items("@s")
+
+    temp["$items_to_give"] -= 1
+    if temp["$items_to_give"] > 0:
+        function jumpr:game/build_phase/give_items
 
 function jumpr:game/tick:
+    def lock_items():
+        as @e[type=minecraft:item]:
+            if entity @s[nbt={Item:{components:{"minecraft:custom_data": {"coin": 1b}}}}]:
+                Data.entity("@s").PickupDelay = 200
+            
+            unless entity @s[nbt={Item:{components:{"minecraft:custom_data": {"coin": 1b}}}}]:
+                Data.entity("@s").PickupDelay = 0
+                at @s:
+                    tp @s @p
+
     if phase == COUNTDOWN:
         title @a times 0s 2s 0s
         for i in range(1, 6):
@@ -79,9 +110,23 @@ function jumpr:game/tick:
         unless entity @a[tag=!finished]:
             function jumpr:game/start_next_phase
     
+    if phase == FINISH:
+        lock_items()
+
     if phase == BUILD:
+        lock_items()
+        
+        
         unless entity @a[nbt={Inventory:[{components:{"minecraft:custom_data":{"keep_through_phase": 0b}}}]}]:
-            function jumpr:game/start_next_phase
+            if temp["$checked_for_items"] == 1:
+                function jumpr:game/start_next_phase
+                temp["$checked_for_items"].reset()
+            else:
+                temp["$checked_for_items"] = 1
+        if entity @a[nbt={Inventory:[{components:{"minecraft:custom_data":{"keep_through_phase": 0b}}}]}]:
+            temp["$checked_for_items"].reset()
+
+        
 
 function jumpr:game/player_finish:
     def msg(formatted_timer: str):
@@ -90,6 +135,7 @@ function jumpr:game/player_finish:
             {"color": "green"})
     
     def add_points(count: int, reason: str, formatted_reason: str):
+        points["@s"] += count
         tellraw @a [
             {
                 "text": f"     +{count}p → ",
@@ -119,5 +165,9 @@ function jumpr:game/player_finish:
     
     if not round_deaths["@s"] > 0:
         add_points(5, "no_deaths", "No deaths")
+    
+    if entity @s[nbt={Inventory: [{components: {"minecraft:custom_data":{"coin": 1b}}}]}]:
+        clear @s *[minecraft:custom_data~{"coin": 1b}] 1
+        add_points(5, "coin", "Coin")
 
     tag @s add finished

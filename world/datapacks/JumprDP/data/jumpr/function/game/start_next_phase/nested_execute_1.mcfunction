@@ -3,3 +3,4 @@ function jumpr:timer/set/from_settings
 function jumpr:timer/start
 tag @a remove finished
 scoreboard players reset @a round_deaths
+execute as @e[type=item] run data modify entity @s PickupDelay set value 0

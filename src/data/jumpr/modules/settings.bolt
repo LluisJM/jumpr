@@ -7,8 +7,10 @@ settings = Scoreboard.objective("game_settings")
 round_length = settings["$round_length"]
 max_rounds = settings["$max_rounds"]
 build_items = settings["$build_items"]
+share_items = settings["$share_items"]
 
 function jumpr:settings/load_default:
     round_length = 20*30
     max_rounds = 5
     build_items = 3
+    share_items = 0

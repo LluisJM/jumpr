@@ -20,22 +20,21 @@ def item_description(id: str, description: list[str] | str) -> list[dict]:
         return to_return
 
 class CustomItem:
-    ctx: Context
     name: str | dict
     description: list[str | dict]
     id: str
     dummy_item: str
     default_count: int
     keep_through_phase: bool
+    extra_identifiers: list[str]
 
     def __init__(self, 
-            ctx: Context, 
             name: str | dict, 
             description: list[str] | str, 
             dummy_item: str, 
             default_count: int = 1,
-            keep_through_phase: bool = False):
-        self.ctx = ctx
+            keep_through_phase: bool = False,
+            extra_identifiers: list[str] | str = None):
         self.name = item_name(name) if isinstance(name, str) else name
         self.id = (to_snake_case(name) if isinstance(name, str) else name["text"] if "text" in name else name["fallback"]) if name else dummy_item.split(":")[-1]
         self.description = item_description(name if name else dummy_item.split(":")[-1], description)
@@ -46,6 +45,11 @@ class CustomItem:
         if keep_through_phase:
             self.description.append(translated("jumpr.item.keep_through_phase.description", "This item is kept after build phase is over.", 
                                            formatting={"color": "gray", "italic": False}))
+
+        if extra_identifiers:
+            self.extra_identifiers = extra_identifiers if isinstance(extra_identifiers, list) else [extra_identifiers]
+        else:
+            self.extra_identifiers = None
         
         
         debug(__name__, f'created custom item "{self.name["fallback"] if self.name else self.id}" which is actually "{self.dummy_item}" with {self.description.__len__()} line(s) of description')
@@ -53,6 +57,15 @@ class CustomItem:
     def as_loot_table_entry(self, count: int = None):
         if not count:
             count = self.default_count
+        
+        tag = {
+            "keep_through_phase": self.keep_through_phase
+        }
+
+        if self.extra_identifiers:
+            for identifier in self.extra_identifiers:
+                tag.setdefault(identifier, True)
+
         functions = [
             {
                 "function": "minecraft:set_lore",
@@ -65,9 +78,7 @@ class CustomItem:
             },
             {
               "function": "minecraft:set_custom_data",
-              "tag": {
-                "keep_through_phase": self.keep_through_phase
-              }
+              "tag": tag
             }
         ]
         if self.name:
@@ -89,14 +100,14 @@ def beet_default(ctx: Context):
     debug(__name__, 'running plugin', True)
 
     items = [
-        CustomItem(ctx, "Building Block", "Just a building block.", "minecraft:yellow_concrete", 5),
-        CustomItem(ctx, "Coin", "Bring this to the finish line during the running phase to score extra points.", "minecraft:gold_ingot"),
-        CustomItem(ctx, None, "That's pretty hot.", "minecraft:lava_bucket"),
-        CustomItem(ctx, None, "Better than dirt?", "minecraft:scaffolding", 5),
-        CustomItem(ctx, "Mr Puffer", "A very respectable pufferfish.", "minecraft:pufferfish_bucket"),
-        CustomItem(ctx, None, "Yummy.", "minecraft:baked_potato", 3, True),
-        CustomItem(ctx, None, "Place them or eat them; your choice.", "minecraft:sweet_berries", 3),
-        CustomItem(ctx, None, "Climb to the top with these!", "minecraft:ladder", 10)
+        CustomItem("Building Block", "Just a building block.", "minecraft:yellow_concrete", 5),
+        CustomItem("Coin", "Bring this to the finish line during the running phase to score extra points.", "minecraft:gold_ingot", extra_identifiers="coin"),
+        CustomItem(None, "That's pretty hot.", "minecraft:lava_bucket"),
+        CustomItem(None, "Better than dirt?", "minecraft:scaffolding", 5),
+        CustomItem("Mr Puffer", "A very respectable pufferfish.", "minecraft:pufferfish_bucket"),
+        CustomItem(None, "Yummy.", "minecraft:baked_potato", 3, True),
+        CustomItem(None, "Place them or eat them; your choice.", "minecraft:sweet_berries", 3),
+        CustomItem(None, "Climb to the top with these!", "minecraft:ladder", 10)
     ]
 
     any_entries = []

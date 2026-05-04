@@ -29,7 +29,8 @@
             {
               "function": "minecraft:set_custom_data",
               "tag": {
-                "keep_through_phase": false
+                "keep_through_phase": false,
+                "coin": true
               }
             },
             {
