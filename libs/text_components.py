@@ -34,7 +34,7 @@ def score(name: str, objective: str) -> dict:
     }
 
 def beet_default(ctx: Context):
-    debug(__name__, "running library", True)
+    debug(__name__, "running library", True, True)
     namespace = ctx.project_name.casefold()
     lang_file = f"{namespace}:en_us"
 

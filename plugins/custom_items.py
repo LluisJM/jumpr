@@ -97,7 +97,7 @@ class CustomItem:
         
 
 def beet_default(ctx: Context):
-    debug(__name__, 'running plugin', True)
+    debug(__name__, 'running plugin', True, True)
 
     items = [
         CustomItem("Building Block", "Just a building block.", "minecraft:yellow_concrete", 5),

@@ -2,7 +2,7 @@ from beet import Context, FunctionTag
 from libs.debugger import debug
 
 def beet_default(ctx: Context):
-    debug(__name__, 'running plugin', True)
+    debug(__name__, 'running plugin', True, True)
 
     tick_functions = []
     load_functions = []

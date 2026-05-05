@@ -17,7 +17,7 @@ def truncate(number: T, decimals: int = 0) -> T:
 
 start_time = timer()
 
-def debug(module: str, msg: str, highlight: bool = False):
+def debug(module: str, msg: str, highlight: bool = False, separate: bool = False):
     def get_time() -> str:
         elapsed = timer() - start_time
         elapsed_ms = elapsed * 1000 - truncate(elapsed) * 1000
@@ -28,6 +28,6 @@ def debug(module: str, msg: str, highlight: bool = False):
     if highlight:
         color1 = "\033[104m"
         color2 = "\033[34m\033[1m"
-    print(f"\033[90m{get_time()}\033[0m \t{color1}[{module}]\033[0m {color2}{msg}\033[0m")
+    print(f"{"\n" if separate else ""}\033[90m{get_time()}\033[0m \t{color1}[{module}]\033[0m {color2}{msg}\033[0m")
 
 debug(__name__, "started debugging")

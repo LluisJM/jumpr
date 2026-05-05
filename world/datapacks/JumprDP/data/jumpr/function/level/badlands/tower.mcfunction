@@ -1,1 +1,2 @@
-execute at @e[type=marker, tag=level.load] run function jumpr:level/badlands/tower/nested_execute_0
+function jumpr:level/clear
+execute at @e[type=marker, tag=level.start] run place template jumpr:level/badlands/tower ~-9 ~-3 ~-2

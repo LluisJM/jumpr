@@ -1,8 +1,8 @@
 function jumpr:markers/load:
     def set_marker(x: float, y: float, z: float, tag: str):
-        summon marker x y z {Tags:["world_marker", tag]}
+        summon marker x y z {Tags:["world_marker", tag], data:{name:tag}}
     
     kill @e[tag=world_marker]
     
     set_marker(0, 61, 27, "level.start")
-    set_marker(-6, 56, 25, "level.load")
+    set_marker(0, 61, 25, "level.load")
