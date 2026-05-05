@@ -71,10 +71,7 @@ def beet_default(ctx: Context):
                 f'   place template {structure} ~{-start_pos[0]} ~{-start_pos[1]} ~{-start_pos[2]}'
             ]
 
-            functions.setdefault(
-                name,
-                contents
-            )
+            functions.setdefault(name, contents)
     
     for name in functions:
         debug(__name__, f'created function "{name}" for loading map')

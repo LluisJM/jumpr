@@ -1,4 +1,4 @@
-from bolt_expressions import Scoreboard, Data
+from bolt_expressions import Scoreboard, Data, ScoreSource
 from libs.text_components import translated, score
 from enum import Enum
 
@@ -180,15 +180,30 @@ function jumpr:game/player_finish:
             [{"selector": "@s", "color": "white"}, formatted_timer], 
             {"color": "green"})
     
-    def add_points(count: int, reason: str, formatted_reason: str):
+    def add_points(count: int | ScoreSource, reason: str, formatted_reason: str, multiplier: int | ScoreSource = None):
         points["@s"] += count
-        tellraw @a [
+        count_str = count.__str__()
+        if isinstance(count, ScoreSource):
+            count_str = count.component()
+
+        text = [
             {
-                "text": f"     +{count}p → ",
+                "text": f"     +",
                 "color": "gray"
             },
+            count_str,
+            "p → ",
             translated(f"jumpr.game.player_finish.points.{reason}", formatted_reason)
         ]
+
+        if not multiplier:
+            tellraw @a text
+        else:
+            if isinstance(count, ScoreSource):
+                text += [" x", multiplier.component()]
+            else:
+                text.append(f" x{count}")
+            tellraw @a text
 
     formatted_timer = [
         {"text": "", "color": "white"},
@@ -212,8 +227,15 @@ function jumpr:game/player_finish:
     if not round_deaths["@s"] > 0:
         add_points(5, "no_deaths", "No deaths")
     
-    if entity @s[nbt={Inventory: [{components: {"minecraft:custom_data":{"coin": 1b}}}]}]:
-        clear @s *[minecraft:custom_data~{"coin": 1b}] 1
-        add_points(5, "coin", "Coin")
+    function jumpr:game/player_finish/count_coins
 
     tag @s add finished
+
+function jumpr:game/player_finish/count_coins:
+    if entity @s[nbt={Inventory: [{components: {"minecraft:custom_data":{"coin": 1b}}}]}]:
+        clear @s *[minecraft:custom_data~{"coin": 1b}] 1
+        temp["@s"] += 1
+        unless entity @s[nbt={Inventory: [{components: {"minecraft:custom_data":{"coin": 1b}}}]}]:
+            add_points(temp["@s"] * 5, "coin", "Coin", temp["@s"])
+            temp["@s"].reset()
+        function jumpr:game/player_finish/count_coins

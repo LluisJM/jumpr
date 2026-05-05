@@ -1,0 +1,1 @@
+execute if entity @s[nbt={Inventory: [{components: {"minecraft:custom_data": {coin: 1b}}}]}] run function jumpr:game/player_finish/count_coins/nested_execute_1
