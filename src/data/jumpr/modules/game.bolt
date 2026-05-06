@@ -40,6 +40,29 @@ function jumpr:game/start_next_phase:
     def countdown():
         timer["$ticks"] = 20 * 5
         function jumpr:timer/start
+    
+    def barrier(place: bool = True):
+        half_width = 10
+        half_height = 5
+        z = 2
+
+        x1 = f"~{half_width}"
+        y1 = f"~{half_height}"
+        z1 = f"~{z}"
+
+        x2 = f"~{-half_width}"
+        y2 = f"~{-half_height}"
+        z2 = f"~{z}"
+
+        block = "air"#  else "air"
+        replace = "barrier"# if place else "barrier"
+
+        if place:
+            block = "barrier"
+            replace = "air"
+
+        as @e[tag=level.start] at @s:
+            fill x1 y1 z1 x2 y2 z2 block replace replace
 
     title @a times 0.1s 2s 0.5s
 
@@ -49,8 +72,7 @@ function jumpr:game/start_next_phase:
         gamemode adventure @a
         countdown()
         tp @a @n[tag=level.start]
-        as @e[tag=level.start] at @s:
-            fill ~10 ~5 ~2 ~-10 ~-5 ~2 barrier replace air
+        barrier(True)
 
     if phase == RUN:
         title @a title translated("jumpr.game.phase.run.start", "Run!", formatting={"color": "green"})
@@ -61,8 +83,7 @@ function jumpr:game/start_next_phase:
         as @e[type=item]:
             Data.entity("@s").PickupDelay = 0
         
-        as @e[tag=level.start] at @s:
-            fill ~10 ~5 ~2 ~-10 ~-5 ~2 air replace barrier
+        barrier(False)
     
     if phase == FINISH:
         title @a actionbar ""
@@ -125,6 +146,16 @@ function jumpr:game/tick:
                 as @a at @s anchored eyes:
                     playsound minecraft:ui.button.click master @s ~ ~ ~ 0.5 pitch
         
+        as @e[type=marker, tag=level.start]:
+            level_start = Data.entity("@s")
+            temp["$level_start_z"] = level_start.Pos[2]
+            as @a at @s:
+                player = Data.entity("@s")
+                temp["@s"] = player.Pos[2]
+                if temp["@s"] > temp["$level_start_z"] + 1:
+                    z_sub = 5.612 / 20
+                    tp @s ~ ~0 ~-z_sub
+
         if temp["$particle_cooldown"] <= 0:
             temp["$particle_cooldown"] = 10
             as @e[tag=level.start] at @s:
@@ -136,8 +167,7 @@ function jumpr:game/tick:
                         particle minecraft:dust{color:[1.0, 0.2, 0.2], duration:50.0, scale:1.0} ~x ~y ~1.5 0 0 0 0 5 normal
         else:
             temp["$particle_cooldown"] -= 1
-                
-
+    
     if phase == RUN:
         function jumpr:timer/display
         as @a[tag=!finished] at @s if block ~ ~-1 ~ minecraft:lodestone:
@@ -227,6 +257,7 @@ function jumpr:game/player_finish:
     if not round_deaths["@s"] > 0:
         add_points(5, "no_deaths", "No deaths")
     
+    temp["@s"].reset()
     function jumpr:game/player_finish/count_coins
 
     tag @s add finished

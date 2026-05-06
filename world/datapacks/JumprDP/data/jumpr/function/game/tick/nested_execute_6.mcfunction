@@ -1,2 +1,2 @@
-scoreboard players set $particle_cooldown temp 10
-execute as @e[tag=level.start] at @s run function jumpr:game/tick/nested_execute_5
+execute store result score $level_start_z temp run data get entity @s Pos[2] 1
+execute as @a at @s run function jumpr:game/tick/nested_execute_5
