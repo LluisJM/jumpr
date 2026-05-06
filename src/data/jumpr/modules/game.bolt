@@ -130,6 +130,8 @@ function jumpr:game/tick:
                     tp @s @p
 
     if phase == COUNTDOWN:
+        function jumpr:timer/display
+
         title @a times 0s 2s 0s
         for i in range(1, 6):
             if timer["$ticks"] == i * 20:
@@ -201,8 +203,7 @@ function jumpr:game/tick:
         if entity @a[nbt={Inventory:[{components:{"minecraft:custom_data":{"keep_through_phase": 0b}}}]}]:
             temp["$checked_for_items"].reset()
         
-
-        
+        title @a actionbar {"selector": "@a", "separator": " - "}
 
 function jumpr:game/player_finish:
     def msg(formatted_timer: str):
