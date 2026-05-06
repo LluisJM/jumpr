@@ -16,6 +16,7 @@ timer = Scoreboard.objective("timer")
 settings = Scoreboard.objective("game_settings")
 
 phase = data["$phase"]
+round = data["$round"]
 
 IDLE = 0
 COUNTDOWN = 1
@@ -37,13 +38,29 @@ function jumpr:game/load:
     create_team("build_phase.done", "Done", "green", "✔ ")
     create_team("build_phase.not_done", "Not Done", "red", "❌ ")
 
+function jumpr:game/start:
+    function jumpr:game/end
+    function jumpr:level/reload
+    round = 0
+    phase = IDLE
+    function jumpr:game/start_next_phase
+
+function jumpr:game/end:
+    function jumpr:timer/stop
+    phase = IDLE
+    gamemode adventure @a
+
 function jumpr:game/start_next_phase:
     phase += 1
+    if phase == BUILD:
+        if round >= settings["$max_rounds"]:
+            function jumpr:game/end
     if phase > BUILD:
+        round += 1
         phase = COUNTDOWN
     
-    def countdown():
-        timer["$ticks"] = 20 * 5
+    def countdown(sec: int):
+        timer["$ticks"] = 20 * sec
         function jumpr:timer/start
     
     def barrier(place: bool = True):
@@ -72,10 +89,12 @@ function jumpr:game/start_next_phase:
     title @a times 0.1s 2s 0.5s
 
     if phase == COUNTDOWN:
+        title @a title translated("jumpr.game.phase.round", "Round %s", [round.component()], formatting={"color": "green"})
+
         team empty build_phase.done
         team empty build_phase.not_done
         gamemode adventure @a
-        countdown()
+        countdown(10)
         tp @a @n[tag=level.start]
         barrier(True)
 
@@ -99,7 +118,7 @@ function jumpr:game/start_next_phase:
         title @a actionbar ""
         title @a title translated("jumpr.game.phase.run.end", "Round over!", formatting={"color": "green"})
         tellraw @a[tag=!finished] translated("jumpr.game.phase.run.end.not_finished", "You didn't finish this round!", formatting={"color":"red"})
-        countdown()
+        countdown(5)
 
     if phase == BUILD:
         team join build_phase.not_done @a

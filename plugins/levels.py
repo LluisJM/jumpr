@@ -14,6 +14,7 @@ def beet_default(ctx: Context):
     ])
 
     functions: dict[str, list[str]] = {}
+    i: int = 0
 
     for structure in ctx.data.structures:
         if structure.startswith("jumpr:level/"):
@@ -65,14 +66,37 @@ def beet_default(ctx: Context):
             if split.__len__() > 3:
                 name = "/".join(split[:3])
 
-            contents = functions[name] if name in functions else ['function jumpr:level/clear']
+            if name in functions:
+                contents = functions[name]
+            else:
+                contents = [
+                    'from bolt_expressions import Scoreboard',
+                    'settings = Scoreboard.objective("game_settings")',
+                    
+                    'function jumpr:level/clear',
+                    f'settings["$level"] = {i}'
+                ]
+                i += 1
             contents += [
                 'at @e[type=marker, tag=level.start]:',
-                f'   place template {structure} ~{-start_pos[0]} ~{-start_pos[1]} ~{-start_pos[2]}'
+                f'   place template {structure} ~{-start_pos[0]} ~{-start_pos[1]} ~{-start_pos[2]}',
             ]
 
             functions.setdefault(name, contents)
     
-    for name in functions:
+    reload_function = [
+        'from bolt_expressions import Scoreboard',
+        'settings = Scoreboard.objective("game_settings")',
+
+        'kill @e[type=creeper]',
+        'kill @e[type=shulker]'
+    ]
+    for i, name in enumerate(functions):
         debug(__name__, f'created function "{name}" for loading map')
         ctx.data[name] = Function(functions[name])
+        reload_function += [
+            f'if settings["$level"] == {i}:',
+            f'   function {name}'
+        ]
+    
+    ctx.data["jumpr:level/reload"] = Function(reload_function)

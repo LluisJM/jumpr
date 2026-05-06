@@ -103,6 +103,8 @@ def beet_default(ctx: Context):
         CustomItem("Building Block", "Just a building block.", "minecraft:yellow_concrete", 3),
         CustomItem("Falling Building Block", "Just a building block; but it falls.", "minecraft:green_concrete_powder", 5),
         CustomItem(None, "Better than dirt?", "minecraft:scaffolding", 5),
+        CustomItem(None, "Better than dirt?", "minecraft:slime_block", 1),
+        CustomItem(None, "Better than dirt?", "minecraft:honey_block", 3),
 
         CustomItem(None, "That's pretty hot.", "minecraft:lava_bucket"),
         CustomItem("Mr Puffer", "A very respectable pufferfish.", "minecraft:pufferfish_bucket"),

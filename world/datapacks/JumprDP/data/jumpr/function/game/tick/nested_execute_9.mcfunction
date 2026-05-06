@@ -6,6 +6,6 @@ execute if score $ticks timer matches 60 run function jumpr:game/tick/nested_exe
 execute if score $ticks timer matches 80 run function jumpr:game/tick/nested_execute_3
 execute if score $ticks timer matches 100 run function jumpr:game/tick/nested_execute_4
 execute as @e[type=marker, tag=level.start] run function jumpr:game/tick/nested_execute_6
-execute store success score $3gooidkub8jev_39 bolt.expr.temp if score $particle_cooldown temp matches ..0
-execute unless score $3gooidkub8jev_39 bolt.expr.temp matches 0 run function jumpr:game/tick/nested_execute_8
-execute if score $3gooidkub8jev_39 bolt.expr.temp matches 0 run scoreboard players remove $particle_cooldown temp 1
+execute store success score $3gooidkub8jev_45 bolt.expr.temp if score $particle_cooldown temp matches ..0
+execute unless score $3gooidkub8jev_45 bolt.expr.temp matches 0 run function jumpr:game/tick/nested_execute_8
+execute if score $3gooidkub8jev_45 bolt.expr.temp matches 0 run scoreboard players remove $particle_cooldown temp 1
