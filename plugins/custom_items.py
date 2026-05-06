@@ -100,14 +100,19 @@ def beet_default(ctx: Context):
     debug(__name__, 'running plugin', True, True)
 
     items = [
-        CustomItem("Building Block", "Just a building block.", "minecraft:yellow_concrete", 5),
-        CustomItem("Coin", "Bring this to the finish line during the running phase to score extra points.", "minecraft:gold_ingot", extra_identifiers="coin"),
-        CustomItem(None, "That's pretty hot.", "minecraft:lava_bucket"),
+        CustomItem("Building Block", "Just a building block.", "minecraft:yellow_concrete", 3),
+        CustomItem("Falling Building Block", "Just a building block; but it falls.", "minecraft:green_concrete_powder", 5),
         CustomItem(None, "Better than dirt?", "minecraft:scaffolding", 5),
+
+        CustomItem(None, "That's pretty hot.", "minecraft:lava_bucket"),
         CustomItem("Mr Puffer", "A very respectable pufferfish.", "minecraft:pufferfish_bucket"),
+        
+        CustomItem("Coin", "Bring this to the finish line during the running phase to score extra points.", "minecraft:gold_ingot", extra_identifiers="coin"),
+
         CustomItem(None, "Yummy.", "minecraft:baked_potato", 3, True),
-        CustomItem(None, "Place them or eat them; your choice.", "minecraft:sweet_berries", 3),
-        CustomItem(None, "Climb to the top with these!", "minecraft:ladder", 10)
+
+        CustomItem(None, "Click, boom!", "minecraft:creeper_spawn_egg", 2),
+        CustomItem(None, "What goes up...", "minecraft:shulker_spawn_egg", 1)
     ]
 
     any_entries = []

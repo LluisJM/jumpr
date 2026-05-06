@@ -24,7 +24,7 @@
             },
             {
               "function": "minecraft:set_count",
-              "count": 5
+              "count": 3
             },
             {
               "function": "minecraft:set_custom_data",
@@ -37,6 +37,154 @@
               "name": {
                 "translate": "item.building_block.name",
                 "fallback": "Building Block",
+                "with": [
+                  ""
+                ]
+              },
+              "target": "item_name",
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:green_concrete_powder",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "translate": "item.Falling Building Block.description",
+                  "fallback": "Just a building block; but it falls.",
+                  "with": [
+                    ""
+                  ],
+                  "color": "gray",
+                  "italic": false
+                }
+              ],
+              "mode": "append"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": 5
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": {
+                "keep_through_phase": false
+              }
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "translate": "item.falling_building_block.name",
+                "fallback": "Falling Building Block",
+                "with": [
+                  ""
+                ]
+              },
+              "target": "item_name",
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:scaffolding",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "translate": "item.scaffolding.description",
+                  "fallback": "Better than dirt?",
+                  "with": [
+                    ""
+                  ],
+                  "color": "gray",
+                  "italic": false
+                }
+              ],
+              "mode": "append"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": 5
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": {
+                "keep_through_phase": false
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:lava_bucket",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "translate": "item.lava_bucket.description",
+                  "fallback": "That's pretty hot.",
+                  "with": [
+                    ""
+                  ],
+                  "color": "gray",
+                  "italic": false
+                }
+              ],
+              "mode": "append"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": 1
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": {
+                "keep_through_phase": false
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:pufferfish_bucket",
+          "functions": [
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "translate": "item.Mr Puffer.description",
+                  "fallback": "A very respectable pufferfish.",
+                  "with": [
+                    ""
+                  ],
+                  "color": "gray",
+                  "italic": false
+                }
+              ],
+              "mode": "append"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": 1
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": {
+                "keep_through_phase": false
+              }
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "translate": "item.mr_puffer.name",
+                "fallback": "Mr Puffer",
                 "with": [
                   ""
                 ]
@@ -92,111 +240,6 @@
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:lava_bucket",
-          "functions": [
-            {
-              "function": "minecraft:set_lore",
-              "lore": [
-                {
-                  "translate": "item.lava_bucket.description",
-                  "fallback": "That's pretty hot.",
-                  "with": [
-                    ""
-                  ],
-                  "color": "gray",
-                  "italic": false
-                }
-              ],
-              "mode": "append"
-            },
-            {
-              "function": "minecraft:set_count",
-              "count": 1
-            },
-            {
-              "function": "minecraft:set_custom_data",
-              "tag": {
-                "keep_through_phase": false
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:scaffolding",
-          "functions": [
-            {
-              "function": "minecraft:set_lore",
-              "lore": [
-                {
-                  "translate": "item.scaffolding.description",
-                  "fallback": "Better than dirt?",
-                  "with": [
-                    ""
-                  ],
-                  "color": "gray",
-                  "italic": false
-                }
-              ],
-              "mode": "append"
-            },
-            {
-              "function": "minecraft:set_count",
-              "count": 5
-            },
-            {
-              "function": "minecraft:set_custom_data",
-              "tag": {
-                "keep_through_phase": false
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:pufferfish_bucket",
-          "functions": [
-            {
-              "function": "minecraft:set_lore",
-              "lore": [
-                {
-                  "translate": "item.Mr Puffer.description",
-                  "fallback": "A very respectable pufferfish.",
-                  "with": [
-                    ""
-                  ],
-                  "color": "gray",
-                  "italic": false
-                }
-              ],
-              "mode": "append"
-            },
-            {
-              "function": "minecraft:set_count",
-              "count": 1
-            },
-            {
-              "function": "minecraft:set_custom_data",
-              "tag": {
-                "keep_through_phase": false
-              }
-            },
-            {
-              "function": "minecraft:set_name",
-              "name": {
-                "translate": "item.mr_puffer.name",
-                "fallback": "Mr Puffer",
-                "with": [
-                  ""
-                ]
-              },
-              "target": "item_name",
-              "conditions": []
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
           "name": "minecraft:baked_potato",
           "functions": [
             {
@@ -237,14 +280,14 @@
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:sweet_berries",
+          "name": "minecraft:creeper_spawn_egg",
           "functions": [
             {
               "function": "minecraft:set_lore",
               "lore": [
                 {
-                  "translate": "item.sweet_berries.description",
-                  "fallback": "Place them or eat them; your choice.",
+                  "translate": "item.creeper_spawn_egg.description",
+                  "fallback": "Click, boom!",
                   "with": [
                     ""
                   ],
@@ -256,7 +299,7 @@
             },
             {
               "function": "minecraft:set_count",
-              "count": 3
+              "count": 2
             },
             {
               "function": "minecraft:set_custom_data",
@@ -268,14 +311,14 @@
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:ladder",
+          "name": "minecraft:shulker_spawn_egg",
           "functions": [
             {
               "function": "minecraft:set_lore",
               "lore": [
                 {
-                  "translate": "item.ladder.description",
-                  "fallback": "Climb to the top with these!",
+                  "translate": "item.shulker_spawn_egg.description",
+                  "fallback": "What goes up...",
                   "with": [
                     ""
                   ],
@@ -287,7 +330,7 @@
             },
             {
               "function": "minecraft:set_count",
-              "count": 10
+              "count": 1
             },
             {
               "function": "minecraft:set_custom_data",

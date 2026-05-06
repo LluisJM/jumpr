@@ -1,2 +1,2 @@
-function jumpr:game/start_next_phase
-scoreboard players reset $checked_for_items temp
+execute if entity @s[tag=ensured_items] run function jumpr:game/tick/nested_execute_17
+tag @s add ensured_items

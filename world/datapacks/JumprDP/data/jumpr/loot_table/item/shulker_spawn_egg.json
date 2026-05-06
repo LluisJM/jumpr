@@ -5,14 +5,14 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:yellow_concrete",
+          "name": "minecraft:shulker_spawn_egg",
           "functions": [
             {
               "function": "minecraft:set_lore",
               "lore": [
                 {
-                  "translate": "item.Building Block.description",
-                  "fallback": "Just a building block.",
+                  "translate": "item.shulker_spawn_egg.description",
+                  "fallback": "What goes up...",
                   "with": [
                     ""
                   ],
@@ -24,25 +24,13 @@
             },
             {
               "function": "minecraft:set_count",
-              "count": 3
+              "count": 1
             },
             {
               "function": "minecraft:set_custom_data",
               "tag": {
                 "keep_through_phase": false
               }
-            },
-            {
-              "function": "minecraft:set_name",
-              "name": {
-                "translate": "item.building_block.name",
-                "fallback": "Building Block",
-                "with": [
-                  ""
-                ]
-              },
-              "target": "item_name",
-              "conditions": []
             }
           ]
         }

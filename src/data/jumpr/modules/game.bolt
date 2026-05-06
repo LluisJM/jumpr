@@ -23,6 +23,11 @@ RUN = 2
 FINISH = 3
 BUILD = 4
 
+def set_ai(entity: str, value: bool):
+    as @e[type=f"{entity}"]:
+        Data.entity("@s").NoAI = not value
+        Data.entity("@s").Invulnerable = not value
+
 function jumpr:game/load:
     def create_team(id: str, name: str, color: str, prefix: str):
         team add id name
@@ -75,6 +80,8 @@ function jumpr:game/start_next_phase:
         barrier(True)
 
     if phase == RUN:
+        set_ai("creeper", True)
+        set_ai("shulker", True)
         title @a title translated("jumpr.game.phase.run.start", "Run!", formatting={"color": "green"})
         function jumpr:timer/set/from_settings
         function jumpr:timer/start
@@ -86,6 +93,9 @@ function jumpr:game/start_next_phase:
         barrier(False)
     
     if phase == FINISH:
+        kill @e[type=shulker_bullet]
+        set_ai("creeper", False)
+        set_ai("shulker", False)
         title @a actionbar ""
         title @a title translated("jumpr.game.phase.run.end", "Round over!", formatting={"color": "green"})
         tellraw @a[tag=!finished] translated("jumpr.game.phase.run.end.not_finished", "You didn't finish this round!", formatting={"color":"red"})
@@ -181,6 +191,8 @@ function jumpr:game/tick:
         lock_items()
 
     if phase == BUILD:
+        set_ai("creeper", False)
+        set_ai("shulker", False)
         lock_items()
         clear @a minecraft:bucket
 
