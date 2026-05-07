@@ -1,3 +1,2 @@
-function jumpr:timer/display
-execute as @a[tag=!finished] at @s if block ~ ~-1 ~ minecraft:lodestone run function jumpr:game/player_finish
-execute unless entity @a[tag=!finished] run function jumpr:game/start_next_phase
+scoreboard players set $particle_cooldown temp 10
+execute as @e[tag=level.start] at @s run function jumpr:game/tick/nested_execute_9

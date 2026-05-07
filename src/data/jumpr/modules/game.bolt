@@ -41,6 +41,8 @@ function jumpr:game/load:
 function jumpr:game/start:
     function jumpr:game/end
     function jumpr:level/reload
+    points["*"].reset()
+    points["@a"] = 0
     round = 0
     phase = IDLE
     function jumpr:game/start_next_phase
@@ -96,6 +98,8 @@ function jumpr:game/start_next_phase:
         gamemode adventure @a
         countdown(10)
         tp @a @n[tag=level.start]
+        as @a at @n[tag=level.start]:
+            spawnpoint @s ~ ~ ~
         barrier(True)
 
     if phase == RUN:
@@ -135,7 +139,7 @@ function jumpr:game/start_next_phase:
 
 function jumpr:game/build_phase/give_items:
     def give_items(selector: str):
-        loot give @a loot jumpr:item/any
+        loot give @s loot jumpr:item/any
     
     if settings["$share_items"] == 1:
         give_items("@a")
@@ -148,6 +152,13 @@ function jumpr:game/build_phase/give_items:
         function jumpr:game/build_phase/give_items
 
 function jumpr:game/tick:
+    as @e[type=marker, tag=level.bottom]:
+        entity_self = Data.entity("@s")
+        temp["$level_bottom_y"] = entity_self.Pos[1]
+        as @a at @s:
+            if entity_self.Pos[1] < temp["$level_bottom_y"] - 1:
+                kill @s
+
     def lock_items():
         as @e[type=minecraft:item]:
             if entity @s[nbt={Item:{components:{"minecraft:custom_data": {"coin": 1b}}}}]:
@@ -178,12 +189,10 @@ function jumpr:game/tick:
                     playsound minecraft:ui.button.click master @s ~ ~ ~ 0.5 pitch
         
         as @e[type=marker, tag=level.start]:
-            level_start = Data.entity("@s")
-            temp["$level_start_z"] = level_start.Pos[2]
+            entity_self = Data.entity("@s")
+            temp["$level_start_z"] = entity_self.Pos[2]
             as @a at @s:
-                player = Data.entity("@s")
-                temp["@s"] = player.Pos[2]
-                if temp["@s"] > temp["$level_start_z"] + 1:
+                if entity_self.Pos[2] > temp["$level_start_z"] + 1:
                     z_sub = 5.612 / 20
                     tp @s ~ ~0 ~-z_sub
 

@@ -5,6 +5,7 @@ def beet_default(ctx: Context):
     debug(__name__, "running plugin", True, True)
 
     ctx.data["jumpr:level/clear"] = Function([
+        'kill @e[type=marker, tag=level.bottom]',
         'at @e[type=marker, tag=level.load]:',
         '   for i in range(10):',
         '       z1 = i * 10',
@@ -70,7 +71,7 @@ def beet_default(ctx: Context):
                 contents = functions[name]
             else:
                 contents = [
-                    'from bolt_expressions import Scoreboard',
+                    'from bolt_expressions import Scoreboard, Data',
                     'settings = Scoreboard.objective("game_settings")',
                     
                     'function jumpr:level/clear',
@@ -80,6 +81,7 @@ def beet_default(ctx: Context):
             contents += [
                 'at @e[type=marker, tag=level.start]:',
                 f'   place template {structure} ~{-start_pos[0]} ~{-start_pos[1]} ~{-start_pos[2]}',
+                f'   summon marker ~ ~{-start_pos[1]} ~ {{Tags:["level.bottom"], data:{{name:"level.bottom"}}}}'
             ]
 
             functions.setdefault(name, contents)
@@ -93,7 +95,7 @@ def beet_default(ctx: Context):
     ]
     for i, name in enumerate(functions):
         debug(__name__, f'created function "{name}" for loading map')
-        ctx.data[name] = Function(functions[name])
+        ctx.data[name] = Function(functions[name] + ["function jumpr:level/sort_bottom_markers"])
         reload_function += [
             f'if settings["$level"] == {i}:',
             f'   function {name}'

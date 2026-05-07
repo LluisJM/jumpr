@@ -1,2 +1,4 @@
-title @a title {text: "1", color: "red"}
-execute as @a at @s anchored eyes run playsound minecraft:ui.button.click master @s ~ ~ ~ 0.5 1.9
+scoreboard players operation $i0 bolt.expr.temp = $level_bottom_y temp
+scoreboard players remove $i0 bolt.expr.temp 1
+execute store result score $i1 bolt.expr.temp run data get entity @s Pos[1] 1
+execute if score $i1 bolt.expr.temp < $i0 bolt.expr.temp run kill @s

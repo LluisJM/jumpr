@@ -1,2 +1,2 @@
-title @a title {text: "2", color: "red"}
-execute as @a at @s anchored eyes run playsound minecraft:ui.button.click master @s ~ ~ ~ 0.5 1.8
+execute store result score $level_bottom_y temp run data get entity @s Pos[1] 1
+execute as @a at @s run function jumpr:game/tick/nested_execute_0
