@@ -1,4 +1,3 @@
-function jumpr:game/end
 function jumpr:level/reload
 scoreboard players reset * points
 scoreboard players set @a points 0

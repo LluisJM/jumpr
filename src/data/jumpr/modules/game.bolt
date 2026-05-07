@@ -23,6 +23,7 @@ COUNTDOWN = 1
 RUN = 2
 FINISH = 3
 BUILD = 4
+END = 5
 
 def set_ai(entity: str, value: bool):
     as @e[type=f"{entity}"]:
@@ -39,7 +40,6 @@ function jumpr:game/load:
     create_team("build_phase.not_done", "Not Done", "red", "❌ ")
 
 function jumpr:game/start:
-    function jumpr:game/end
     function jumpr:level/reload
     points["*"].reset()
     points["@a"] = 0
@@ -51,6 +51,22 @@ function jumpr:game/end:
     function jumpr:timer/stop
     phase = IDLE
     gamemode adventure @a
+    team empty build_phase.done
+    team empty build_phase.not_done
+
+    tag @a remove winner
+    temp["$highest_points"] = 0
+    as @a:
+        if points["@s"] > temp["$highest_points"]:
+            temp["$highest_points"] = points["@s"]
+    as @a:
+        if points["@s"] == temp["$highest_points"]:
+            tag @s add winner
+    
+    title @a times 0s 5s 0.5s
+    title @a subtitle translated("jumpr.game.over", "%s wins!", [{"selector": "@a[tag=winner]", "color": "white"}], formatting={"color": "gold"})
+    title @a title translated("jumpr.game.over", "Game Over!", formatting={"color": "gold"})
+    #title @a subtitle ""
 
 function jumpr:game/start_next_phase:
     phase += 1
@@ -91,7 +107,7 @@ function jumpr:game/start_next_phase:
     title @a times 0.1s 2s 0.5s
 
     if phase == COUNTDOWN:
-        title @a title translated("jumpr.game.phase.round", "Round %s", [round.component()], formatting={"color": "green"})
+        title @a title translated("jumpr.game.phase.round", "Round %s", [round.component()], formatting={"color": "yellow"})
 
         team empty build_phase.done
         team empty build_phase.not_done
@@ -135,7 +151,7 @@ function jumpr:game/start_next_phase:
             formatting={"color": "gray"})
         
         temp["$items_to_give"] = settings["$build_items"]
-        function jumpr:game/build_phase/give_items
+        function jumpr:game/build_phase/give_items  
 
 function jumpr:game/build_phase/give_items:
     def give_items(selector: str):

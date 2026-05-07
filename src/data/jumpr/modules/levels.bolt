@@ -3,7 +3,6 @@ from bolt_expressions import Scoreboard, Data
 temp = Scoreboard.objective("temp")
 
 function jumpr:level/sort_bottom_markers:
-    say Hello
     temp["$level_lowest_y"] = Data.entity("@n[type=marker, tag=level.bottom]").Pos[1]
     as @e[type=marker, tag=level.bottom] at @s:
         entity_self = Data.entity("@s")

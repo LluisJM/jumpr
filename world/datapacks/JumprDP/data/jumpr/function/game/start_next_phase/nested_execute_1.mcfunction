@@ -1,4 +1,4 @@
-title @a title {translate: "jumpr.game.phase.round", fallback: "Round %s", with: [{score: {name: "$round", objective: "game_data"}}], color: "green"}
+title @a title {translate: "jumpr.game.phase.round", fallback: "Round %s", with: [{score: {name: "$round", objective: "game_data"}}], color: "yellow"}
 team empty build_phase.done
 team empty build_phase.not_done
 gamemode adventure @a
