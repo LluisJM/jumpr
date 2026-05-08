@@ -66,7 +66,6 @@ function jumpr:game/end:
     title @a times 0s 5s 0.5s
     title @a subtitle translated("jumpr.game.over", "%s wins!", [{"selector": "@a[tag=winner]", "color": "white"}], formatting={"color": "gold"})
     title @a title translated("jumpr.game.over", "Game Over!", formatting={"color": "gold"})
-    #title @a subtitle ""
 
 function jumpr:game/start_next_phase:
     phase += 1
@@ -117,6 +116,7 @@ function jumpr:game/start_next_phase:
         as @a at @n[tag=level.start]:
             spawnpoint @s ~ ~ ~
         barrier(True)
+        temp["$particle_cooldown"] = 0
 
     if phase == RUN:
         set_ai("creeper", True)
@@ -211,7 +211,8 @@ function jumpr:game/tick:
                 if entity_self.Pos[2] > temp["$level_start_z"] + 1:
                     z_sub = 5.612 / 20
                     tp @s ~ ~0 ~-z_sub
-
+        
+        temp["$particle_cooldown"] -= 1
         if temp["$particle_cooldown"] <= 0:
             temp["$particle_cooldown"] = 10
             as @e[tag=level.start] at @s:
@@ -221,9 +222,8 @@ function jumpr:game/tick:
                         y *= 0.7
                         entity = Data.entity("@s")
                         particle minecraft:dust{color:[1.0, 0.2, 0.2], duration:50.0, scale:1.0} ~x ~y ~1.5 0 0 0 0 5 normal
-        else:
-            temp["$particle_cooldown"] -= 1
-    
+            
+
     if phase == RUN:
         function jumpr:timer/display
         as @a[tag=!finished] at @s if block ~ ~-1 ~ minecraft:lodestone:
