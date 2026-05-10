@@ -1,11 +1,11 @@
-# Minecraft world ignores
 session.lock
 uid.dat
 *.log
 *.tmp
 *.bak
+resources.zip
 
-# Player-specific data (optional)
 /players/
 /advancements/
 /generated/
+/datapacks/

@@ -1,6 +1,0 @@
-{
-  "values": [
-    "jumpr:game/tick",
-    "jumpr:timer/tick"
-  ]
-}

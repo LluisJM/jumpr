@@ -1,7 +1,0 @@
-{
-  "values": [
-    "jumpr:init_expressions",
-    "jumpr:game/load",
-    "jumpr:markers/load"
-  ]
-}
