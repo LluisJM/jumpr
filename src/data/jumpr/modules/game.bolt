@@ -48,6 +48,7 @@ function jumpr:game/start:
     function jumpr:game/start_next_phase
 
 function jumpr:game/end:
+    gamerule pvp false
     function jumpr:timer/stop
     phase = IDLE
     gamemode adventure @a
@@ -106,6 +107,7 @@ function jumpr:game/start_next_phase:
     title @a times 0.1s 2s 0.5s
 
     if phase == COUNTDOWN:
+        gamerule pvp false
         title @a title translated("jumpr.game.phase.round", "Round %s", [round.component()], formatting={"color": "yellow"})
 
         team empty build_phase.done
@@ -119,6 +121,8 @@ function jumpr:game/start_next_phase:
         temp["$particle_cooldown"] = 0
 
     if phase == RUN:
+        if settings["$pvp"] == 1:
+            gamerule pvp false
         set_ai("creeper", True)
         set_ai("shulker", True)
         title @a title translated("jumpr.game.phase.run.start", "Run!", formatting={"color": "green"})
@@ -141,6 +145,7 @@ function jumpr:game/start_next_phase:
         countdown(5)
 
     if phase == BUILD:
+        gamerule pvp false
         team join build_phase.not_done @a
         gamemode survival @a
         attribute @s minecraft:block_break_speed base set 0
