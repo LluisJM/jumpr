@@ -10,6 +10,9 @@ def to_snake_case(string):
     string = re.sub(r'(?<=[a-z])(?=[A-Z])|[^a-zA-Z]', ' ', string).strip().replace(' ', '_')
     return ''.join(string.lower())
 
+def from_snake_case(string):
+    return string.capitalize().strip().replace('_', ' ').replace('.', ' ')
+
 def translated(key: str, text: str = None, inserted: list[str] = [""], formatting: dict = {}) -> dict:
     if key not in translation_keys:
         translation_keys.setdefault(key, text if text else TRANSLATION_MISSING)

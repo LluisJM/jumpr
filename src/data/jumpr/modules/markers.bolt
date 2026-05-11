@@ -1,8 +1,62 @@
+from bolt_expressions import Scoreboard, Data
+from libs.text_components import translated, from_snake_case
+
+settings = Scoreboard.objective("settings")
+
 function jumpr:markers/load:
     def set_marker(x: float, y: float, z: float, tag: str):
         summon marker x y z {Tags:["world_marker", tag], data:{name:tag}}
+    
+    def set_interaction(x: float, y: float, z: float, tag: str, display_name: str, formatting: dict = {}):
+        text = [
+            translated(f"jumpr.interaction.{tag}", display_name, formatting=formatting),
+            {text: "\n[RB]", color: "dark_gray"}
+        ]
+        set_raw_interaction(x, y, z, tag, text)
+
+    def set_raw_interaction(x: float, y: float, z: float, tag: str, display_name: str | dict = None):
+        summon interaction x y z {Tags:["world_marker", tag]}
+        if not display_name:
+            display_name = from_snake_case(tag)
+        nbt = {
+            Tags: ["world_marker", tag], 
+            billboard: "vertical",
+            text: display_name
+        }
+        summon text_display x y z nbt
     
     kill @e[tag=world_marker]
     
     set_marker(0, 61, 27, "level.start")
     set_marker(0, 61, 25, "level.load")
+
+    set_interaction(3, 63, 20, "game.start", "Start game", {"color": "green"})
+    set_interaction(3, 63, 22, "game.end", "Stop game", {"color": "red"})
+
+    set_raw_interaction(-3, 63, 22, "level.select", [
+        {"text": "", "color": "dark_gray"},
+        translated("jumpr.interaction.level.next", "Select level", formatting={"color": "yellow"}),
+        {"text": "\n[LB] → "}, 
+        translated("jumpr.previous", "Previous"),
+        {"text": "\n[RB] → "},
+        translated("jumpr.next", "Next")
+    ])
+
+function jumpr:markers/tick:
+    as @e[type=interaction, tag=world_marker, nbt={interaction:{}}]:
+        if entity @s[tag=game.start]:
+            function jumpr:game/start
+        if entity @s[tag=game.end]:
+            function jumpr:game/end
+        if entity @s[tag=level.select]:
+            settings["$level"] += 1
+            function jumpr:level/reload
+
+        data remove entity @s interaction
+        
+    as @e[type=interaction, tag=world_marker, nbt={attack:{}}]:
+        if entity @s[tag=level.select]:
+            settings["$level"] -= 1
+            function jumpr:level/reload
+
+        data remove entity @s attack

@@ -72,7 +72,7 @@ def beet_default(ctx: Context):
             else:
                 contents = [
                     'from bolt_expressions import Scoreboard, Data',
-                    'settings = Scoreboard.objective("game_settings")',
+                    'settings = Scoreboard.objective("settings")',
                     
                     'function jumpr:level/clear',
                     f'settings["$level"] = {i}'
@@ -88,10 +88,16 @@ def beet_default(ctx: Context):
     
     reload_function = [
         'from bolt_expressions import Scoreboard',
-        'settings = Scoreboard.objective("game_settings")',
+        'settings = Scoreboard.objective("settings")',
 
         'kill @e[type=creeper]',
-        'kill @e[type=shulker]'
+        'kill @e[type=shulker]',
+
+        
+        f'if settings["$level"] >= {functions.__len__()}:',
+        '    settings["$level"] = 0', 
+        'if settings["$level"] < 0:',
+        f'    settings["$level"] = {functions.__len__() - 1}'
     ]
     for i, name in enumerate(functions):
         debug(__name__, f'created function "{name}" for loading map')
@@ -100,5 +106,8 @@ def beet_default(ctx: Context):
             f'if settings["$level"] == {i}:',
             f'   function {name}'
         ]
+
+    reload_function += [
+    ]
     
     ctx.data["jumpr:level/reload"] = Function(reload_function)
