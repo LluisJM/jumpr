@@ -1,16 +1,17 @@
 output: build
 
+name: Jumpr
+
 require:
   - bolt
   - bolt_expressions
 
-name: Jumpr
-
 data_pack:
-  name: JumprDP
+  name: datapack
   pack_format: 101
   load:
     - src
+    - kore_out/jumpr
   zipped: false
 
 resource_pack:
@@ -18,17 +19,9 @@ resource_pack:
   pack_format: 84
   load:
     - src
+    - kore_out/jumpr
   zipped: false
 
 pipeline:
-  - plugins.custom_items
   - plugins.levels
-  - plugins.debug_bolt
-  - bolt
   - mecha
-  - plugins.functions
-  - libs.text_components
-
-meta:
-  bolt:
-    entrypoint: "*"
