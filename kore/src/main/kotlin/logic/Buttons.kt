@@ -32,7 +32,7 @@ class Button(
             align(Axes(x = true, y = true, z = true))
             run {
                 summon(EntityTypes.TEXT_DISPLAY, vec3(0.0, 0.75, 0.0).relative) {
-                    this["text"] = getOrCreateTranslation("jumpr.button.${this@Button.name}", this@Button.formattedName, block = formatting).toNbtTag()
+                    this["text"] = getOrCreateTranslation("button.${this@Button.name}", this@Button.formattedName, block = formatting).toNbtTag()
                     this["billboard"] = "vertical"
                 }
                 interaction.summon(pos)

@@ -17,17 +17,16 @@ repositories {
 dependencies {
 	// Install Kore.
 	implementation(libs.kore)
+	implementation(libs.kore.oop)
+	implementation(libs.kore.helpers)
 	implementation(libs.kotlinx.io)
-
-	implementation("io.github.ayfri.kore:oop:2.0.3-1.21.11")
-	implementation("io.github.ayfri.kore:helpers:2.0.3-1.21.11")
 
 	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
 kotlin {
-	jvmToolchain(21)
+	jvmToolchain(25)
 
 	// Activate required compiler options for using Kore.
 	compilerOptions {

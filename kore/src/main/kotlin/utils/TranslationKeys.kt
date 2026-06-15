@@ -18,6 +18,8 @@ fun getOrCreateTranslation(
     with: List<ChatComponent>? = null,
     block: TranslatedTextComponent.() -> Unit = {}
 ): ChatComponents {
+    val key = "jumpr.$key"
+
     if (translations.contains(key)) {
         assert(value == null) { "Translation key '$key' already exists" }
     } else {

@@ -8,6 +8,8 @@ kotlinx-io = "0.9.0"
 [libraries]
 kotlinx-io = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
 kore = { module = "io.github.ayfri.kore:kore", version.ref = "kore" }
+kore-oop = { module = "io.github.ayfri.kore:oop", version.ref = "kore" }
+kore-helpers = { module = "io.github.ayfri.kore:helpers", version.ref = "kore" }
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
