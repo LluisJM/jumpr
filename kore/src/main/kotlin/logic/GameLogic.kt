@@ -178,69 +178,6 @@ fun DataPack.generateGameLogic() {
 
     // GAME LOOP
 
-    val playerFinish = function("player/finish") {
-        val points = scoreboard("points") {
-            create()
-            setDisplaySlot(DisplaySlots.belowName)
-            setDisplaySlot(DisplaySlots.list)
-            setDisplayName(getOrCreateTranslation("points", "Points") {
-                color = Color.GOLD
-            })
-        }
-
-        context(fn: Function)
-        fun addPoints(value: Int, source: String): Function.() -> Command {
-            val msg = ChatComponents(
-                textComponent(" +${value}p → ", color = Color.GRAY).list[0],
-                getOrCreateTranslation("points.${source.snakeCase()}", source).list[0]
-            )
-
-            val block: Function.() -> Command = {
-                fn.scoreboard.players.add(self(), points.name, value)
-                fn.tellraw(allPlayers(), msg)
-            }
-            return block
-        }
-
-        withTimerComponent { timerComponent ->
-            {
-                tellraw(
-                    allPlayers(),
-                    getOrCreateTranslation(
-                        "finish", "%s finished with %s left",
-                        with = listOf(
-                            entityComponent(self()) {
-                                color = Color.WHITE
-                            }.list[0],
-                            timerComponent.list[0] // TODO: Add whole component
-                        )
-                    ) {
-                        color = Color.GREEN
-                    }
-                )
-            }
-        }()
-
-        // Add points for finishing
-        addPoints(1, "Finishing")()
-
-        // Add points for finishing 1st
-        execute {
-            unlessCondition {
-                entity(nearestPlayer {
-                    tag = finishedTag
-                })
-            }
-            run {
-                addPoints(1, "Finishing First")()
-            }
-        }
-
-        // Add tag for finishing
-        tag(self()) {
-            add(finishedTag)
-        }
-    }
     tick("game/loop") {
         effect(inGamePlayers()) {
             giveInfinite(Effects.SATURATION, 0, true)
