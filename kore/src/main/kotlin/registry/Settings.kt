@@ -8,7 +8,6 @@ import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.kill
-import io.github.ayfri.kore.commands.say
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.tick
 import io.github.ayfri.kore.generated.EntityTypes
@@ -24,6 +23,7 @@ interface Settings {
         val ALL: List<AbstractSetting> get() = _all
 
         val MAX_ROUNDS = register(IntSetting("max_rounds", 1, 100, 5))
+        val ROUND_TIME = register(IntSetting("round_time", 200, 5000, 1000))
         val PVP = register(BooleanSetting("pvp", true))
 
         private fun <T: AbstractSetting> register(setting: T): T {
@@ -54,6 +54,12 @@ fun DataPack.initializeSettings(): FunctionArgument {
             }
 
             setting.onDisplayUpdate()
+        }
+    }
+
+    function("settings/reset") {
+        ALL.forEach {
+            it.reset()
         }
     }
 

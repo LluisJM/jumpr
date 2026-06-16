@@ -28,6 +28,9 @@ def debug(module: str, msg: str, highlight: bool = False, separate: bool = False
     if highlight:
         color1 = "\033[104m"
         color2 = "\033[34m\033[1m"
-    print(f"{"\n" if separate else ""}\033[90m{get_time()}\033[0m \t{color1}[{module}]\033[0m {color2}{msg}\033[0m")
+
+    if separate:
+        print()
+    print(f"\033[90m{get_time()}\033[0m \t{color1}[{module}]\033[0m {color2}{msg}\033[0m")
 
 debug(__name__, "started debugging")

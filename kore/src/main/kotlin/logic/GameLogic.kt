@@ -2,13 +2,15 @@ package logic
 
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.DisplaySlots
+import io.github.ayfri.kore.arguments.chatcomponents.ChatComponents
 import io.github.ayfri.kore.arguments.chatcomponents.ScoreComponent
 import io.github.ayfri.kore.arguments.chatcomponents.ScoreComponentEntry
-import io.github.ayfri.kore.arguments.chatcomponents.scoreComponent
+import io.github.ayfri.kore.arguments.chatcomponents.entityComponent
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.colors.Color
 import io.github.ayfri.kore.arguments.enums.Gamemode
 import io.github.ayfri.kore.arguments.maths.vec3
+import io.github.ayfri.kore.arguments.numbers.seconds
 import io.github.ayfri.kore.arguments.selector.SelectorArguments
 import io.github.ayfri.kore.arguments.types.literals.SelectorArgument
 import io.github.ayfri.kore.arguments.types.literals.allEntities
@@ -23,12 +25,12 @@ import io.github.ayfri.kore.commands.effect
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.gamemode
+import io.github.ayfri.kore.commands.give
+import io.github.ayfri.kore.commands.schedules
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.commands.tellraw
 import io.github.ayfri.kore.commands.title
-import io.github.ayfri.kore.entities.getScoreEntity
-import io.github.ayfri.kore.entities.player
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.load
@@ -38,7 +40,6 @@ import io.github.ayfri.kore.generated.Attributes
 import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.Effects
 import io.github.ayfri.kore.generated.EntityTypes
-import io.github.ayfri.kore.scoreboard.add
 import io.github.ayfri.kore.scoreboard.create
 import io.github.ayfri.kore.scoreboard.scoreboard
 import io.github.ayfri.kore.scoreboard.setDisplayName
@@ -49,13 +50,16 @@ import io.github.ayfri.kore.utils.set
 import io.github.ayfri.kore.utils.snakeCase
 
 import net.benwoodworth.knbt.addNbtCompound
+import registry.CustomItems
+import registry.Settings
 import registry.initializeSettings
+import utils.countdown
 import utils.getOrCreateTranslation
 
 const val IDLE = "idle"
-const val RUN_COUNTDOWN = "run_countdown"
+const val PRE_RUN = "pre_run"
 const val RUN = "run"
-const val BUILD_COUNTDOWN = "build_countdown"
+const val PRE_BUILD = "pre_build"
 const val BUILD = "build"
 
 val FINISH_LINE = Blocks.LODESTONE
@@ -77,9 +81,9 @@ const val finishedTag = "jumpr.finished"
 fun DataPack.generateGameLogic() {
     val states = registerGameStates {
         state(IDLE)
-        state(RUN_COUNTDOWN)
+        state(PRE_RUN)
         state(RUN)
-        state(BUILD_COUNTDOWN)
+        state(PRE_BUILD)
         state(BUILD)
     }
 
@@ -92,34 +96,70 @@ fun DataPack.generateGameLogic() {
 
     // GAME PHASES
 
-    val phaseRun = function("game/phase/run") {
-        states.transitionTo(RUN)
-        scoreboard.players {
-            // Increase round number
-            add(literal(currentRound), gameData.name, 1)
-        }
+    val startRunPhase = function("game/phase/run") {
+        val actualPhase = function("${this.name}_actual") {
+            Settings.ROUND_TIME.copyTo(timerTicks, timerObjective.name)
 
-        // Show title "Round X"
-        title(allPlayers(), TitleLocation.TITLE,
-            getOrCreateTranslation("round", "Round %s", with = listOf(
-                ScoreComponent(ScoreComponentEntry(currentRound, gameData.name))
-            )) {
+            states.transitionTo(RUN)
+
+            // Show title
+            title(allPlayers(), 0.seconds, 1.seconds, 0.2.seconds)
+            title(allPlayers(), TitleLocation.TITLE, getOrCreateTranslation("run", "Run!") {
                 color = Color.GREEN
             })
 
-        // Manage tags
-        tag(inGamePlayers()) {
-            remove(finishedTag)
+            // Manage tags
+            tag(inGamePlayers()) {
+                remove(finishedTag)
+            }
+        }
+
+        states.transitionTo(PRE_RUN)
+
+        // Show title "Round X"
+        scoreboard .players {
+            // Increase round number
+            add(literal(currentRound), gameData.name, 1)
+        }
+        title(allPlayers(), 0.seconds, 3.seconds, 0.2.seconds)
+        title(allPlayers(), TitleLocation.TITLE,
+            getOrCreateTranslation(
+                "round", "Round %s", with = listOf(
+                    ScoreComponent(ScoreComponentEntry(currentRound, gameData.name))
+                )
+            ) {
+                color = Color.GREEN
+            }
+        )
+
+        countdown(5, actualPhase, 5.0) { second ->
+            {
+                color = if (second > 3) Color.YELLOW else Color.RED
+                if (second <= 1) italic = true
+            }
         }
     }
-    val phaseBuild = function("game/phase/build") {
-        states.transitionTo(BUILD)
+    val startBuildPhase = function("game/phase/build") {
+        val actualPhase = function("${this.name}_actual") {
+            states.transitionTo(BUILD)
+            // Show title "Build Phase"
+            title(
+                allPlayers(), TitleLocation.TITLE,
+                getOrCreateTranslation("build_phase", "Build Phase") {
+                    color = Color.YELLOW
+                })
 
-        // Show title "Build Phase"
-        title(allPlayers(), TitleLocation.TITLE,
-            getOrCreateTranslation("build_phase", "Build Phase") {
-                color = Color.YELLOW
-            })
+            give(inGamePlayers(), CustomItems.BUILDING_BLOCK.toItemArgument(),
+                CustomItems.BUILDING_BLOCK.count?.toInt()
+            )
+        }
+
+        states.transitionTo(PRE_BUILD)
+
+        schedules.replace(actualPhase, 5.seconds)
+
+        title(allPlayers(), TitleLocation.ACTIONBAR, textComponent(""))
+        stopTimer()
     }
 
     // GAME STARTING AND STOPING
@@ -130,7 +170,7 @@ fun DataPack.generateGameLogic() {
             set(literal(currentRound), gameData.name, -1)
         }
 
-        function(phaseRun)
+        function(startRunPhase)
     }
     function(gameStop) {
         states.transitionTo(IDLE)
@@ -147,34 +187,43 @@ fun DataPack.generateGameLogic() {
                 color = Color.GOLD
             })
         }
-        val player = player("LluisJM") //TODO Set this to self when it's developed
-        val playerPoints = player.getScoreEntity(points.name)
 
+        context(fn: Function)
         fun addPoints(value: Int, source: String): Function.() -> Command {
-            val msg = textComponent {
-                textComponent(" +${value}p → ", color = Color.GRAY)
-                getOrCreateTranslation("points.${source.snakeCase()}", source)
-            }
+            val msg = ChatComponents(
+                textComponent(" +${value}p → ", color = Color.GRAY).list[0],
+                getOrCreateTranslation("points.${source.snakeCase()}", source).list[0]
+            )
 
             val block: Function.() -> Command = {
-                playerPoints.add(value)
-                tellraw(allPlayers(), msg)
+                fn.scoreboard.players.add(self(), points.name, value)
+                fn.tellraw(allPlayers(), msg)
             }
             return block
         }
 
-        tag(self()) {
-            add("finished")
-        }
-        tellraw(
-            allPlayers(),
-            getOrCreateTranslation("finish", "%s finished with %s left") { //TODO add with value
-                color = Color.GREEN
+        withTimerComponent { timerComponent ->
+            {
+                tellraw(
+                    allPlayers(),
+                    getOrCreateTranslation(
+                        "finish", "%s finished with %s left",
+                        with = listOf(
+                            entityComponent(self()) {
+                                color = Color.WHITE
+                            }.list[0],
+                            timerComponent.list[0] // TODO: Add whole component
+                        )
+                    ) {
+                        color = Color.GREEN
+                    }
+                )
             }
-        )
+        }()
 
         // Add points for finishing
-        addPoints(1, "Finishing")
+        addPoints(1, "Finishing")()
+
         // Add points for finishing 1st
         execute {
             unlessCondition {
@@ -182,7 +231,14 @@ fun DataPack.generateGameLogic() {
                     tag = finishedTag
                 })
             }
-            run(addPoints(1, "Finishing First"))
+            run {
+                addPoints(1, "Finishing First")()
+            }
+        }
+
+        // Add tag for finishing
+        tag(self()) {
+            add(finishedTag)
         }
     }
     tick("game/loop") {
@@ -191,6 +247,12 @@ fun DataPack.generateGameLogic() {
         }
 
         states.whenState(RUN) {
+            withTimerComponent { timerComponent ->
+                {
+                    title(allPlayers(), TitleLocation.ACTIONBAR, timerComponent)
+                }
+            }()
+
             gamemode(Gamemode.ADVENTURE, inGamePlayers())
 
             val notFinishedPlayers = inGamePlayers {
@@ -209,12 +271,16 @@ fun DataPack.generateGameLogic() {
                             entity(notFinishedPlayers)
                         }
                         run {
-                            function(phaseBuild)
+                            function(startBuildPhase)
                         }
                     }
                 }
             }
+            onFinishTimer {
+                function(startBuildPhase)
+            }
         }
+
         states.whenState(BUILD) {
             gamemode(Gamemode.SURVIVAL, inGamePlayers())
             execute {
@@ -250,7 +316,7 @@ fun DataPack.generateGameLogic() {
                     })
                 }
                 run {
-                    function(phaseRun)
+                    function(startRunPhase)
                 }
             }
         }
