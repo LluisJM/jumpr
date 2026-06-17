@@ -1,11 +1,8 @@
 package logic
 
 import io.github.ayfri.kore.DataPack
-import io.github.ayfri.kore.arguments.DisplaySlots
-import io.github.ayfri.kore.arguments.chatcomponents.ChatComponents
 import io.github.ayfri.kore.arguments.chatcomponents.ScoreComponent
 import io.github.ayfri.kore.arguments.chatcomponents.ScoreComponentEntry
-import io.github.ayfri.kore.arguments.chatcomponents.entityComponent
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.colors.Color
 import io.github.ayfri.kore.arguments.enums.Gamemode
@@ -16,22 +13,17 @@ import io.github.ayfri.kore.arguments.types.literals.SelectorArgument
 import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.literal
-import io.github.ayfri.kore.arguments.types.literals.nearestPlayer
 import io.github.ayfri.kore.arguments.types.literals.self
-import io.github.ayfri.kore.commands.Command
 import io.github.ayfri.kore.commands.TitleLocation
 import io.github.ayfri.kore.commands.attributes
 import io.github.ayfri.kore.commands.effect
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.gamemode
-import io.github.ayfri.kore.commands.give
 import io.github.ayfri.kore.commands.schedules
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
-import io.github.ayfri.kore.commands.tellraw
 import io.github.ayfri.kore.commands.title
-import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.load
 import io.github.ayfri.kore.functions.tick
@@ -42,12 +34,9 @@ import io.github.ayfri.kore.generated.Effects
 import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.scoreboard.create
 import io.github.ayfri.kore.scoreboard.scoreboard
-import io.github.ayfri.kore.scoreboard.setDisplayName
-import io.github.ayfri.kore.scoreboard.setDisplaySlot
 import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.nbtList
 import io.github.ayfri.kore.utils.set
-import io.github.ayfri.kore.utils.snakeCase
 
 import net.benwoodworth.knbt.addNbtCompound
 import registry.CustomItems
@@ -149,9 +138,12 @@ fun DataPack.generateGameLogic() {
                     color = Color.YELLOW
                 })
 
-            give(inGamePlayers(), CustomItems.BUILDING_BLOCK.toItemArgument(),
-                CustomItems.BUILDING_BLOCK.count?.toInt()
-            )
+            execute {
+                asTarget(inGamePlayers())
+                run {
+                    function(giveItem)
+                }
+            }
         }
 
         states.transitionTo(PRE_BUILD)
