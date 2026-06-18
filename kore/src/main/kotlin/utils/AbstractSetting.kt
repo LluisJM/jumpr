@@ -2,6 +2,7 @@ package utils
 
 import io.github.ayfri.kore.arguments.chatcomponents.scoreComponent
 import io.github.ayfri.kore.arguments.chatcomponents.translatedTextComponent
+import io.github.ayfri.kore.arguments.colors.Color
 import io.github.ayfri.kore.arguments.maths.Vec3
 import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.numbers.ranges.IntRange
@@ -23,12 +24,11 @@ import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.generated.arguments.types.EntityTypeArgument
 import io.github.ayfri.kore.scoreboard.scoreboard
 import io.github.ayfri.kore.utils.nbtList
-import io.github.ayfri.kore.utils.nbtListOf
 import io.github.ayfri.kore.utils.set
+import io.github.ayfri.kore.utils.snakeCase
 import net.benwoodworth.knbt.NbtList
 import net.benwoodworth.knbt.NbtString
 import net.benwoodworth.knbt.add
-import net.benwoodworth.knbt.addNbtCompound
 import kotlin.collections.forEach
 
 const val TEXT_HEIGHT = 1.0 / 16.0 * 4.0
@@ -36,15 +36,16 @@ const val TEXT_HEIGHT = 1.0 / 16.0 * 4.0
 val settings = scoreboard("settings")
 
 abstract class AbstractSetting (
-    val id: String,
-    val defaultValue: Int
+    val name: String,
+    val defaultValue: Int,
+    val id: String = name.snakeCase().replace(" ", "_")
 ) {
     fun getTranslationKey(): String {
-        return "jumpr.setting.$id"
+        return "setting.$id"
     }
 
     fun getScoreId(): LiteralArgument {
-        return literal("#$id")
+        return literal(".$id")
     }
 
     context(fn: Function)
@@ -61,12 +62,11 @@ abstract class AbstractSetting (
     open fun createInteraction(pos: Vec3) {
         fn.summon(EntityTypes.TEXT_DISPLAY, pos.plus(vec3(0, TEXT_HEIGHT, 0))) {
             this["Tags"] = getEntityTags()
-            this["text"] = translatedTextComponent(getTranslationKey()).toNbtTag()
+            this["text"] = getOrCreateTranslation(getTranslationKey(), name) {
+                color = Color.GRAY
+            }.toNbtTag()
         }
     }
-
-    context(fn: Function)
-    abstract fun onButtonInteract(): Command
 
     context(fn: Function)
     abstract fun onDisplayUpdate(): Command
@@ -89,15 +89,22 @@ abstract class AbstractSetting (
             add(it)
         }
     }
+
+    context(fn: Function)
+    abstract fun tick()
 }
 
 class BooleanSetting(
-    id: String,
-    defaultValue: Boolean = false
+    name: String,
+    defaultValue: Boolean = false,
+    id: String = name.snakeCase().replace(" ", "_")
 ) : AbstractSetting(
-    id,
-    defaultValue.compareTo(false)
+    name,
+    defaultValue.compareTo(false),
+    id
 ) {
+    val interaction = createInteractionFace()
+
     context(fn: Function)
     fun toggle(): Command {
         fn.scoreboard.players.add(getScoreId(), settings.name, 1)
@@ -114,7 +121,8 @@ class BooleanSetting(
     context(fn: Function)
     override fun createInteraction(pos: Vec3) {
         super.createInteraction(pos)
-        fn.summonInteractionFace(pos)
+
+        fn.summonInteractionFace(pos, interaction)
         fn.summon(EntityTypes.TEXT_DISPLAY, pos) {
             this["Tags"] = getEntityTags(true)
             this["text"] = "[x]"
@@ -134,11 +142,6 @@ class BooleanSetting(
     }
 
     context(fn: Function)
-    override fun onButtonInteract(): Command {
-        return toggle()
-    }
-
-    context(fn: Function)
     override fun onDisplayUpdate(): Command {
         return fn.execute {
             asTarget(entity(EntityTypes.TEXT_DISPLAY) {
@@ -154,19 +157,31 @@ class BooleanSetting(
             }
         }
     }
+
+    context(fn: Function)
+    override fun tick() {
+        interaction.onInteract {
+            toggle()
+        }
+    }
 }
 
 class IntSetting(
-    id: String,
+    name: String,
     val minValue: Int,
     val maxValue: Int,
-    defaultValue: Int = minValue
+    defaultValue: Int = minValue,
+    id: String = name.snakeCase().replace(" ", "_")
 ) : AbstractSetting(
-    id,
-    defaultValue
+    name,
+    defaultValue,
+    id
 ) {
+    val removeInteraction = createInteractionFace("remove_button")
+    val addInteraction = createInteractionFace("add_button")
+
     context(fn: Function)
-    fun addOne(step: Int = 1): Command {
+    fun add(step: Int = 1): Command {
         fn.scoreboard.players {
             if (step < 0) {
                 remove(getScoreId(), settings.name, -step)
@@ -187,8 +202,8 @@ class IntSetting(
         val buttonXOffset = 0.5
 
         super.createInteraction(pos)
-        fn.summonInteractionFace(pos.plus(vec3(-buttonXOffset, 0, 0)))
-        fn.summonInteractionFace(pos.plus(vec3(buttonXOffset, 0, 0)))
+        fn.summonInteractionFace(pos.plus(vec3(-buttonXOffset, 0, 0)), removeInteraction)
+        fn.summonInteractionFace(pos.plus(vec3(buttonXOffset, 0, 0)), addInteraction)
         fn.summon(EntityTypes.TEXT_DISPLAY, pos) {
             this["Tags"] = getEntityTags(true)
             this["text"] = "12"
@@ -204,11 +219,6 @@ class IntSetting(
     }
 
     context(fn: Function)
-    override fun onButtonInteract(): Command {
-        return addOne()
-    }
-
-    context(fn: Function)
     override fun onDisplayUpdate(): Command {
         return fn.execute {
             asTarget(entity(EntityTypes.TEXT_DISPLAY) {
@@ -219,14 +229,28 @@ class IntSetting(
             }
         }
     }
+
+    context(fn: Function)
+    override fun tick() {
+        removeInteraction.onInteract {
+            add(-1)
+        }
+        addInteraction.onInteract {
+            add(1)
+        }
+    }
 }
 
 context(setting: AbstractSetting)
-fun Function.summonInteractionFace(pos: Vec3, name: String = "button", width: Double = 0.4): Command {
-    setting.getEntityTags()
+fun createInteractionFace(name: String = "button", width: Double = 0.4): Interaction {
     val interaction = Interaction(setting.getEntityTags(false, "jumpr.setting.${setting.id}.$name"), TEXT_HEIGHT, width)
 
-    return interaction.summon(pos.plus(vec3(0, 0, -(width / 2))))
+    return interaction
+}
+
+context(setting: AbstractSetting)
+fun Function.summonInteractionFace(pos: Vec3, interaction: Interaction): Command {
+    return interaction.summon(pos.plus(vec3(0, 0, -(interaction.width / 2))))
 }
 
 context(fn: Function)
