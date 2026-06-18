@@ -209,6 +209,17 @@ fun DataPack.generateGameLogic() {
                 }
             }
             onFinishTimer {
+                execute {
+                    asTarget(notFinishedPlayers)
+                    run {
+                        tellraw(allPlayers(), getOrCreateTranslation("finish_fail", "%s did not finish the round!",
+                            listOf(entityComponent(self()) {
+                                color = Color.WHITE
+                            }.list[0])) {
+                            color = Color.RED
+                        })
+                    }
+                }
                 function(startBuildPhase)
             }
         }
