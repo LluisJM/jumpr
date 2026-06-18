@@ -43,8 +43,10 @@ import io.github.ayfri.kore.utils.set
 import net.benwoodworth.knbt.addNbtCompound
 import registry.Settings
 import registry.initializeSettings
+import utils.Timer
 import utils.countdown
 import utils.getOrCreateTranslation
+import utils.timerObjective
 
 const val IDLE = "idle"
 const val PRE_RUN = "pre_run"
@@ -68,7 +70,7 @@ const val gameStop = "game/stop"
 
 const val finishedTag = "jumpr.finished"
 
-fun DataPack.generateGameLogic() {
+fun DataPack.generateGameLogic(gameTimer: Timer) {
     val states = registerGameStates {
         state(IDLE)
         state(PRE_RUN)
@@ -88,7 +90,7 @@ fun DataPack.generateGameLogic() {
 
     val startRunPhase = function("game/phase/run") {
         val actualPhase = function("${this.name}_actual") {
-            Settings.ROUND_TIME.copyTo(timerTicks, timerObjective.name)
+            Settings.ROUND_TIME.copyTo(gameTimer.ticks, timerObjective.name)
 
             states.transitionTo(RUN)
 
@@ -152,7 +154,7 @@ fun DataPack.generateGameLogic() {
         schedules.replace(actualPhase, 5.seconds)
 
         title(allPlayers(), TitleLocation.ACTIONBAR, textComponent(""))
-        stopTimer()
+        gameTimer.stop()
     }
 
     // GAME STARTING AND STOPING
@@ -168,7 +170,7 @@ fun DataPack.generateGameLogic() {
     function(gameStop) {
         states.transitionTo(IDLE)
 
-        stopTimer()
+        gameTimer.stop()
     }
 
     // GAME LOOP
@@ -179,7 +181,7 @@ fun DataPack.generateGameLogic() {
         }
 
         states.whenState(RUN) {
-            withTimerComponent { timerComponent ->
+            gameTimer.withComponent { timerComponent ->
                 {
                     title(allPlayers(), TitleLocation.ACTIONBAR, timerComponent)
                 }
@@ -208,7 +210,7 @@ fun DataPack.generateGameLogic() {
                     }
                 }
             }
-            onFinishTimer {
+            gameTimer.onFinish {
                 execute {
                     asTarget(notFinishedPlayers)
                     run {

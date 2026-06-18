@@ -21,11 +21,12 @@ import io.github.ayfri.kore.scoreboard.scoreboard
 import io.github.ayfri.kore.scoreboard.setDisplayName
 import io.github.ayfri.kore.scoreboard.setDisplaySlot
 import io.github.ayfri.kore.utils.snakeCase
+import utils.Timer
 import utils.getOrCreateTranslation
 
 const val playerFinish = "player/finish"
 
-fun DataPack.generatePointLogic() {
+fun DataPack.generatePointLogic(gameTimer: Timer) {
     function(playerFinish) {
         val points = scoreboard("points") {
             create()
@@ -50,7 +51,7 @@ fun DataPack.generatePointLogic() {
             return block
         }
 
-        withTimerComponent { timerComponent ->
+        gameTimer.withComponent { timerComponent ->
             {
                 tellraw(
                     allPlayers(),

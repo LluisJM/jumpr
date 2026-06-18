@@ -23,13 +23,13 @@ fun main() {
 			path = Path(out)
 			SystemFileSystem.createDirectories(path)
 
+			val gameTimer = generateTimer()
+
 			generateItemLogic()
-			generatePointLogic()
-			generateGameLogic()
+			generatePointLogic(gameTimer)
+			generateGameLogic(gameTimer)
 
 			registerInteractions()
-			generateTimer()
-
 			generateDebugging()
 
 			arrayOf("tick", "load").forEach { name ->
