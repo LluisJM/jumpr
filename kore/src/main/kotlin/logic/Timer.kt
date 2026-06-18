@@ -79,10 +79,6 @@ fun Function.onFinishTimer(block: Function.() -> Command) {
     }
 }
 
-fun Function.startTimer(seconds: Int) {
-    scoreboard.players.set(timerTicks, timerObjective.name, seconds * 20)
-}
-
 fun Function.stopTimer() {
     scoreboard.players.set(timerTicks, timerObjective.name, 0)
 }

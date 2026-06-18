@@ -3,6 +3,7 @@ package logic
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.chatcomponents.ScoreComponent
 import io.github.ayfri.kore.arguments.chatcomponents.ScoreComponentEntry
+import io.github.ayfri.kore.arguments.chatcomponents.entityComponent
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.colors.Color
 import io.github.ayfri.kore.arguments.enums.Gamemode
@@ -23,6 +24,7 @@ import io.github.ayfri.kore.commands.gamemode
 import io.github.ayfri.kore.commands.schedules
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
+import io.github.ayfri.kore.commands.tellraw
 import io.github.ayfri.kore.commands.title
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.load
@@ -39,7 +41,6 @@ import io.github.ayfri.kore.utils.nbtList
 import io.github.ayfri.kore.utils.set
 
 import net.benwoodworth.knbt.addNbtCompound
-import registry.CustomItems
 import registry.Settings
 import registry.initializeSettings
 import utils.countdown
@@ -124,7 +125,7 @@ fun DataPack.generateGameLogic() {
         countdown(5, actualPhase, 5.0) { second ->
             {
                 color = if (second > 3) Color.YELLOW else Color.RED
-                if (second <= 1) italic = true
+                if (second <= 1) bold = true
             }
         }
     }
@@ -166,6 +167,8 @@ fun DataPack.generateGameLogic() {
     }
     function(gameStop) {
         states.transitionTo(IDLE)
+
+        stopTimer()
     }
 
     // GAME LOOP
