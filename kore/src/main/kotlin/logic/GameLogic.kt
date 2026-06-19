@@ -7,6 +7,7 @@ import io.github.ayfri.kore.arguments.chatcomponents.entityComponent
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.colors.Color
 import io.github.ayfri.kore.arguments.enums.Gamemode
+import io.github.ayfri.kore.arguments.enums.Relation
 import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.numbers.seconds
 import io.github.ayfri.kore.arguments.selector.SelectorArguments
@@ -18,6 +19,7 @@ import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.TitleLocation
 import io.github.ayfri.kore.commands.attributes
 import io.github.ayfri.kore.commands.effect
+import io.github.ayfri.kore.commands.execute.ExecuteCondition
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.gamemode
@@ -60,10 +62,7 @@ val gameData = scoreboard("game_data")
 val settings = scoreboard("settings")
 
 // Game data
-const val currentRound = ".round"
-
-// Settings
-const val maxRounds = ".max_rounds"
+val currentRound = literal(".round")
 
 const val gameStart = "game/start"
 const val gameStop = "game/stop"
@@ -111,15 +110,23 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
         // Show title "Round X"
         scoreboard .players {
             // Increase round number
-            add(literal(currentRound), gameData.name, 1)
+            add(currentRound, gameData.name, 1)
         }
         title(allPlayers(), 0.seconds, 3.seconds, 0.2.seconds)
         title(allPlayers(), TitleLocation.TITLE,
             getOrCreateTranslation(
-                "round", "Round %s", with = listOf(
-                    ScoreComponent(ScoreComponentEntry(currentRound, gameData.name))
+                "round.title", "Round %s", with = listOf(
+                    ScoreComponent(ScoreComponentEntry(currentRound.text, gameData.name))
                 )
             ) {
+                color = Color.GREEN
+            }
+        )
+        tellraw(allPlayers(),
+            getOrCreateTranslation("round", "Round %s out of %s is starting soon!", with = listOf(
+                ScoreComponent(ScoreComponentEntry(currentRound.text, gameData.name)),
+                ScoreComponent(ScoreComponentEntry(Settings.MAX_ROUNDS.getScoreId().asString(), Settings.MAX_ROUNDS.objective.name))
+            )) {
                 color = Color.GREEN
             }
         )
@@ -156,13 +163,32 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
         title(allPlayers(), TitleLocation.ACTIONBAR, textComponent(""))
         gameTimer.stop()
     }
+    val tryStartBuildPhase = function("game/phase/try_build") {
+        val condition: ExecuteCondition.() -> Unit = {
+            score(currentRound, gameData.name, Settings.MAX_ROUNDS.getScoreId(), Settings.MAX_ROUNDS.objective.name,
+                Relation.GREATER_THAN_OR_EQUAL_TO)
+        }
+
+        execute {
+            ifCondition(condition)
+            run {
+                function(gameStop)
+            }
+        }
+        execute {
+            unlessCondition(condition)
+            run {
+                function(startBuildPhase)
+            }
+        }
+    }
 
     // GAME STARTING AND STOPING
 
     function(gameStart) {
         scoreboard.players {
             // Reset current round
-            set(literal(currentRound), gameData.name, -1)
+            set(currentRound, gameData.name, -1)
         }
 
         function(startRunPhase)
@@ -205,7 +231,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
                             entity(notFinishedPlayers)
                         }
                         run {
-                            function(startBuildPhase)
+                            function(tryStartBuildPhase)
                         }
                     }
                 }
@@ -222,7 +248,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
                         })
                     }
                 }
-                function(startBuildPhase)
+                function(tryStartBuildPhase)
             }
         }
 
