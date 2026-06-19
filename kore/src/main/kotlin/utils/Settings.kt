@@ -1,7 +1,6 @@
 package utils
 
 import io.github.ayfri.kore.arguments.chatcomponents.scoreComponent
-import io.github.ayfri.kore.arguments.chatcomponents.translatedTextComponent
 import io.github.ayfri.kore.arguments.colors.Color
 import io.github.ayfri.kore.arguments.maths.Vec3
 import io.github.ayfri.kore.arguments.maths.vec3
@@ -32,6 +31,7 @@ import net.benwoodworth.knbt.add
 import kotlin.collections.forEach
 
 const val TEXT_HEIGHT = 1.0 / 16.0 * 4.0
+const val displayTag = "jumpr.setting.display"
 
 val settings = scoreboard("settings")
 
@@ -40,36 +40,34 @@ abstract class AbstractSetting (
     val defaultValue: Int,
     val id: String = name.snakeCase().replace(" ", "_")
 ) {
-    fun getTranslationKey(): String {
-        return "setting.$id"
-    }
+    open val objective = settings
 
-    fun getScoreId(): LiteralArgument {
-        return literal(".$id")
-    }
+    fun getTranslationKey() = "setting.$id"
+
+    open fun getScoreId() = literal(".$id")
 
     context(fn: Function)
     fun reset(): Command {
-        return fn.scoreboard.players.set(getScoreId(), settings.name, defaultValue)
+        return fn.scoreboard.players.set(getScoreId(), objective.name, defaultValue)
     }
 
     context(fn: Function)
     fun copyTo(target: ScoreHolderArgument, objective: String): Command {
-        return fn.scoreboard.players.operation(target, objective, Operation.SET, getScoreId(), settings.name)
+        return fn.scoreboard.players.operation(target, objective, Operation.SET, getScoreId(), this.objective.name)
     }
 
     context(fn: Function)
-    open fun createInteraction(pos: Vec3) {
+    open fun summonButton(pos: Vec3) {
         fn.summon(EntityTypes.TEXT_DISPLAY, pos.plus(vec3(0, TEXT_HEIGHT, 0))) {
             this["Tags"] = getEntityTags()
             this["text"] = getOrCreateTranslation(getTranslationKey(), name) {
-                color = Color.GRAY
+                color = Color.YELLOW
             }.toNbtTag()
         }
     }
 
     context(fn: Function)
-    abstract fun onDisplayUpdate(): Command
+    abstract fun updateDisplay()
 
     fun entity(entityType: EntityTypeArgument? = null, data: SelectorArguments.() -> Unit = {}): SelectorArgument {
         return allEntities {
@@ -84,7 +82,7 @@ abstract class AbstractSetting (
     fun getEntityTags(display: Boolean = false, vararg extraElements: String): NbtList<NbtString> = nbtList<NbtString> {
         add("jumpr.setting")
         add(entityTag())
-        if (display) add("jumpr.setting.display")
+        if (display) add(displayTag)
         extraElements.forEach {
             add(it)
         }
@@ -98,7 +96,7 @@ class BooleanSetting(
     name: String,
     defaultValue: Boolean = false,
     id: String = name.snakeCase().replace(" ", "_")
-) : AbstractSetting(
+): AbstractSetting(
     name,
     defaultValue.compareTo(false),
     id
@@ -107,20 +105,20 @@ class BooleanSetting(
 
     context(fn: Function)
     fun toggle(): Command {
-        fn.scoreboard.players.add(getScoreId(), settings.name, 1)
+        fn.scoreboard.players.add(getScoreId(), objective.name, 1)
         return fn.execute {
             ifCondition {
-                score(getScoreId(), settings.name, IntRange(2, null).asRangeOrInt())
+                score(getScoreId(), objective.name, IntRange(2, null).asRangeOrInt())
             }
             run {
-                scoreboard.players.set(getScoreId(), settings.name, 0)
+                scoreboard.players.set(getScoreId(), objective.name, 0)
             }
         }
     }
 
     context(fn: Function)
-    override fun createInteraction(pos: Vec3) {
-        super.createInteraction(pos)
+    override fun summonButton(pos: Vec3) {
+        super.summonButton(pos)
 
         fn.summonInteractionFace(pos, interaction)
         fn.summon(EntityTypes.TEXT_DISPLAY, pos) {
@@ -135,17 +133,17 @@ class BooleanSetting(
         val range = IntRange(if (value) 1 else null, if (value) null else 0).asRangeOrInt()
         return fn.execute {
             ifCondition {
-                score(getScoreId(), settings.name, range)
+                score(getScoreId(), objective.name, range)
             }
             run(block)
         }
     }
 
     context(fn: Function)
-    override fun onDisplayUpdate(): Command {
-        return fn.execute {
+    override fun updateDisplay() {
+        fn.execute {
             asTarget(entity(EntityTypes.TEXT_DISPLAY) {
-                tag = "jumpr.setting.display"
+                tag = displayTag
             })
             run {
                 executeIf {
@@ -166,17 +164,19 @@ class BooleanSetting(
     }
 }
 
-class IntSetting(
+open class IntSetting(
     name: String,
     val minValue: Int,
     val maxValue: Int,
     defaultValue: Int = minValue,
     id: String = name.snakeCase().replace(" ", "_")
-) : AbstractSetting(
+): AbstractSetting(
     name,
     defaultValue,
     id
 ) {
+    open val buttonXOffset = 0.5
+
     val removeInteraction = createInteractionFace("remove_button")
     val addInteraction = createInteractionFace("add_button")
 
@@ -184,29 +184,27 @@ class IntSetting(
     fun add(step: Int = 1): Command {
         fn.scoreboard.players {
             if (step < 0) {
-                remove(getScoreId(), settings.name, -step)
+                remove(getScoreId(), objective.name, -step)
             } else {
-                add(getScoreId(), settings.name, step)
+                add(getScoreId(), objective.name, step)
             }
         }
         executeIfScoreRange(this, null, minValue - 1) {
-            scoreboard.players.set(getScoreId(), settings.name, minValue)
+            scoreboard.players.set(getScoreId(), objective.name, minValue)
         }
         return executeIfScoreRange(this, maxValue + 1, null) {
-            scoreboard.players.set(getScoreId(), settings.name, maxValue)
+            scoreboard.players.set(getScoreId(), objective.name, maxValue)
         }
     }
 
     context(fn: Function)
-    override fun createInteraction(pos: Vec3) {
-        val buttonXOffset = 0.5
-
-        super.createInteraction(pos)
+    override fun summonButton(pos: Vec3) {
+        super.summonButton(pos)
         fn.summonInteractionFace(pos.plus(vec3(-buttonXOffset, 0, 0)), removeInteraction)
         fn.summonInteractionFace(pos.plus(vec3(buttonXOffset, 0, 0)), addInteraction)
         fn.summon(EntityTypes.TEXT_DISPLAY, pos) {
             this["Tags"] = getEntityTags(true)
-            this["text"] = "12"
+            this["text"] = "--"
         }
         fn.summon(EntityTypes.TEXT_DISPLAY, pos.plus(vec3(-buttonXOffset, 0.0, 0.0))) {
             this["Tags"] = getEntityTags()
@@ -219,13 +217,13 @@ class IntSetting(
     }
 
     context(fn: Function)
-    override fun onDisplayUpdate(): Command {
-        return fn.execute {
+    override fun updateDisplay() {
+        fn.execute {
             asTarget(entity(EntityTypes.TEXT_DISPLAY) {
-                tag = "jumpr.setting.display"
+                tag = displayTag
             })
             run {
-                data(self()).set("text", scoreComponent(settings.name, getScoreId()))
+                data(self()).set("text", scoreComponent(objective.name, getScoreId()))
             }
         }
     }
@@ -241,6 +239,55 @@ class IntSetting(
     }
 }
 
+class TimeSetting(
+    name: String,
+    minSeconds: Int,
+    maxSeconds: Int,
+    defaultSeconds: Int,
+    id: String = name.snakeCase().replace(" ", "_"),
+    val timer: Timer = Timer(id)
+): IntSetting(
+    name,
+    minSeconds * 20,
+    maxSeconds * 20,
+    defaultSeconds * 20,
+    id
+) {
+    override val buttonXOffset = 0.7
+    override val objective = timerObjective
+
+    override fun getScoreId(): LiteralArgument = literal(".$id.ticks")
+
+    val step = 5 * 20
+
+    context(fn: Function)
+    override fun updateDisplay() {
+        timer.calculate()
+        timer.withComponent { components ->
+            {
+                execute {
+                    asTarget(entity(EntityTypes.TEXT_DISPLAY) {
+                        tag = displayTag
+                    })
+                    run {
+                        data(self()).set("text", components.toNbtTag())
+                    }
+                }
+            }
+        }
+    }
+
+    context(fn: Function)
+    override fun tick() {
+        removeInteraction.onInteract {
+            add(-step)
+        }
+        addInteraction.onInteract {
+            add(step)
+        }
+    }
+}
+
 context(setting: AbstractSetting)
 fun createInteractionFace(name: String = "button", width: Double = 0.4): Interaction {
     val interaction = Interaction(setting.getEntityTags(false, "jumpr.setting.${setting.id}.$name"), TEXT_HEIGHT, width)
@@ -248,7 +295,6 @@ fun createInteractionFace(name: String = "button", width: Double = 0.4): Interac
     return interaction
 }
 
-context(setting: AbstractSetting)
 fun Function.summonInteractionFace(pos: Vec3, interaction: Interaction): Command {
     return interaction.summon(pos.plus(vec3(0, 0, -(interaction.width / 2))))
 }
@@ -257,7 +303,7 @@ context(fn: Function)
 fun executeIfScoreRange(setting: AbstractSetting, start: Int?, end: Int?, block: Function.() -> Command): Command {
     return fn.execute {
         ifCondition {
-            score(setting.getScoreId(), settings.name, IntRange(start, end).asRangeOrInt())
+            score(setting.getScoreId(), setting.objective.name, IntRange(start, end).asRangeOrInt())
         }
         run(block)
     }

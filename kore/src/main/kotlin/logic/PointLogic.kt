@@ -37,8 +37,8 @@ fun DataPack.generatePointLogic(gameTimer: Timer) {
             })
         }
 
-        context(fn: io.github.ayfri.kore.functions.Function)
-        fun addPoints(value: Int, source: String): io.github.ayfri.kore.functions.Function.() -> Command {
+        context(fn: Function)
+        fun addPoints(value: Int, source: String): Function.() -> Command {
             val msg = ChatComponents(
                 textComponent(" +${value}p → ", color = Color.GRAY).list[0],
                 getOrCreateTranslation("points.${source.snakeCase()}", source).list[0]
@@ -68,7 +68,7 @@ fun DataPack.generatePointLogic(gameTimer: Timer) {
                     }
                 )
             }
-        }()
+        }
 
         // Add points for finishing
         addPoints(1, "Finishing")()

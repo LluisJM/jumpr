@@ -11,6 +11,7 @@ import registry.Settings.Companion.ALL
 import utils.AbstractSetting
 import utils.BooleanSetting
 import utils.IntSetting
+import utils.TimeSetting
 import java.lang.Math.floorDiv
 
 interface Settings {
@@ -19,7 +20,7 @@ interface Settings {
         val ALL: List<AbstractSetting> get() = _all
 
         val MAX_ROUNDS = register(IntSetting("Maximum Rounds", 1, 100, 5, "max_rounds"))
-        val ROUND_TIME = register(IntSetting("Round Time", 200, 5000, 1000))
+        val ROUND_LENGTH = register(TimeSetting("Round Length", 15, 60 * 10, 45))
         val PVP = register(BooleanSetting("PvP", true, "pvp"))
 
         private fun <T: AbstractSetting> register(setting: T): T {
@@ -35,9 +36,9 @@ fun DataPack.initializeSettings(): FunctionArgument {
     val horizontalSeparation = 2.1
 
     tick("settings/handle_interactions") {
-        for (setting in ALL) {
+        ALL.forEach { setting ->
             setting.tick()
-            setting.onDisplayUpdate()
+            setting.updateDisplay()
         }
     }
 
@@ -54,7 +55,7 @@ fun DataPack.initializeSettings(): FunctionArgument {
         for ((i, setting) in ALL.withIndex()) {
             val x = floorDiv(i, settingPerRow).toDouble() * horizontalSeparation
             val y = (i % settingPerRow).toDouble() * verticalSeparation + 0.75
-            setting.createInteraction(vec3(x, y, 0.0).relative)
+            setting.summonButton(vec3(x, y, 0.0).relative) // TODO: Make this align to XYZ
         }
     }
 }

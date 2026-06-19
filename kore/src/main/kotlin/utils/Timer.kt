@@ -17,7 +17,7 @@ import io.github.ayfri.kore.scoreboard.scoreboard
 val timerObjective = scoreboard("timer")
 
 class Timer(
-    val id: String
+    id: String
 ) {
     private val minutes = literal(".$id.min")
     private val seconds = literal(".$id.sec")
@@ -71,25 +71,28 @@ class Timer(
         fn.scoreboard.players.set(ticks, timerObjective.name, 0)
     }
 
-    fun withComponent(action: (component: ChatComponents) -> Function.() -> Command): Function.() -> Unit {
-        return {
-            arrayOf(true, false).forEach { doubleDigits ->
-                val range = if (doubleDigits) IntRange(10, null) else IntRange(null, 9)
-                val prefix = if (doubleDigits) "" else "0"
-
-                execute {
-                    ifCondition {
-                        score(seconds, timerObjective.name, IntRangeOrInt(range))
-                    }
-                    run(action(ChatComponents(
-                        scoreComponent(timerObjective.name, minutes).list[0],
-                        text(":$prefix"),
-                        scoreComponent(timerObjective.name, seconds).list[0],
-                        text("."),
-                        scoreComponent(timerObjective.name, deciseconds).list[0]))
-                    )
+    context(fn: Function)
+    fun withComponent(block: (components: ChatComponents) -> Function.() -> Command) {
+        fun run(range: IntRange, prefix: String) {
+            fn.execute {
+                ifCondition {
+                    score(seconds, timerObjective.name, IntRangeOrInt(range))
                 }
+                run(
+                    block(
+                        ChatComponents(
+                            scoreComponent(timerObjective.name, minutes).list[0],
+                            text(":$prefix"),
+                            scoreComponent(timerObjective.name, seconds).list[0],
+                            text("."),
+                            scoreComponent(timerObjective.name, deciseconds).list[0]
+                        )
+                    )
+                )
             }
         }
+
+        run(IntRange(10, null), "")
+        run(IntRange(null, 9), "0")
     }
 }

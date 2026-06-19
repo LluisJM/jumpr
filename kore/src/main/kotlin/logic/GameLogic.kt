@@ -90,7 +90,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
 
     val startRunPhase = function("game/phase/run") {
         val actualPhase = function("${this.name}_actual") {
-            Settings.ROUND_TIME.copyTo(gameTimer.ticks, timerObjective.name)
+            Settings.ROUND_LENGTH.copyTo(gameTimer.ticks, timerObjective.name)
 
             states.transitionTo(RUN)
 
@@ -185,7 +185,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
                 {
                     title(allPlayers(), TitleLocation.ACTIONBAR, timerComponent)
                 }
-            }()
+            }
 
             gamemode(Gamemode.ADVENTURE, inGamePlayers())
 

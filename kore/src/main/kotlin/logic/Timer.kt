@@ -1,22 +1,13 @@
 package logic
 
 import io.github.ayfri.kore.DataPack
-import io.github.ayfri.kore.arguments.chatcomponents.ChatComponents
-import io.github.ayfri.kore.arguments.chatcomponents.scoreComponent
-import io.github.ayfri.kore.arguments.chatcomponents.text
 import io.github.ayfri.kore.arguments.numbers.ranges.IntRange
 import io.github.ayfri.kore.arguments.numbers.ranges.IntRangeOrInt
-import io.github.ayfri.kore.arguments.types.ScoreHolderArgument
-import io.github.ayfri.kore.arguments.types.literals.literal
-import io.github.ayfri.kore.commands.Command
 import io.github.ayfri.kore.commands.execute.execute
-import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
-import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.load
 import io.github.ayfri.kore.functions.tick
 import io.github.ayfri.kore.scoreboard.create
-import io.github.ayfri.kore.scoreboard.scoreboard
 import utils.Timer
 import utils.timerObjective
 
