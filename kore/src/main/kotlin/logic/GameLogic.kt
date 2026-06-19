@@ -23,6 +23,7 @@ import io.github.ayfri.kore.commands.execute.ExecuteCondition
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.gamemode
+import io.github.ayfri.kore.commands.gamerule
 import io.github.ayfri.kore.commands.schedules
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
@@ -36,6 +37,7 @@ import io.github.ayfri.kore.generated.Attributes
 import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.Effects
 import io.github.ayfri.kore.generated.EntityTypes
+import io.github.ayfri.kore.generated.Gamerules
 import io.github.ayfri.kore.scoreboard.create
 import io.github.ayfri.kore.scoreboard.scoreboard
 import io.github.ayfri.kore.utils.nbt
@@ -103,6 +105,9 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
             tag(inGamePlayers()) {
                 remove(finishedTag)
             }
+            Settings.PVP.executeIf {
+                gamerule(Gamerules.PVP, true)
+            }
         }
 
         states.transitionTo(PRE_RUN)
@@ -159,6 +164,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
         states.transitionTo(PRE_BUILD)
 
         schedules.replace(actualPhase, 5.seconds)
+        gamerule(Gamerules.PVP, false)
 
         title(allPlayers(), TitleLocation.ACTIONBAR, textComponent(""))
         gameTimer.stop()
@@ -191,10 +197,14 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
             set(currentRound, gameData.name, -1)
         }
 
+        gamerule(Gamerules.PVP, false)
+
         function(startRunPhase)
     }
     function(gameStop) {
         states.transitionTo(IDLE)
+
+        gamerule(Gamerules.PVP, false)
 
         gameTimer.stop()
     }
