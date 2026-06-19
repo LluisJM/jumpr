@@ -5,6 +5,7 @@ import kotlinx.io.files.SystemFileSystem
 import logic.generateDebugging
 import logic.generateGameLogic
 import logic.generateItemLogic
+import logic.generateLevelLogic
 import logic.generatePointLogic
 import logic.generateTimer
 import logic.registerInteractions
@@ -24,6 +25,8 @@ fun main() {
 			SystemFileSystem.createDirectories(path)
 
 			val gameTimer = generateTimer()
+
+			generateLevelLogic()
 
 			generateItemLogic()
 			generatePointLogic(gameTimer)

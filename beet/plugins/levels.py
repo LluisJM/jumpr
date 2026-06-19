@@ -4,16 +4,6 @@ from libs.debugger import debug
 def beet_default(ctx: Context):
     debug(__name__, "running plugin", True, True)
 
-    ctx.data["jumpr:level/clear"] = Function([
-        'kill @e[type=marker, tag=level.bottom]',
-        'at @e[type=marker, tag=level.load]:',
-        '   for i in range(10):',
-        '       z1 = i * 10',
-        '       z2 = (i + 1) * 10',
-        '       fill ~20 ~20 ~z1 ~-20 ~-50 ~z2 air',
-        '       fill ~20 ~80 ~z1 ~-20 ~21 ~z2 air'
-    ])
-
     functions: dict[str, list[str]] = {}
     i: int = 0
 
@@ -71,40 +61,29 @@ def beet_default(ctx: Context):
                 contents = functions[name]
             else:
                 contents = [
-                    'from bolt_expressions import Scoreboard, Data',
-                    'settings = Scoreboard.objective("settings")',
-                    
                     'function jumpr:level/clear',
-                    f'settings["$level"] = {i}'
+                    f'scoreboard players set .level settings {i}'
                 ]
                 i += 1
             contents += [
-                'at @e[type=marker, tag=level.start]:',
-                f'   place template {structure} ~{-start_pos[0]} ~{-start_pos[1]} ~{-start_pos[2]}',
-                f'   summon marker ~ ~{-start_pos[1]} ~ {{Tags:["level.bottom"], data:{{name:"level.bottom"}}}}'
+                f'execute at @e[type=marker, tag=level.start] run place template {structure} ~{-start_pos[0]} ~{-start_pos[1]} ~{-start_pos[2]}',
+                f'execute at @e[type=marker, tag=level.start] run summon marker ~ ~{-start_pos[1]} ~ {{Tags:["level.bottom"], data:{{name:"level.bottom"}}}}'
             ]
 
             functions.setdefault(name, contents)
     
     reload_function = [
-        'from bolt_expressions import Scoreboard',
-        'settings = Scoreboard.objective("settings")',
-
         'kill @e[type=creeper]',
         'kill @e[type=shulker]',
 
-        
-        f'if settings["$level"] >= {functions.__len__()}:',
-        '    settings["$level"] = 0', 
-        'if settings["$level"] < 0:',
-        f'    settings["$level"] = {functions.__len__() - 1}'
+        f'execute if score .level settings matches ..{functions.__len__()} run scoreboard players set .level settings 0'
+        f'execute if score .level settings matches ..-1 run scoreboard players set .level settings {i}'
     ]
     for i, name in enumerate(functions):
         debug(__name__, f'created function "{name}" for loading map')
         ctx.data[name] = Function(functions[name] + ["function jumpr:level/sort_bottom_markers"])
         reload_function += [
-            f'if settings["$level"] == {i}:',
-            f'   function {name}'
+            f'execute if score .level settings matches {i} run function {name}'
         ]
 
     reload_function += [
