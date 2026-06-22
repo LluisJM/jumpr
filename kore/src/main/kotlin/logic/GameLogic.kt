@@ -48,8 +48,11 @@ import net.benwoodworth.knbt.addNbtCompound
 import registry.Settings
 import registry.initializeSettings
 import utils.Timer
+import utils.lockInInventoryTag
+import utils.componentWithItemTag
 import utils.countdown
 import utils.getOrCreateTranslation
+import utils.keepOnGroundTag
 import utils.timerObjective
 
 const val IDLE = "idle"
@@ -156,7 +159,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
             execute {
                 asTarget(inGamePlayers())
                 run {
-                    function(giveItem)
+                    function(giveItemOptions)
                 }
             }
         }
@@ -272,26 +275,25 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
             }
             execute {
                 unlessCondition {
-                    val itemComponents = nbt {
-                        this["minecraft:custom_data"] = nbt {
-                            this["build_phase"] = nbt()
-                        }
-                    }
-
-                    entity(inGamePlayers {
-                        nbt = nbt {
-                            this["Inventory"] = nbtList {
-                                addNbtCompound {
-                                    this["components"] = itemComponents
+                    fun tagInInventory(tag: String) {
+                        entity(inGamePlayers {
+                            nbt = nbt {
+                                this["Inventory"] = nbtList {
+                                    addNbtCompound {
+                                        this["components"] = componentWithItemTag(tag)
+                                    }
                                 }
                             }
-                        }
-                    })
+                        })
+                    }
+                    tagInInventory(lockInInventoryTag)
+                    tagInInventory(keepOnGroundTag)
+
                     entity(allEntities {
                         type = EntityTypes.ITEM
                         nbt = nbt {
                             this["Item"] = nbt {
-                                this["components"] = itemComponents
+                                this["components"] = componentWithItemTag(lockInInventoryTag)
                             }
                         }
                     })
