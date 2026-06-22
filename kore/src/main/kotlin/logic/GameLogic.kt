@@ -12,6 +12,7 @@ import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.numbers.seconds
 import io.github.ayfri.kore.arguments.selector.SelectorArguments
 import io.github.ayfri.kore.arguments.types.literals.SelectorArgument
+import io.github.ayfri.kore.arguments.types.literals.all
 import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.literal
@@ -94,6 +95,10 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
 
     val startRunPhase = function("game/phase/run") {
         val actualPhase = function("${this.name}_actual") {
+            scoreboard.players {
+                reset(all(), roundDeaths.name)
+            }
+
             Settings.ROUND_LENGTH.copyTo(gameTimer.ticks, timerObjective.name)
 
             states.transitionTo(RUN)
@@ -116,9 +121,10 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
         states.transitionTo(PRE_RUN)
 
         // Show title "Round X"
-        scoreboard .players {
+        scoreboard.players {
             // Increase round number
             add(currentRound, gameData.name, 1)
+            reset(lastFinishedPlayer, gameData.name)
         }
         title(allPlayers(), 0.seconds, 3.seconds, 0.2.seconds)
         title(allPlayers(), TitleLocation.TITLE,
