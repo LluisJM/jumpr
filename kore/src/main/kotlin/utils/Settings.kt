@@ -61,8 +61,9 @@ abstract class AbstractSetting (
         fn.summon(EntityTypes.TEXT_DISPLAY, pos.plus(vec3(0, TEXT_HEIGHT, 0))) {
             this["Tags"] = getEntityTags()
             this["text"] = getOrCreateTranslation(getTranslationKey(), name) {
-                color = Color.YELLOW
+                color = Color.BLUE
             }.toNbtTag()
+            this["background"] = 0
         }
     }
 
@@ -124,6 +125,7 @@ class BooleanSetting(
         fn.summon(EntityTypes.TEXT_DISPLAY, pos) {
             this["Tags"] = getEntityTags(true)
             this["text"] = "[x]"
+            this["background"] = 0
         }
     }
 
@@ -205,14 +207,17 @@ open class IntSetting(
         fn.summon(EntityTypes.TEXT_DISPLAY, pos) {
             this["Tags"] = getEntityTags(true)
             this["text"] = "--"
+            this["background"] = 0
         }
         fn.summon(EntityTypes.TEXT_DISPLAY, pos.plus(vec3(-buttonXOffset, 0.0, 0.0))) {
             this["Tags"] = getEntityTags()
             this["text"] = "[-]"
+            this["background"] = 0
         }
         fn.summon(EntityTypes.TEXT_DISPLAY, pos.plus(vec3(buttonXOffset, 0.0, 0.0))) {
             this["Tags"] = getEntityTags()
             this["text"] = "[+]"
+            this["background"] = 0
         }
     }
 

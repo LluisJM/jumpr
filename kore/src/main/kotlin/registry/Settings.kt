@@ -1,11 +1,16 @@
 package registry
 
 import io.github.ayfri.kore.DataPack
+import io.github.ayfri.kore.arguments.maths.Axes
 import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.types.literals.allEntities
+import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
+import io.github.ayfri.kore.commands.execute.execute
+import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.functions.function
+import io.github.ayfri.kore.functions.generatedFunction
 import io.github.ayfri.kore.functions.tick
 import registry.Settings.Companion.ALL
 import utils.AbstractSetting
@@ -52,10 +57,20 @@ fun DataPack.initializeSettings(): FunctionArgument {
         kill(allEntities {
             tag = "jumpr.setting"
         })
-        for ((i, setting) in ALL.withIndex()) {
-            val x = floorDiv(i, settingPerRow).toDouble() * horizontalSeparation
-            val y = (i % settingPerRow).toDouble() * verticalSeparation + 0.75
-            setting.summonButton(vec3(x, y, 0.0).relative) // TODO: Make this align to XYZ
+        val body = generatedFunction("settings/setup_${hashCode()}") {
+            ALL.withIndex().forEach { (i, setting) ->
+                val x = floorDiv(i, settingPerRow).toDouble() * horizontalSeparation
+                val y = (i % settingPerRow).toDouble() * verticalSeparation + 0.75
+                setting.summonButton(vec3(x, y,  0.01).relative)
+            }
+        }
+
+        execute {
+            at(self())
+            align(Axes(x = true, y = true, z = true))
+            run {
+                function(body)
+            }
         }
     }
 }

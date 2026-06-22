@@ -1,18 +1,15 @@
 {
   "gameType": "CREATIVE",
   "difficulty": "NORMAL",
+  "difficultyLocked": false,
   "cheats": true,
   "invited": [
-    "6c3be40c-f0f3-4ff5-8d27-4e428da50301",
     "38d558bf-9e09-414d-bf22-887738550cef",
-    "2370f418-3d52-4de3-b873-67a714138ba5",
-    "c9b1572e-d02a-4542-a34c-a679b6d98d24"
+    "2d7022e5-f4bf-450f-a753-1fa6485b54b9"
   ],
-  "shareResourcePack": true,
+  "shareResourcePack": false,
   "oppedPlayers": [
-    "6c3be40c-f0f3-4ff5-8d27-4e428da50301",
     "38d558bf-9e09-414d-bf22-887738550cef",
-    "2d7022e5-f4bf-450f-a753-1fa6485b54b9",
-    "a593f7cd-9d2d-41f2-b56d-04f2801fe4f7"
+    "2d7022e5-f4bf-450f-a753-1fa6485b54b9"
   ]
 }
