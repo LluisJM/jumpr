@@ -14,7 +14,9 @@ import io.github.ayfri.kore.commands.schedules
 import io.github.ayfri.kore.commands.stopSound
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
+import io.github.ayfri.kore.functions.tick
 import io.github.ayfri.kore.gamestate.GameStateManager
+import io.github.ayfri.kore.generated.SoundEvents
 import io.github.ayfri.kore.generated.arguments.types.SoundEventArgument
 
 const val startRunPhaseMusic = "music/run_phase/start"
@@ -26,6 +28,18 @@ fun DataPack.generateMusicLogic(states: GameStateManager) {
     val runMusicLoop = SoundEventArgument("music.run_phase.loop", "jumpr")
     val runMusicOutro = SoundEventArgument("music.run_phase.outro", "jumpr")
     val buildMusic = SoundEventArgument("music.build_phase", "jumpr")
+
+    tick {
+        SoundEvents.Music.entries.forEach {
+            stopSound(allPlayers(), PlaySoundMixer.MUSIC, SoundArgument(it.asId().split(":").last()))
+        }
+        SoundEvents.Music.Nether.entries.forEach {
+            stopSound(allPlayers(), PlaySoundMixer.MUSIC, SoundArgument(it.asId().split(":").last()))
+        }
+        SoundEvents.Music.Overworld.entries.forEach {
+            stopSound(allPlayers(), PlaySoundMixer.MUSIC, SoundArgument(it.asId().split(":").last()))
+        }
+    }
 
     function(startBuildPhaseMusic) {
         playMusic(buildMusic)
