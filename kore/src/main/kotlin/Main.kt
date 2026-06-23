@@ -6,6 +6,7 @@ import logic.generateDebugging
 import logic.generateGameLogic
 import logic.generateItemLogic
 import logic.generateLevelLogic
+import logic.generateMusicLogic
 import logic.generatePointLogic
 import logic.generateTimer
 import logic.registerInteractions
@@ -30,10 +31,12 @@ fun main() {
 
 			generateItemLogic()
 			generatePointLogic(gameTimer)
-			generateGameLogic(gameTimer)
+			val states = generateGameLogic(gameTimer)
 
 			registerInteractions()
 			generateDebugging()
+
+			generateMusicLogic(states)
 
 			arrayOf("tick", "load").forEach { name ->
 				functionTag(name, "minecraft") {

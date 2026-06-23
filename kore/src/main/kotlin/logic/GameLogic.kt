@@ -33,6 +33,7 @@ import io.github.ayfri.kore.commands.title
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.load
 import io.github.ayfri.kore.functions.tick
+import io.github.ayfri.kore.gamestate.GameStateManager
 import io.github.ayfri.kore.gamestate.registerGameStates
 import io.github.ayfri.kore.generated.Attributes
 import io.github.ayfri.kore.generated.Blocks
@@ -75,7 +76,7 @@ const val gameStop = "game/stop"
 
 const val finishedTag = "jumpr.finished"
 
-fun DataPack.generateGameLogic(gameTimer: Timer) {
+fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
     val states = registerGameStates {
         state(IDLE)
         state(PRE_RUN)
@@ -118,6 +119,8 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
             }
         }
 
+        function(startRunPhaseMusic)
+        function(stopBuildPhaseMusic)
         states.transitionTo(PRE_RUN)
 
         // Show title "Round X"
@@ -170,6 +173,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
             }
         }
 
+        function(startBuildPhaseMusic)
         states.transitionTo(PRE_BUILD)
 
         schedules.replace(actualPhase, 5.seconds)
@@ -311,6 +315,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
         }
     }
 
+    return states
 }
 
 fun inGamePlayers(data: SelectorArguments.() -> Unit = {}): SelectorArgument {
