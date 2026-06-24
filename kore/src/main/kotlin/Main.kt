@@ -11,6 +11,7 @@ import logic.generatePointLogic
 import logic.generateTimer
 import logic.registerInteractions
 import utils.createLangFile
+import utils.initializeInfiniteBorders
 import java.io.File
 
 const val outputPathFolder = "./out"
@@ -38,6 +39,8 @@ fun main() {
 
 			generateMusicLogic(states)
 
+			initializeInfiniteBorders()
+
 			arrayOf("tick", "load").forEach { name ->
 				functionTag(name, "minecraft") {
 					tags.forEach { tag ->
@@ -52,7 +55,9 @@ fun main() {
 			tags.reverse()
 
 			createLangFile(out)
-		}.generate()
+		}
+
+		dataPack.generate()
 	}
 }
 
