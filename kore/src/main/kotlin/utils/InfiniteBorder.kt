@@ -12,6 +12,7 @@ import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.Command
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.execute.execute
+import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.commands.summon
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.load
@@ -39,6 +40,13 @@ class InfiniteBorder(
         fn.summon(EntityTypes.MARKER, pos) {
             this["Tags"] = nbtListOf(markerTag())
         }
+
+    context(fn: Function)
+    fun killMarkers() =
+        fn.kill(allEntities {
+            type = EntityTypes.MARKER
+            tag = markerTag()
+        })
 
     context(fn: Function)
     fun ifOutside(target: EntityArgument, block: Function.() -> Command) {

@@ -13,12 +13,15 @@ import io.github.ayfri.kore.functions.generatedFunction
 import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.EntityTypes
 
+const val levelStartTag = "level.start"
+const val levelBottomTag = "level.bottom"
+const val levelLoadTag = "level.load"
+
 fun DataPack.generateLevelLogic() {
     function("level/clear") {
         val actualFunction = generatedFunction("level/clear_${hashCode()}") {
-            // TODO: Set correct bottom for map
             kill(allEntities {
-                tag = "level.bottom"
+                tag = levelBottomTag
             })
 
             for (zMultiplier in 0..5) {
@@ -35,10 +38,9 @@ fun DataPack.generateLevelLogic() {
         execute {
             asTarget(allEntities {
                 type = EntityTypes.MARKER
-                tag = "level.load"
+                tag = levelLoadTag
             })
             at(self())
-
             run {
                 function(actualFunction)
             }
