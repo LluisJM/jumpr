@@ -5,10 +5,13 @@ import kotlinx.io.files.SystemFileSystem
 import logic.generateDebugging
 import logic.generateGameLogic
 import logic.generateItemLogic
+import logic.generateLevelLogic
+import logic.generateMusicLogic
 import logic.generatePointLogic
 import logic.generateTimer
 import logic.registerInteractions
 import utils.createLangFile
+import utils.initializeInfiniteBorders
 import java.io.File
 
 const val outputPathFolder = "./out"
@@ -23,14 +26,20 @@ fun main() {
 			path = Path(out)
 			SystemFileSystem.createDirectories(path)
 
+			val gameTimer = generateTimer()
+
+			generateLevelLogic()
+
 			generateItemLogic()
-			generatePointLogic()
-			generateGameLogic()
+			generatePointLogic(gameTimer)
+			val states = generateGameLogic(gameTimer)
 
 			registerInteractions()
-			generateTimer()
-
 			generateDebugging()
+
+			generateMusicLogic(states)
+
+			initializeInfiniteBorders()
 
 			arrayOf("tick", "load").forEach { name ->
 				functionTag(name, "minecraft") {
@@ -46,7 +55,9 @@ fun main() {
 			tags.reverse()
 
 			createLangFile(out)
-		}.generate()
+		}
+
+		dataPack.generate()
 	}
 }
 

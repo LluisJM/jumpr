@@ -1,0 +1,7 @@
+{
+  "music.build_phase": {
+    "sounds": [
+      "jumpr:music/blocking_enemies"
+    ]
+  }
+}

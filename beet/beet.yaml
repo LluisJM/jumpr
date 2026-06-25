@@ -8,7 +8,7 @@ require:
 
 data_pack:
   name: datapack
-  pack_format: 101
+  pack_format: 97
   load:
     - src
     - kore_out/jumpr
@@ -24,4 +24,3 @@ resource_pack:
 
 pipeline:
   - plugins.levels
-  - mecha
