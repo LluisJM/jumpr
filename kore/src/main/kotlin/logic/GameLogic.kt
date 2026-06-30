@@ -1,9 +1,8 @@
 package logic
 
 import io.github.ayfri.kore.DataPack
-import io.github.ayfri.kore.arguments.chatcomponents.ScoreComponent
-import io.github.ayfri.kore.arguments.chatcomponents.ScoreComponentEntry
 import io.github.ayfri.kore.arguments.chatcomponents.entityComponent
+import io.github.ayfri.kore.arguments.chatcomponents.scoreComponent
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.colors.Color
 import io.github.ayfri.kore.arguments.enums.Axis
@@ -174,7 +173,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
         title(allPlayers(), TitleLocation.TITLE,
             getOrCreateTranslation(
                 "round.title", "Round %s", with = listOf(
-                    ScoreComponent(ScoreComponentEntry(currentRound.text, gameData.name))
+                    scoreComponent(gameData.name, currentRound)
                 )
             ) {
                 color = Color.GREEN
@@ -182,8 +181,8 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
         )
         tellraw(allPlayers(),
             getOrCreateTranslation("round", "Round %s out of %s is starting soon!", with = listOf(
-                ScoreComponent(ScoreComponentEntry(currentRound.text, gameData.name)),
-                ScoreComponent(ScoreComponentEntry(Settings.MAX_ROUNDS.getScoreId().asString(), Settings.MAX_ROUNDS.objective.name))
+                scoreComponent(gameData.name, currentRound),
+                scoreComponent(Settings.MAX_ROUNDS.objective.name, Settings.MAX_ROUNDS.getScoreId())
             )) {
                 color = Color.GREEN
             }
@@ -401,7 +400,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
                         tellraw(allPlayers(), getOrCreateTranslation("finish_fail", "%s did not finish the round!",
                             listOf(entityComponent(self()) {
                                 color = Color.WHITE
-                            }.list[0])) {
+                            })) {
                             color = Color.RED
                         })
                     }

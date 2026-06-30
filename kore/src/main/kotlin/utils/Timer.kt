@@ -1,8 +1,9 @@
 package utils
 
 import io.github.ayfri.kore.arguments.chatcomponents.ChatComponents
+import io.github.ayfri.kore.arguments.chatcomponents.ScoreComponent
 import io.github.ayfri.kore.arguments.chatcomponents.scoreComponent
-import io.github.ayfri.kore.arguments.chatcomponents.text
+import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.numbers.ranges.IntRange
 import io.github.ayfri.kore.arguments.numbers.ranges.IntRangeOrInt
 import io.github.ayfri.kore.arguments.types.ScoreHolderArgument
@@ -72,7 +73,7 @@ class Timer(
     }
 
     context(fn: Function)
-    fun withComponent(block: (components: ChatComponents) -> Function.() -> Command) {
+    fun withComponent(formatting: ScoreComponent.() -> Unit = {}, block: (components: ChatComponents) -> Function.() -> Command) {
         fun run(range: IntRange, prefix: String) {
             fn.execute {
                 ifCondition {
@@ -80,13 +81,15 @@ class Timer(
                 }
                 run(
                     block(
-                        ChatComponents(
-                            scoreComponent(timerObjective.name, minutes).list[0],
-                            text(":$prefix"),
-                            scoreComponent(timerObjective.name, seconds).list[0],
-                            text("."),
-                            scoreComponent(timerObjective.name, deciseconds).list[0]
-                        )
+                        scoreComponent(timerObjective.name, minutes) {
+                            extra = ChatComponents(
+                                textComponent(":$prefix").list[0],
+                                scoreComponent(timerObjective.name, seconds).list[0],
+                                textComponent(".").list[0],
+                                scoreComponent(timerObjective.name, deciseconds).list[0]
+                            )
+                            formatting()
+                        }
                     )
                 )
             }

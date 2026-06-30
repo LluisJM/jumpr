@@ -33,7 +33,7 @@ val lastFinishedPlayer = literal(".last_finished_player")
 val roundDeaths = scoreboard("round_deaths")
 
 const val finishingFirstPoints = 5
-const val coinPoints = 5
+const val coinPoints = 5 // TODO: Add coin counting
 const val noDeathsPoints = 3
 
 fun DataPack.generatePointLogic(gameTimer: Timer) {
@@ -76,8 +76,8 @@ fun DataPack.generatePointLogic(gameTimer: Timer) {
                         with = listOf(
                             entityComponent(self()) {
                                 color = Color.WHITE
-                            }.list[0],
-                            timerComponent.list[0] // TODO: Add whole component
+                            },
+                            timerComponent
                         )
                     ) {
                         color = Color.GREEN

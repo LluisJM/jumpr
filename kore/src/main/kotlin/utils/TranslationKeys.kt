@@ -1,7 +1,6 @@
 package utils
 
 import io.github.ayfri.kore.DataPack
-import io.github.ayfri.kore.arguments.chatcomponents.ChatComponent
 import io.github.ayfri.kore.arguments.chatcomponents.ChatComponents
 import io.github.ayfri.kore.arguments.chatcomponents.TranslatedTextComponent
 import io.github.ayfri.kore.arguments.chatcomponents.translatedTextComponent
@@ -15,7 +14,7 @@ val translations = HashMap<String, String>()
 fun getOrCreateTranslation(
     key: String,
     value: String? = null,
-    with: List<ChatComponent>? = null,
+    with: List<ChatComponents>? = null,
     block: TranslatedTextComponent.() -> Unit = {}
 ): ChatComponents {
     val key = "jumpr.$key"
