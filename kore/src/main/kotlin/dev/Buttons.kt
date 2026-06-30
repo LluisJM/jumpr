@@ -1,5 +1,7 @@
-package logic
+package dev
 
+import game.gameStart
+import game.gameStop
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.chatcomponents.TranslatedTextComponent
 import io.github.ayfri.kore.arguments.colors.Color

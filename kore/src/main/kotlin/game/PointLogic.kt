@@ -1,4 +1,4 @@
-package logic
+package game
 
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.DisplaySlots

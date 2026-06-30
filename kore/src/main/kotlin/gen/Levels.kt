@@ -1,4 +1,4 @@
-package logic
+package gen
 
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.maths.vec3

@@ -1,4 +1,4 @@
-package logic
+package game
 
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.chatcomponents.entityComponent
@@ -56,6 +56,9 @@ import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.nbtList
 import io.github.ayfri.kore.utils.nbtListOf
 import io.github.ayfri.kore.utils.set
+import gen.levelBottomTag
+import gen.levelLoadTag
+import gen.levelStartTag
 
 import net.benwoodworth.knbt.addNbtCompound
 import registry.Settings

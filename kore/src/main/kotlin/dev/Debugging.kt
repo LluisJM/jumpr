@@ -1,4 +1,4 @@
-package logic
+package dev
 
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.colors.Color
