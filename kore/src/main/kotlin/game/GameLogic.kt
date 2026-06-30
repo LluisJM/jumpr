@@ -63,13 +63,12 @@ import gen.levelStartTag
 import net.benwoodworth.knbt.addNbtCompound
 import registry.Settings
 import registry.initializeSettings
+import utils.BuildPhaseItem
 import utils.InfiniteBorder
 import utils.Timer
-import utils.lockInInventoryTag
 import utils.componentWithItemTag
 import utils.countdown
 import utils.getOrCreateTranslation
-import utils.keepOnGroundTag
 import utils.timerObjective
 
 const val IDLE = "idle"
@@ -90,6 +89,8 @@ const val gameStart = "game/start"
 const val gameStop = "game/stop"
 
 const val finishedTag = "jumpr.finished"
+
+const val buildPhaseDelaySeconds = 5
 
 fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
     val states = registerGameStates {
@@ -232,7 +233,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
         function(startBuildPhaseMusic)
         states.transitionTo(PRE_BUILD)
 
-        schedules.replace(actualPhase, 5.seconds)
+        schedules.replace(actualPhase, buildPhaseDelaySeconds.seconds)
         gamerule(Gamerules.PVP, false)
 
         title(allPlayers(), TitleLocation.ACTIONBAR, textComponent(""))
@@ -432,14 +433,15 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
                             }
                         })
                     }
-                    tagInInventory(lockInInventoryTag)
-                    tagInInventory(keepOnGroundTag)
+                    BuildPhaseItem.Behaviour.entries.forEach {
+                        tagInInventory(it.tag)
+                    }
 
                     entity(allEntities {
                         type = EntityTypes.ITEM
                         nbt = nbt {
                             this["Item"] = nbt {
-                                this["components"] = componentWithItemTag(lockInInventoryTag)
+                                this["components"] = componentWithItemTag(BuildPhaseItem.Behaviour.LOCK_IN_INVENTORY.tag)
                             }
                         }
                     })

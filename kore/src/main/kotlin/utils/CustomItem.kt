@@ -52,9 +52,6 @@ abstract class CustomItem(
     fun give(target: EntityArgument = self()): Command = fn.give(target, asItemStack().toItemArgument(), defaultCount)
 }
 
-const val lockInInventoryTag = "lock_in_inventory"
-const val keepOnGroundTag = "keep_on_ground"
-
 fun componentWithItemTag(tag: String) = nbt {
     this["minecraft:custom_data"] = nbt {
         this[tag] = nbt()
@@ -67,7 +64,7 @@ class BuildPhaseItem(
     val type: Type,
     dummyItem: ItemArgument,
     defaultCount: Int = 1,
-    keepOnGround: Boolean = false,
+    behaviour: Behaviour = Behaviour.LOCK_IN_INVENTORY,
     tags: List<String> = listOf(),
     components: Components.() -> Unit = {}
 ): CustomItem(
@@ -76,12 +73,18 @@ class BuildPhaseItem(
     type.color,
     dummyItem,
     defaultCount,
-    tags.plus(if (keepOnGround) keepOnGroundTag else lockInInventoryTag),
+    tags.plus(behaviour.tag),
     components
 ) {
     enum class Type(val color: Color) {
         BUILDING(Color.YELLOW),
         DESTROYING(Color.RED),
         SPECIAL(Color.BLUE)
+    }
+
+    enum class Behaviour(val tag: String) {
+        LOCK_IN_INVENTORY("lock_in_inventory"),
+        KEEP_ON_GROUND("keep_on_ground"),
+        CAN_PICK_UP("can_pick_up")
     }
 }

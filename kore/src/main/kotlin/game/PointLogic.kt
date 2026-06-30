@@ -2,8 +2,12 @@ package game
 
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.DisplaySlots
+import io.github.ayfri.kore.arguments.chatcomponents.ChatComponent
 import io.github.ayfri.kore.arguments.chatcomponents.ChatComponents
+import io.github.ayfri.kore.arguments.chatcomponents.TranslatedTextComponent
 import io.github.ayfri.kore.arguments.chatcomponents.entityComponent
+import io.github.ayfri.kore.arguments.chatcomponents.scoreComponent
+import io.github.ayfri.kore.arguments.chatcomponents.text
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.colors.Color
 import io.github.ayfri.kore.arguments.numbers.ranges.IntRange
@@ -13,7 +17,9 @@ import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.Command
+import io.github.ayfri.kore.commands.command
 import io.github.ayfri.kore.commands.execute.execute
+import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.commands.tellraw
@@ -51,11 +57,24 @@ fun DataPack.generatePointLogic(gameTimer: Timer) {
             })
         }
 
+        fun getPointMessage(points: ChatComponents, last: ChatComponent) = ChatComponents(
+            text("  ") {
+                color = Color.GRAY
+            },
+            getOrCreateTranslation("points.finish", "+%s points") {
+                with = listOf(points)
+            }.list[0],
+            text(" → "),
+            last
+        )
+
+        fun getSourceText(source: String, block: TranslatedTextComponent.() -> Unit = {}) = getOrCreateTranslation("points.source.${source.snakeCase()}", source, block = block)
+
         context(fn: Function)
         fun addPoints(value: Int, source: String): Function.() -> Command {
-            val msg = ChatComponents(
-                textComponent(" +${value}p → ", color = Color.GRAY).list[0],
-                getOrCreateTranslation("points.${source.snakeCase()}", source).list[0]
+            val msg = getPointMessage(
+                textComponent("$value"),
+                getSourceText(source).first()
             )
 
             val block: Function.() -> Command = {
@@ -110,6 +129,48 @@ fun DataPack.generatePointLogic(gameTimer: Timer) {
             }
             run {
                 addPoints(noDeathsPoints, "No Deaths")()
+            }
+        }
+
+        val totalCoins = literal("#temp1")
+        val totalCoinPoints = literal("#temp2")
+
+        scoreboard {
+            objective(points.name) {
+                reset(totalCoins)
+                reset(totalCoinPoints)
+            }
+        }
+
+        // Deal with coins
+        execute {
+            storeResult {
+                score(totalCoins, points.name)
+            }
+            run {
+                // TODO: Turn into actual clear command
+                addLine(command("clear", self(), literal("*[minecraft:custom_data~{custom_item_id:\"coin\"}]")))
+            }
+        }
+        scoreboard.objective(points.name) {
+            set(totalCoinPoints, coinPoints)
+            operation(totalCoinPoints, Operation.MULTIPLY, totalCoins, points.name)
+            operation(self(), Operation.ADD, totalCoinPoints, points.name)
+        }
+        execute {
+            ifCondition {
+                score(totalCoins, points.name, IntRangeOrInt(IntRange(1, null)))
+            }
+            run {
+                tellraw(allPlayers(), getPointMessage(
+                    scoreComponent(points.name, totalCoinPoints),
+                    getSourceText("Coin") {
+                        extra = ChatComponents(
+                            text(" x"),
+                            scoreComponent(points.name, totalCoins).first()
+                        )
+                    }.first()
+                ))
             }
         }
 

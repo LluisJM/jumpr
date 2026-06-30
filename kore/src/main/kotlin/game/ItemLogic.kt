@@ -13,6 +13,7 @@ import io.github.ayfri.kore.commands.tp
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.load
 import io.github.ayfri.kore.functions.tick
+import io.github.ayfri.kore.gamestate.GameStateManager
 import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.scoreboard.Scoreboard
 import io.github.ayfri.kore.scoreboard.create
@@ -22,13 +23,11 @@ import io.github.ayfri.kore.utils.set
 import registry.CustomItems
 import utils.BuildPhaseItem
 import utils.CustomItem
-import utils.lockInInventoryTag
 import utils.componentWithItemTag
-import utils.keepOnGroundTag
 
 const val giveItemOptions = "items/give_options"
 
-fun DataPack.generateItemLogic() {
+fun DataPack.generateItemLogic(states: GameStateManager) {
     val itemsAndGiveFunc = mutableMapOf<CustomItem, FunctionArgument>()
 
     val buildingPoolObjective = scoreboard("pool_1")
@@ -98,7 +97,7 @@ fun DataPack.generateItemLogic() {
                 type = EntityTypes.ITEM
                 nbt = nbt {
                     this["Item"] = nbt {
-                        this["components"] = componentWithItemTag(lockInInventoryTag)
+                        this["components"] = componentWithItemTag(BuildPhaseItem.Behaviour.LOCK_IN_INVENTORY.tag)
                     }
                 }
             })
@@ -112,12 +111,27 @@ fun DataPack.generateItemLogic() {
                 type = EntityTypes.ITEM
                 nbt = nbt {
                     this["Item"] = nbt {
-                        this["components"] = componentWithItemTag(keepOnGroundTag)
+                        this["components"] = componentWithItemTag(BuildPhaseItem.Behaviour.KEEP_ON_GROUND.tag)
                     }
                 }
             })
             run {
                 data(self()).set("PickupDelay", 100)
+            }
+        }
+        states.whenState(BUILD) {
+            execute {
+                asTarget(allEntities {
+                    type = EntityTypes.ITEM
+                    nbt = nbt {
+                        this["Item"] = nbt {
+                            this["components"] = componentWithItemTag(BuildPhaseItem.Behaviour.CAN_PICK_UP.tag)
+                        }
+                    }
+                })
+                run {
+                    data(self()).set("PickupDelay", buildPhaseDelaySeconds * 20)
+                }
             }
         }
     }

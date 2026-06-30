@@ -29,7 +29,7 @@ interface CustomItems {
         val SLIME_BLOCK = register(BuildPhaseItem("Slime Block", "Bouncy!",
             BuildPhaseItem.Type.SPECIAL, Items.SLIME_BLOCK, 2))
         val COIN = register(BuildPhaseItem("Coin", "Bring this to the finish line to get extra points",
-            BuildPhaseItem.Type.SPECIAL, Items.GOLD_INGOT, 2, true))
+            BuildPhaseItem.Type.SPECIAL, Items.GOLD_INGOT, 1, BuildPhaseItem.Behaviour.CAN_PICK_UP))
 
         // Destroying Type
         val MULTITOOL = register(BuildPhaseItem("Multitool", "You could break anything! Except a few things",
