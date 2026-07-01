@@ -462,6 +462,15 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
                                 }
                             }
                         })
+                        entity(inGamePlayers {
+                            nbt = nbt {
+                                this["equipment"] = nbt {
+                                    this["offhand"] = nbt {
+                                        this["components"] = componentWithItemTag(tag)
+                                    }
+                                }
+                            }
+                        })
                     }
                     BuildPhaseItem.Behaviour.entries.forEach {
                         tagInInventory(it.tag)
