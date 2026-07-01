@@ -10,6 +10,9 @@ import io.github.ayfri.kore.arguments.chatcomponents.scoreComponent
 import io.github.ayfri.kore.arguments.chatcomponents.text
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.colors.Color
+import io.github.ayfri.kore.arguments.components.item.customData
+import io.github.ayfri.kore.arguments.components.itemPredicate
+import io.github.ayfri.kore.arguments.components.partial
 import io.github.ayfri.kore.arguments.numbers.ranges.IntRange
 import io.github.ayfri.kore.arguments.numbers.ranges.IntRangeOrInt
 import io.github.ayfri.kore.arguments.scores.ScoreboardCriteria
@@ -17,7 +20,7 @@ import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.Command
-import io.github.ayfri.kore.commands.command
+import io.github.ayfri.kore.commands.clear
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
@@ -26,12 +29,16 @@ import io.github.ayfri.kore.commands.tellraw
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.load
+import io.github.ayfri.kore.generated.ItemComponentTypes
 import io.github.ayfri.kore.scoreboard.create
 import io.github.ayfri.kore.scoreboard.scoreboard
 import io.github.ayfri.kore.scoreboard.setDisplayName
 import io.github.ayfri.kore.scoreboard.setDisplaySlot
+import io.github.ayfri.kore.utils.set
 import io.github.ayfri.kore.utils.snakeCase
+import registry.CustomItems
 import utils.Timer
+import utils.customItemIdTag
 import utils.getOrCreateTranslation
 
 const val playerFinish = "player/finish"
@@ -39,7 +46,7 @@ val lastFinishedPlayer = literal(".last_finished_player")
 val roundDeaths = scoreboard("round_deaths")
 
 const val finishingFirstPoints = 5
-const val coinPoints = 5 // TODO: Add coin counting
+const val coinPoints = 5
 const val noDeathsPoints = 3
 
 fun DataPack.generatePointLogic(gameTimer: Timer) {
@@ -148,8 +155,12 @@ fun DataPack.generatePointLogic(gameTimer: Timer) {
                 score(totalCoins, points.name)
             }
             run {
-                // TODO: Turn into actual clear command
-                addLine(command("clear", self(), literal("*[minecraft:custom_data~{custom_item_id:\"coin\"}]")))
+                clear(self(), itemPredicate {
+                    customData {
+                        this[customItemIdTag] = CustomItems.COIN.id
+                    }
+                    partial(ItemComponentTypes.CUSTOM_DATA)
+                })
             }
         }
         scoreboard.objective(points.name) {

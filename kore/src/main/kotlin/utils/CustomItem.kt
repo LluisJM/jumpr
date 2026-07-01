@@ -18,6 +18,8 @@ import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
 import io.github.ayfri.kore.utils.snakeCase
 
+const val customItemIdTag = "custom_item_id"
+
 abstract class CustomItem(
     val name: String,
     val description: String,
@@ -35,7 +37,7 @@ abstract class CustomItem(
             italic = false
         })
         customData {
-            put("custom_item_id", id.nbt)
+            put(customItemIdTag, id.nbt)
             tags.forEach { tag ->
                 put(tag, nbt())
             }
