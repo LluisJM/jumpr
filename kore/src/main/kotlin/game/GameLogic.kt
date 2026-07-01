@@ -59,6 +59,9 @@ import io.github.ayfri.kore.utils.set
 import gen.levelBottomTag
 import gen.levelLoadTag
 import gen.levelStartTag
+import io.github.ayfri.kore.teams.ensureExists
+import io.github.ayfri.kore.teams.setColor
+import io.github.ayfri.kore.teams.team
 
 import net.benwoodworth.knbt.addNbtCompound
 import registry.Settings
@@ -89,6 +92,7 @@ const val gameStart = "game/start"
 const val gameStop = "game/stop"
 
 const val finishedTag = "jumpr.finished"
+const val playingTag = "jumpr.playing"
 
 const val buildPhaseDelaySeconds = 5
 
@@ -359,6 +363,32 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
             giveInfinite(Effects.SATURATION, 0, true)
         }
 
+        states.whenState(IDLE) {
+            val willPlay: ExecuteCondition.() -> Unit = {
+                entity(self {
+                    tag = playingTag
+                })
+            }
+            execute {
+                asTarget(allPlayers())
+                ifCondition(willPlay)
+                run {
+                    title(self(), TitleLocation.ACTIONBAR, getOrCreateTranslation("player.will_play", "You will be playing this game") {
+                        color = Color.BLUE
+                    })
+                }
+            }
+            execute {
+                asTarget(allPlayers())
+                unlessCondition(willPlay)
+                run {
+                    title(self(), TitleLocation.ACTIONBAR, getOrCreateTranslation("player.will_spectate", "You will be spectating this game") {
+                        color = Color.GRAY
+                    })
+                }
+            }
+        }
+
         states.whenState(PRE_RUN) {
             runPhase()
             startBorder.ifOutside(inGamePlayers()) {
@@ -458,7 +488,8 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
 
 fun inGamePlayers(data: SelectorArguments.() -> Unit = {}): SelectorArgument {
     return allPlayers {
-        gamemode = !Gamemode.SPECTATOR
+        gamemode = !Gamemode.CREATIVE
+        tag = playingTag
         data()
     }
 }

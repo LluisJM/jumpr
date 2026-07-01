@@ -3,6 +3,7 @@ import io.github.ayfri.kore.features.tags.functionTag
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
 import dev.generateDebugging
+import dev.initializePads
 import game.generateGameLogic
 import game.generateItemLogic
 import gen.generateLevelLogic
@@ -40,6 +41,7 @@ fun main() {
 			generateMusicLogic(states)
 
 			initializeInfiniteBorders()
+			initializePads()
 
 			arrayOf("tick", "load").forEach { name ->
 				functionTag(name, "minecraft") {
