@@ -11,6 +11,9 @@ import utils.BuildPhaseItem
 import utils.CustomItem
 import kotlin.collections.*
 
+private const val goldenPickaxeDurability = 32
+private const val multitoolUses = 3
+
 interface CustomItems {
     companion object {
         private val _all = mutableListOf<CustomItem>()
@@ -44,6 +47,7 @@ interface CustomItems {
                     )
                 }
                 tooltipDisplay(false, ItemComponentTypes.ATTRIBUTE_MODIFIERS)
+                damage(goldenPickaxeDurability - multitoolUses)
             }
         )
 
