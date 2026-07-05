@@ -33,7 +33,7 @@ class Pad(
     val id: String = text.snakeCase().replace(" ", "_"),
     private val formatting: TranslatedTextComponent.() -> Unit = {}
 ) {
-    fun entityTag() = "pad.$id"
+    fun entityTag() = "pad.${id.replace("_", ".")}"
 
     context(fn: Function)
     fun set() {
@@ -79,10 +79,10 @@ class Pad(
 }
 
 fun DataPack.initializePads() {
-    val playPad = Pad("player.play", Blocks.BLUE_CONCRETE, 2) {
+    val playPad = Pad("Play Game", Blocks.BLUE_CONCRETE, 2, "player.play") {
         color = Color.BLUE
     }
-    val spectatePad = Pad("player.spectate", Blocks.LIGHT_GRAY_CONCRETE, 2) {
+    val spectatePad = Pad("Spectate Game", Blocks.LIGHT_GRAY_CONCRETE, 2, "player.spectate") {
         color = Color.GRAY
     }
 
