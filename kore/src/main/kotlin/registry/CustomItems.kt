@@ -31,6 +31,8 @@ interface CustomItems {
         // Special Type
         val SLIME_BLOCK = register(BuildPhaseItem("Slime Block", "Bouncy!",
             BuildPhaseItem.Type.SPECIAL, Items.SLIME_BLOCK, 2))
+        val LAVA_BUCKET = register(BuildPhaseItem("Lava Bucket", "So hot!",
+            BuildPhaseItem.Type.SPECIAL, Items.LAVA_BUCKET, 2))
         val COIN = register(BuildPhaseItem("Coin", "Bring this to the finish line to get extra points",
             BuildPhaseItem.Type.SPECIAL, Items.GOLD_INGOT, 1, BuildPhaseItem.Behaviour.CAN_PICK_UP))
 
