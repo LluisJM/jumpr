@@ -1,5 +1,6 @@
 package game
 
+import asFunction
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.chatcomponents.entityComponent
 import io.github.ayfri.kore.arguments.chatcomponents.scoreComponent
@@ -59,9 +60,9 @@ import io.github.ayfri.kore.utils.set
 import gen.levelBottomTag
 import gen.levelLoadTag
 import gen.levelStartTag
-import io.github.ayfri.kore.teams.ensureExists
-import io.github.ayfri.kore.teams.setColor
-import io.github.ayfri.kore.teams.team
+import io.github.ayfri.kore.arguments.numbers.ranges.IntRangeOrInt
+import io.github.ayfri.kore.commands.PlaySoundMixer
+import io.github.ayfri.kore.generated.arguments.types.SoundEventArgument
 
 import net.benwoodworth.knbt.addNbtCompound
 import registry.Settings
@@ -94,7 +95,9 @@ const val gameStop = "game/stop"
 const val finishedTag = "jumpr.finished"
 const val playingTag = "jumpr.playing"
 
-const val buildPhaseDelaySeconds = 5
+const val buildPhaseDelaySeconds = 3.5
+
+val whistleSfx = SoundEventArgument("sfx.whistle", "jumpr")
 
 fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
     val states = registerGameStates {
@@ -167,8 +170,10 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
             fillBarrier(Blocks.AIR, Blocks.BARRIER)
         }
 
-        function(startRunPhaseMusic)
         function(stopBuildPhaseMusic)
+        schedules {
+            append(playRunPhaseMusic.asFunction(), 8.seconds)
+        }
         states.transitionTo(PRE_RUN)
 
         // Show title "Round X"
@@ -215,6 +220,14 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
                 spawnPoint(self(), vec3().relative)
             }
         }
+        execute {
+            unlessCondition {
+                score(currentRound, gameData.name, IntRangeOrInt(null, 0))
+            }
+            run {
+                playForAll(whistleSfx, PlaySoundMixer.MASTER)
+            }
+        }
     }
     val startBuildPhase = function("game/phase/build") {
         val actualPhase = function("${this.name}_actual") {
@@ -232,9 +245,11 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
                     function(giveItemOptions)
                 }
             }
+
+            function(playBuildPhaseMusic)
         }
 
-        function(startBuildPhaseMusic)
+        function(stopRunPhaseMusic)
         states.transitionTo(PRE_BUILD)
 
         schedules.replace(actualPhase, buildPhaseDelaySeconds.seconds)
@@ -327,6 +342,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
 
         gamerule(Gamerules.PVP, false)
 
+        function(stopRunPhaseMusic)
         function(stopBuildPhaseMusic)
 
         gameTimer.stop()

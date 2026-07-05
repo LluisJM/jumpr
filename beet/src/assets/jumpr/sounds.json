@@ -3,5 +3,37 @@
     "sounds": [
       "jumpr:music/blocking_enemies"
     ]
+  },
+  "music.run_phase.intro": {
+    "sounds": [
+      {
+        "name": "jumpr:music/outjumpring_friends/intro",
+        "volume": 0.4,
+        "pitch": 1.0
+      }
+    ]
+  },
+  "music.run_phase.loop": {
+    "sounds": [
+      {
+        "name": "jumpr:music/outjumpring_friends/loop",
+        "volume": 0.4,
+        "pitch": 1.0
+      }
+    ]
+  },
+  "music.run_phase.outro": {
+    "sounds": [
+      {
+        "name": "jumpr:music/outjumpring_friends/outro",
+        "volume": 0.15,
+        "pitch": 1.0
+      }
+    ]
+  },
+  "sfx.whistle": {
+    "sounds": [
+      "jumpr:sfx/whistle"
+    ]
   }
 }

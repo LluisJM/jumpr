@@ -11,6 +11,7 @@ import game.generateMusicLogic
 import game.generatePointLogic
 import game.generateTimer
 import dev.registerInteractions
+import io.github.ayfri.kore.DataPack
 import utils.createLangFile
 import utils.initializeInfiniteBorders
 import java.io.File
@@ -38,7 +39,7 @@ fun main() {
 			registerInteractions()
 			generateDebugging()
 
-			generateMusicLogic(states)
+			generateMusicLogic()
 
 			initializeInfiniteBorders()
 			initializePads()
@@ -73,4 +74,9 @@ fun deleteDirectory(directory: File) {
 		}
 	}
 	directory.delete()
+}
+
+context(dp: DataPack)
+fun String.asFunction(): String {
+	return "${dp.name}:$this"
 }
