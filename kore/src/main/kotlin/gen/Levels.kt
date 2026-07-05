@@ -24,13 +24,15 @@ fun DataPack.generateLevelLogic() {
                 tag = levelBottomTag
             })
 
-            for (zMultiplier in 0..5) {
-                for (yMultiplier in -1..2) {
-                    fill(
-                        vec3(-20, 20 * yMultiplier, 10 * zMultiplier).relative,
-                        vec3(20, 20 * (yMultiplier + 1), 10 * (zMultiplier + 1)).relative,
-                        Blocks.AIR
-                    )
+            for (zMultiplier in 0..10) {
+                for (yMultiplier in -2..3) {
+                    for (xMultiplier in -2..3) {
+                        fill(
+                            vec3(20 * xMultiplier - 40, 20 * yMultiplier, 10 * zMultiplier).relative,
+                            vec3(20 * xMultiplier, 20 * (yMultiplier + 1), 10 * (zMultiplier + 1)).relative,
+                            Blocks.AIR
+                        )
+                    }
                 }
             }
         }
