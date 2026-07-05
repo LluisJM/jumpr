@@ -506,6 +506,12 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
                 }
             }
         }
+
+        effect(inGamePlayers {
+            tag = finishedTag
+        }) {
+            give(Effects.WEAKNESS, 1, 9, true)
+        }
     }
 
     return states
