@@ -276,6 +276,9 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
     // GAME STARTING AND STOPING
 
     function(gameStart) {
+        kill(allEntities {
+            type = EntityTypes.ITEM
+        })
         scoreboard.players {
             // Reset current round
             set(currentRound, gameData.name, -1)
