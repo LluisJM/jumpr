@@ -134,5 +134,13 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
                 }
             }
         }
+        execute {
+            asTarget(allEntities {
+                type = EntityTypes.ITEM
+            })
+            run {
+                data(self()).set("Age", 0)
+            }
+        }
     }
 }
