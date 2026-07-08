@@ -1,5 +1,6 @@
 package gen
 
+import game.enemyEntities
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.enums.Axis
 import io.github.ayfri.kore.arguments.enums.Relation
@@ -12,6 +13,7 @@ import io.github.ayfri.kore.commands.fill
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.commands.summon
+import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.generatedFunction
 import io.github.ayfri.kore.generated.Blocks
@@ -47,6 +49,12 @@ fun DataPack.generateLevelLogic() {
             }
         }
 
+        enemyEntities.forEach {
+            kill(allEntities {
+                type = it
+            })
+        }
+        clearShulkerBullets()
         execute {
             asTarget(allEntities {
                 type = EntityTypes.MARKER
@@ -111,4 +119,10 @@ fun DataPack.generateLevelLogic() {
             }
         }
     }
+}
+
+fun Function.clearShulkerBullets() {
+    kill(allEntities {
+        type = EntityTypes.SHULKER_BULLET
+    })
 }

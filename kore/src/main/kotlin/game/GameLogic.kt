@@ -1,6 +1,7 @@
 package game
 
 import asFunction
+import gen.clearShulkerBullets
 import gen.levelBottomBorder
 import gen.levelBottomLimitBorder
 import io.github.ayfri.kore.DataPack
@@ -254,6 +255,8 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
 
             function(playBuildPhaseMusic)
         }
+
+        clearShulkerBullets()
 
         function(stopRunPhaseMusic)
         states.transitionTo(PRE_BUILD)
