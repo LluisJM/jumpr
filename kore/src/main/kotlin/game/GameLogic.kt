@@ -59,6 +59,8 @@ import io.github.ayfri.kore.utils.set
 import gen.levelStartTag
 import io.github.ayfri.kore.arguments.numbers.ranges.IntRangeOrInt
 import io.github.ayfri.kore.commands.PlaySoundMixer
+import io.github.ayfri.kore.commands.data
+import io.github.ayfri.kore.generated.arguments.types.EntityTypeArgument
 import io.github.ayfri.kore.generated.arguments.types.SoundEventArgument
 
 import net.benwoodworth.knbt.addNbtCompound
@@ -95,6 +97,11 @@ const val playingTag = "jumpr.playing"
 const val buildPhaseDelaySeconds = 3.5
 
 val whistleSfx = SoundEventArgument("sfx.whistle", "jumpr")
+
+val enemyEntities = listOf(
+    EntityTypes.SHULKER,
+    EntityTypes.CREEPER
+)
 
 fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
     val states = registerGameStates {
@@ -140,6 +147,10 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
         }
 
         val actualPhase = function("${this.name}_actual") {
+            enemyEntities.forEach {
+                setAI(it, true)
+            }
+
             scoreboard.players {
                 reset(all(), roundDeaths.name)
             }
@@ -307,6 +318,9 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
         }
 
         fun Function.buildPhase() {
+            enemyEntities.forEach {
+                setAI(it, false)
+            }
             gamemode(Gamemode.SURVIVAL, inGamePlayers())
             execute {
                 asTarget(inGamePlayers())
@@ -472,5 +486,18 @@ fun inGamePlayers(data: SelectorArguments.() -> Unit = {}): SelectorArgument {
     return allPlayers {
         tag = playingTag
         data()
+    }
+}
+
+private fun Function.setAI(type: EntityTypeArgument, enabled: Boolean) {
+    execute {
+        asTarget(allEntities {
+            this.type = type
+        })
+        run {
+            data(self()) {
+                set("NoAI", enabled.not())
+            }
+        }
     }
 }
