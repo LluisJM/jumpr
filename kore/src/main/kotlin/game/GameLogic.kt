@@ -467,7 +467,6 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
 
 fun inGamePlayers(data: SelectorArguments.() -> Unit = {}): SelectorArgument {
     return allPlayers {
-        gamemode = !Gamemode.CREATIVE
         tag = playingTag
         data()
     }
