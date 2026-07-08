@@ -13,14 +13,16 @@ def beet_default(ctx: Context):
 
             file_data = ctx.data.structures[structure].data
             
-            start_pos: list[int] = None
+            start_pos: list[int] | None = None
 
             delete_queue: list[list[int]] = []
 
-            def get_pos(block, offset: list[int] = [0, 0, 0]):
+            def get_pos(this_block, offset = None):
+                if offset is None:
+                    offset = [0, 0, 0]
                 to_return = []
                 for i in range(3):
-                    to_return.append(block["pos"][i].__int__() + offset[i])
+                    to_return.append(this_block["pos"][i].__int__() + offset[i])
                 return to_return
 
             for block in file_data["blocks"]:
@@ -67,7 +69,8 @@ def beet_default(ctx: Context):
                 i += 1
             contents += [
                 f'execute at @e[type=marker, tag=level.start] run place template {structure} ~{-start_pos[0]} ~{-start_pos[1]} ~{-start_pos[2]}',
-                f'execute at @e[type=marker, tag=level.start] run summon marker ~ ~{-start_pos[1]} ~ {{Tags:["level.bottom"], data:{{name:"level.bottom"}}}}'
+                f'execute at @e[type=marker, tag=level.start] run summon marker ~ ~{-start_pos[1]} ~ {{Tags:["level.bottom"], data:{{name:"level.bottom"}}}}',
+                'function jumpr:level/set_borders'
             ]
 
             functions.setdefault(name, contents)
@@ -85,8 +88,5 @@ def beet_default(ctx: Context):
         reload_function += [
             f'execute if score .level settings matches {i} run function {name}'
         ]
-
-    reload_function += [
-    ]
     
     ctx.data["jumpr:level/reload"] = Function(reload_function)

@@ -1,6 +1,8 @@
 package game
 
 import asFunction
+import gen.levelBottomBorder
+import gen.levelBottomLimitBorder
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.chatcomponents.entityComponent
 import io.github.ayfri.kore.arguments.chatcomponents.scoreComponent
@@ -12,7 +14,6 @@ import io.github.ayfri.kore.arguments.enums.Relation
 import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.numbers.seconds
 import io.github.ayfri.kore.arguments.selector.SelectorArguments
-import io.github.ayfri.kore.arguments.selector.Sort
 import io.github.ayfri.kore.arguments.types.literals.SelectorArgument
 import io.github.ayfri.kore.arguments.types.literals.all
 import io.github.ayfri.kore.arguments.types.literals.allEntities
@@ -34,7 +35,6 @@ import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.commands.schedules
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.spawnPoint
-import io.github.ayfri.kore.commands.summon
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.commands.tellraw
 import io.github.ayfri.kore.commands.title
@@ -55,10 +55,7 @@ import io.github.ayfri.kore.scoreboard.create
 import io.github.ayfri.kore.scoreboard.scoreboard
 import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.nbtList
-import io.github.ayfri.kore.utils.nbtListOf
 import io.github.ayfri.kore.utils.set
-import gen.levelBottomTag
-import gen.levelLoadTag
 import gen.levelStartTag
 import io.github.ayfri.kore.arguments.numbers.ranges.IntRangeOrInt
 import io.github.ayfri.kore.commands.PlaySoundMixer
@@ -109,8 +106,6 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
     }
 
     val startBorder = InfiniteBorder("start", Axis.Z, Relation.GREATER_THAN_OR_EQUAL_TO)
-    val levelBottomBorder = InfiniteBorder("level.bottom", Axis.Y, Relation.LESS_THAN)
-    val levelBottomLimitBorder = InfiniteBorder("level.bottom.limit", Axis.Z, Relation.GREATER_THAN_OR_EQUAL_TO)
 
     initializeSettings()
 
@@ -287,53 +282,6 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
         }
 
         gamerule(Gamerules.PVP, false)
-
-        // Set level bottom. TODO: Move to actual level loading functions
-        levelBottomBorder.killMarkers()
-        val bottomFinderTag = "bottom_finder"
-
-        execute {
-            asTarget(allEntities {
-                type = EntityTypes.MARKER
-                tag = levelStartTag
-            })
-            at(self())
-            run {
-                summon(EntityTypes.MARKER, vec3(0, 100, 0).relative) {
-                    this["Tags"] = nbtListOf(bottomFinderTag)
-                }
-            }
-        }
-        execute {
-            asTarget(allEntities {
-                type = EntityTypes.MARKER
-                tag = bottomFinderTag
-            })
-            at(self())
-            run {
-                execute {
-                    at(allEntities(true) {
-                        type = EntityTypes.MARKER
-                        tag = levelBottomTag
-                        sort = Sort.NEAREST
-                    })
-                    run {
-                        levelBottomBorder.summonMarker(vec3(0, -2, 0).relative)
-                    }
-                }
-            }
-        }
-
-        execute {
-            asTarget(allEntities {
-                type = EntityTypes.MARKER
-                tag = levelLoadTag
-            })
-            at(self())
-            run {
-                levelBottomLimitBorder.summonMarker(vec3(0, 0, -1).relative)
-            }
-        }
 
         function(startRunPhase)
     }
