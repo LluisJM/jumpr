@@ -1,14 +1,18 @@
 package game
 
 import io.github.ayfri.kore.DataPack
+import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.numbers.ranges.IntRangeOrInt
 import io.github.ayfri.kore.arguments.types.literals.allEntities
+import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.nearestPlayer
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.execute.execute
+import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.randomValue
+import io.github.ayfri.kore.commands.tellraw
 import io.github.ayfri.kore.commands.tp
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.load
@@ -38,7 +42,15 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
     val specialPool = mutableListOf<CustomItem>()
     val destroyingPool = mutableListOf<CustomItem>()
 
+    fun CustomItem.giveFunctionName() = "items/give/${id}"
+
     CustomItems.ALL.forEach { item ->
+        val function = function(item.giveFunctionName()) {
+            item.give()
+            tellraw(allPlayers(), textComponent("Given item ${item.name}"))
+        }
+        itemsAndGiveFunc[item] = function
+
         val phaseItem = item as? BuildPhaseItem
         if (phaseItem != null) {
             if (phaseItem.type == BuildPhaseItem.Type.BUILDING) {
@@ -57,13 +69,6 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
         destroyingPoolObjective.create()
     }
 
-    CustomItems.ALL.forEach { item ->
-        val function = function("items/give/${item.id}") {
-            item.give()
-        }
-        itemsAndGiveFunc[item] = function
-    }
-
     function(giveItemOptions) { // TODO: Give actual options
         fun sendOption(pool: List<CustomItem>, poolObjective: Scoreboard) {
             execute {
@@ -80,7 +85,7 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
                         score(self(), poolObjective.name, IntRangeOrInt(null, i))
                     }
                     run {
-                        item.give()
+                        function(item.giveFunctionName())
                     }
                 }
             }
@@ -91,7 +96,11 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
         sendOption(destroyingPool, destroyingPoolObjective)
     }
 
-    tick("items/handle_items_on_ground") {
+    tick("items/handle_items") {
+        CustomItems.ORBS.forEach { orb ->
+            orb.applyEffect()
+        }
+
         execute {
             asTarget(allEntities {
                 type = EntityTypes.ITEM

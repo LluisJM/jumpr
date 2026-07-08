@@ -4,20 +4,25 @@ import io.github.ayfri.kore.arguments.components.data.EquipmentSlot
 import io.github.ayfri.kore.arguments.components.item.*
 import io.github.ayfri.kore.commands.AttributeModifierOperation
 import io.github.ayfri.kore.generated.Attributes
+import io.github.ayfri.kore.generated.Effects
 import io.github.ayfri.kore.generated.ItemComponentTypes
 import io.github.ayfri.kore.generated.Items
 import io.github.ayfri.kore.generated.arguments.types.AttributeModifierArgument
 import utils.BuildPhaseItem
 import utils.CustomItem
+import utils.OrbItem
 import kotlin.collections.*
 
 private const val goldenPickaxeDurability = 32
 private const val multitoolUses = 3
 
 interface CustomItems {
+    @Suppress("unused")
     companion object {
         private val _all = mutableListOf<CustomItem>()
         val ALL: List<CustomItem> get() = _all
+        private val _orbs = mutableListOf<OrbItem>()
+        val ORBS: List<OrbItem> get() = _orbs
 
         // Build Phase Items
         // Building Type
@@ -35,6 +40,9 @@ interface CustomItems {
             BuildPhaseItem.Type.SPECIAL, Items.LAVA_BUCKET, 2))
         val COIN = register(BuildPhaseItem("Coin", "Bring this to the finish line to get extra points",
             BuildPhaseItem.Type.SPECIAL, Items.GOLD_INGOT, 1, BuildPhaseItem.Behaviour.CAN_PICK_UP))
+
+        val SLOWNESS_ORB = register(OrbItem("Slowness Orb", "Drop to create an area that slows down all players", 3.0, Effects.SLOWNESS, 5))
+        val SPEED_ORB = register(OrbItem("Speed Orb", "Drop to create an area that speeds up all players", 3.0, Effects.SPEED, 5))
 
         // Destroying Type
         val MULTITOOL = register(BuildPhaseItem("Multitool", "You could break anything! Except a few things",
@@ -55,6 +63,7 @@ interface CustomItems {
 
         private fun register(item: CustomItem): CustomItem {
             _all += item
+            if (item is OrbItem) _orbs += item
             println("Registered custom item: ${item.name} (${item.dummyItem.name})")
             return item
         }
