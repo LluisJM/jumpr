@@ -1,6 +1,7 @@
 package registry
 
 import io.github.ayfri.kore.DataPack
+import io.github.ayfri.kore.arguments.enums.Axis
 import io.github.ayfri.kore.arguments.maths.Axes
 import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.types.literals.allEntities
@@ -59,9 +60,9 @@ fun DataPack.initializeSettings(): FunctionArgument {
         })
         val body = generatedFunction("settings/setup_${hashCode()}") {
             ALL.withIndex().forEach { (i, setting) ->
-                val x = floorDiv(i, settingPerRow).toDouble() * horizontalSeparation
-                val y = (i % settingPerRow).toDouble() * verticalSeparation + 0.75
-                setting.summonButton(vec3(x, y,  0.01).relative)
+                val z = floorDiv(i, settingPerRow).toDouble() * horizontalSeparation
+                val y = (i % settingPerRow).toDouble() * verticalSeparation + 1.0
+                setting.summonButton(vec3(0.9, y, z).relative, Axis.Z)
             }
         }
 

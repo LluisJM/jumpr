@@ -2,6 +2,7 @@ package utils
 
 import io.github.ayfri.kore.arguments.chatcomponents.scoreComponent
 import io.github.ayfri.kore.arguments.colors.Color
+import io.github.ayfri.kore.arguments.enums.Axis
 import io.github.ayfri.kore.arguments.maths.Vec3
 import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.numbers.ranges.IntRange
@@ -23,6 +24,7 @@ import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.generated.arguments.types.EntityTypeArgument
 import io.github.ayfri.kore.scoreboard.scoreboard
 import io.github.ayfri.kore.utils.nbtList
+import io.github.ayfri.kore.utils.nbtListOf
 import io.github.ayfri.kore.utils.set
 import io.github.ayfri.kore.utils.snakeCase
 import net.benwoodworth.knbt.NbtList
@@ -57,13 +59,16 @@ abstract class AbstractSetting (
     }
 
     context(fn: Function)
-    open fun summonButton(pos: Vec3) {
+    open fun summonButton(pos: Vec3, axis: Axis) {
+        if (axis == Axis.Y) throw IllegalArgumentException("You cannot align settings button to vertical axis")
+
         fn.summon(EntityTypes.TEXT_DISPLAY, pos.plus(vec3(0, TEXT_HEIGHT, 0))) {
             this["Tags"] = getEntityTags()
             this["text"] = getOrCreateTranslation(getTranslationKey(), name) {
                 color = Color.BLUE
             }.toNbtTag()
             this["background"] = 0
+            if (axis == Axis.Z) this["Rotation"] = nbtListOf(90f, 0f)
         }
     }
 
@@ -118,14 +123,15 @@ class BooleanSetting(
     }
 
     context(fn: Function)
-    override fun summonButton(pos: Vec3) {
-        super.summonButton(pos)
+    override fun summonButton(pos: Vec3, axis: Axis) {
+        super.summonButton(pos, axis)
 
         fn.summonInteractionFace(pos, interaction)
         fn.summon(EntityTypes.TEXT_DISPLAY, pos) {
             this["Tags"] = getEntityTags(true)
             this["text"] = "[x]"
             this["background"] = 0
+            if (axis == Axis.Z) this["Rotation"] = nbtListOf(90f, 0f)
         }
     }
 
@@ -200,24 +206,30 @@ open class IntSetting(
     }
 
     context(fn: Function)
-    override fun summonButton(pos: Vec3) {
-        super.summonButton(pos)
-        fn.summonInteractionFace(pos.plus(vec3(-buttonXOffset, 0, 0)), removeInteraction)
-        fn.summonInteractionFace(pos.plus(vec3(buttonXOffset, 0, 0)), addInteraction)
+    override fun summonButton(pos: Vec3, axis: Axis) {
+        super.summonButton(pos, axis)
+        val removeButtonPosition = vec3WithAxis(-buttonXOffset, axis)
+        val addButtonPosition = vec3WithAxis(buttonXOffset, axis)
+
+        fn.summonInteractionFace(pos.plus(removeButtonPosition), removeInteraction)
+        fn.summonInteractionFace(pos.plus(addButtonPosition), addInteraction)
         fn.summon(EntityTypes.TEXT_DISPLAY, pos) {
             this["Tags"] = getEntityTags(true)
             this["text"] = "--"
             this["background"] = 0
+            if (axis == Axis.Z) this["Rotation"] = nbtListOf(90f, 0f)
         }
-        fn.summon(EntityTypes.TEXT_DISPLAY, pos.plus(vec3(-buttonXOffset, 0.0, 0.0))) {
+        fn.summon(EntityTypes.TEXT_DISPLAY, pos.plus(removeButtonPosition)) {
             this["Tags"] = getEntityTags()
             this["text"] = "[-]"
             this["background"] = 0
+            if (axis == Axis.Z) this["Rotation"] = nbtListOf(90f, 0f)
         }
-        fn.summon(EntityTypes.TEXT_DISPLAY, pos.plus(vec3(buttonXOffset, 0.0, 0.0))) {
+        fn.summon(EntityTypes.TEXT_DISPLAY, pos.plus(addButtonPosition)) {
             this["Tags"] = getEntityTags()
             this["text"] = "[+]"
             this["background"] = 0
+            if (axis == Axis.Z) this["Rotation"] = nbtListOf(90f, 0f)
         }
     }
 
@@ -301,7 +313,7 @@ fun createInteractionFace(name: String = "button", width: Double = 0.4): Interac
 }
 
 fun Function.summonInteractionFace(pos: Vec3, interaction: Interaction): Command {
-    return interaction.summon(pos.plus(vec3(0, 0, -(interaction.width / 2))))
+    return interaction.summon(pos.plus(vec3(interaction.width / 2, 0, 0)))
 }
 
 context(fn: Function)
@@ -313,3 +325,5 @@ fun executeIfScoreRange(setting: AbstractSetting, start: Int?, end: Int?, block:
         run(block)
     }
 }
+
+private fun vec3WithAxis(offset: Double, axis: Axis) = vec3(if (axis == Axis.X) -offset else 0, 0, if (axis == Axis.Z) -offset else 0)
