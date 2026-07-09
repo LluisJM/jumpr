@@ -276,7 +276,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
         execute {
             ifCondition(condition)
             run {
-                function(gameStop)
+                function(findWinner)
             }
         }
         execute {
@@ -290,6 +290,8 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
     // GAME STARTING AND STOPING
 
     function(gameStart) {
+        function(gameStop)
+
         kill(allEntities {
             type = EntityTypes.ITEM
         })
@@ -297,8 +299,6 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
             // Reset current round
             set(currentRound, gameData.name, -1)
         }
-
-        gamerule(Gamerules.PVP, false)
 
         function(startRunPhase)
     }
@@ -488,6 +488,13 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
 fun inGamePlayers(data: SelectorArguments.() -> Unit = {}): SelectorArgument {
     return allPlayers {
         tag = playingTag
+        data()
+    }
+}
+
+fun spectators(data: SelectorArguments.() -> Unit = {}): SelectorArgument {
+    return allPlayers {
+        tag = !playingTag
         data()
     }
 }

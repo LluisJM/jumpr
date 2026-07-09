@@ -13,19 +13,25 @@ import io.github.ayfri.kore.arguments.colors.Color
 import io.github.ayfri.kore.arguments.components.item.customData
 import io.github.ayfri.kore.arguments.components.itemPredicate
 import io.github.ayfri.kore.arguments.components.partial
+import io.github.ayfri.kore.arguments.enums.Relation
 import io.github.ayfri.kore.arguments.numbers.ranges.IntRange
 import io.github.ayfri.kore.arguments.numbers.ranges.IntRangeOrInt
+import io.github.ayfri.kore.arguments.numbers.seconds
 import io.github.ayfri.kore.arguments.scores.ScoreboardCriteria
+import io.github.ayfri.kore.arguments.types.EntityArgument
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.Command
+import io.github.ayfri.kore.commands.TitleLocation
 import io.github.ayfri.kore.commands.clear
 import io.github.ayfri.kore.commands.execute.execute
+import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.scoreboard.Operation
 import io.github.ayfri.kore.commands.scoreboard.scoreboard
 import io.github.ayfri.kore.commands.tag
 import io.github.ayfri.kore.commands.tellraw
+import io.github.ayfri.kore.commands.title
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.load
@@ -42,27 +48,31 @@ import utils.customItemIdTag
 import utils.getOrCreateTranslation
 
 const val playerFinish = "player/finish"
+const val findWinner = "player/find_winner"
+
 val lastFinishedPlayer = literal(".last_finished_player")
+
 val roundDeaths = scoreboard("round_deaths")
+val points = scoreboard("points")
 
 const val finishingFirstPoints = 5
 const val coinPoints = 5
 const val noDeathsPoints = 3
 
+
 fun DataPack.generatePointLogic(gameTimer: Timer) {
     load {
         roundDeaths.create(ScoreboardCriteria.DEATH_COUNT)
+        points.create()
+        points.setDisplaySlot(DisplaySlots.belowName)
+        points.setDisplaySlot(DisplaySlots.list)
+        points.setDisplayName(getOrCreateTranslation("points", "Points") {
+            color = Color.GOLD
+        })
     }
 
     function(playerFinish) {
-        val points = scoreboard("points") {
-            create()
-            setDisplaySlot(DisplaySlots.belowName)
-            setDisplaySlot(DisplaySlots.list)
-            setDisplayName(getOrCreateTranslation("points", "Points") {
-                color = Color.GOLD
-            })
-        }
+
 
         fun getPointMessage(points: ChatComponents, last: ChatComponent) = ChatComponents(
             text("  ") {
@@ -189,5 +199,64 @@ fun DataPack.generatePointLogic(gameTimer: Timer) {
         tag(self()) {
             add(finishedTag)
         }
+    }
+
+    function(findWinner) {
+        val highestScore = literal(".highest_score")
+        val winnerTag = "winner"
+
+        tag(allPlayers()) {
+            remove(winnerTag)
+        }
+
+        scoreboard.objective(highestScore, gameData.name).reset()
+        execute {
+            asTarget(inGamePlayers())
+            run {
+                scoreboard.players.operation(highestScore, gameData.name, Operation.MAX, self(), points.name)
+            }
+        }
+        execute {
+            asTarget(inGamePlayers())
+            ifCondition {
+                score(highestScore, gameData.name, self(), points.name, Relation.EQUAL_TO)
+            }
+            run {
+                tag(self()) {
+                    add(winnerTag)
+                }
+            }
+        }
+        val winners = inGamePlayers {
+            tag = winnerTag
+        }
+        val losers = inGamePlayers {
+            tag = !winnerTag
+        }
+
+        title(allPlayers(), 0.seconds, 5.seconds, 0.5.seconds)
+
+        title(winners, TitleLocation.TITLE, getOrCreateTranslation("title.victory", "Victory") {
+            color = Color.YELLOW
+        })
+
+        fun subtitleWinners(targets: EntityArgument) {
+            title(targets, TitleLocation.SUBTITLE, getOrCreateTranslation("title.defeat.winner", "%s wins", listOf(
+                entityComponent(winners)
+            )) {
+                color = Color.RED
+            })
+        }
+        subtitleWinners(losers)
+        subtitleWinners(spectators())
+
+        title(losers, TitleLocation.TITLE, getOrCreateTranslation("title.defeat", "Defeat") {
+            color = Color.RED
+        })
+        title(spectators(), TitleLocation.TITLE, getOrCreateTranslation("title.game_over", "Game Over") {
+            color = Color.RED
+        })
+
+        function(gameStop)
     }
 }
