@@ -1,6 +1,6 @@
 ---
 name: Feature
-about: A feature that needs to be added
+about: A feature that needs to be added.
 title: "[FEATURE]"
 labels: enhancement
 assignees: LluisJM
