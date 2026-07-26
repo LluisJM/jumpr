@@ -115,7 +115,7 @@ class OrbItem(
     defaultCount: Int = 1,
     tags: List<String> = listOf(),
     components: Components.() -> Unit = {},
-    val effect: Function.() -> Command
+    val effect: Function.() -> Unit
 ): BuildPhaseItem(
     name,
     description,
@@ -140,7 +140,6 @@ class OrbItem(
     ) : this(
         name,
         description,
-        radius,
         dummyItem,
         defaultCount,
         tags,
@@ -163,7 +162,7 @@ class OrbItem(
     }
 
     context(fn: Function)
-    private fun asAndAtOrb(block: Function.() -> Command) = fn.execute {
+    private fun asAndAtOrb(block: Function.() -> Unit) = fn.execute {
         asTarget(allEntities {
             type = EntityTypes.ITEM
             nbt = nbt {
