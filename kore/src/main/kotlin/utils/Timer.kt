@@ -58,7 +58,7 @@ class Timer(
     }
 
     context(fn: Function)
-    fun onFinish(block: Function.() -> Command) {
+    fun onFinish(block: Function.() -> Unit) {
         fn.execute {
             ifCondition {
                 score(ticks, timerObjective.name, IntRangeOrInt(null, 0))
@@ -73,7 +73,7 @@ class Timer(
     }
 
     context(fn: Function)
-    fun withComponent(formatting: ScoreComponent.() -> Unit = {}, block: (components: ChatComponents) -> Function.() -> Command) {
+    fun withComponent(formatting: ScoreComponent.() -> Unit = {}, block: (components: ChatComponents) -> Function.() -> Unit) {
         fun run(range: IntRange, prefix: String) {
             fn.execute {
                 ifCondition {

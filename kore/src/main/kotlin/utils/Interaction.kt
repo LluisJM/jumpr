@@ -36,7 +36,7 @@ class Interaction(
     }
 
     context(fn: Function)
-    fun onInteract(block: Function.() -> Command): Command {
+    fun onInteract(block: Function.() -> Unit): Command {
         return fn.execute {
             asTarget(allEntities {
                 for (tag in tags) {

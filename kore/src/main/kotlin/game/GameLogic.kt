@@ -335,12 +335,9 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
 
         // Deal with bottom border
         levelBottomBorder.ifOutside(inGamePlayers()) {
-            val bottomZBorderCheck = generatedFunction("border/check_z_for_bottom") {
-                levelBottomLimitBorder.ifOutside(self()) {
-                    kill(self())
-                }
+            levelBottomLimitBorder.ifOutside(self()) {
+                kill(self())
             }
-            function(bottomZBorderCheck)
         }
 
         effect(inGamePlayers()) {

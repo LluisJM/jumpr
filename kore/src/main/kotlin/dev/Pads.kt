@@ -55,7 +55,7 @@ class Pad(
     }
 
     context(fn: Function)
-    fun tick(block: Function.() -> Command) {
+    fun tick(block: Function.() -> Unit) {
         fn.execute {
             asTarget(allEntities {
                 type = EntityTypes.MARKER

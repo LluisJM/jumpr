@@ -24,7 +24,7 @@ class Button(
     val name: String,
     val formattedName: String,
     val formatting: TranslatedTextComponent.() -> Unit = {},
-    val interactionResult: Function.() -> Command
+    val interactionResult: Function.() -> Unit
 ) {
     val interaction = Interaction(name)
 

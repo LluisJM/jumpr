@@ -2,6 +2,7 @@ package gen
 
 import game.enemyEntities
 import io.github.ayfri.kore.DataPack
+import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.enums.Axis
 import io.github.ayfri.kore.arguments.enums.Relation
 import io.github.ayfri.kore.arguments.maths.vec3
@@ -13,6 +14,7 @@ import io.github.ayfri.kore.commands.fill
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.commands.summon
+import io.github.ayfri.kore.commands.tellraw
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.generatedFunction
@@ -21,6 +23,7 @@ import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.utils.nbtListOf
 import io.github.ayfri.kore.utils.set
 import utils.InfiniteBorder
+import utils.getOrCreateTranslation
 
 const val levelStartTag = "level.start"
 const val levelBottomTag = "level.bottom"
@@ -31,24 +34,6 @@ val levelBottomLimitBorder = InfiniteBorder("level.bottom.limit", Axis.Z, Relati
 
 fun DataPack.generateLevelLogic() {
     function("level/clear") {
-        val actualFunction = generatedFunction("level/clear_${hashCode()}") {
-            kill(allEntities {
-                tag = levelBottomTag
-            })
-
-            for (zMultiplier in 0..10) {
-                for (yMultiplier in -3..3) {
-                    for (xMultiplier in -2..3) {
-                        fill(
-                            vec3(20 * xMultiplier - 40, 20 * yMultiplier, 10 * zMultiplier).relative,
-                            vec3(20 * xMultiplier, 20 * (yMultiplier + 1), 10 * (zMultiplier + 1)).relative,
-                            Blocks.AIR
-                        )
-                    }
-                }
-            }
-        }
-
         enemyEntities.forEach {
             kill(allEntities {
                 type = it
@@ -62,7 +47,21 @@ fun DataPack.generateLevelLogic() {
             })
             at(self())
             run {
-                function(actualFunction)
+                kill(allEntities {
+                    tag = levelBottomTag
+                })
+
+                for (zMultiplier in 0..10) {
+                    for (yMultiplier in -3..3) {
+                        for (xMultiplier in -2..3) {
+                            fill(
+                                vec3(20 * xMultiplier - 40, 20 * yMultiplier, 10 * zMultiplier).relative,
+                                vec3(20 * xMultiplier, 20 * (yMultiplier + 1), 10 * (zMultiplier + 1)).relative,
+                                Blocks.AIR
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -88,6 +87,7 @@ fun DataPack.generateLevelLogic() {
                 }
             }
         }
+
         execute {
             asTarget(allEntities {
                 type = EntityTypes.MARKER
@@ -95,16 +95,20 @@ fun DataPack.generateLevelLogic() {
             })
             at(self())
             run {
-                execute {
-                    at(allEntities(true) {
-                        type = EntityTypes.MARKER
-                        tag = levelBottomTag
-                        sort = Sort.FURTHEST
-                    })
-                    run {
-                        levelBottomBorder.summonMarker(vec3(0, -2, 0).relative)
+                val actualFunction = generatedFunction("${this@function.name}/place_bottom_border") {
+                    execute {
+                        at(allEntities(true) {
+                            type = EntityTypes.MARKER
+                            tag = levelBottomTag
+                            sort = Sort.FURTHEST
+                        })
+                        run {
+                            levelBottomBorder.summonMarker(vec3(0, -2, 0).relative)
+                        }
                     }
                 }
+
+                function(actualFunction)
             }
         }
 

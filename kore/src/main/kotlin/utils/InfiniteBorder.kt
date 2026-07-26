@@ -49,7 +49,7 @@ class InfiniteBorder(
         })
 
     context(fn: Function)
-    fun ifOutside(target: EntityArgument, block: Function.() -> Command) {
+    fun ifOutside(target: EntityArgument, block: Function.() -> Unit) {
         fn.execute {
             asTarget(allEntities {
                 type = EntityTypes.MARKER

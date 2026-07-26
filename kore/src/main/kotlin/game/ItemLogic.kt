@@ -98,7 +98,8 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
 
     tick("items/handle_items") {
         CustomItems.ORBS.forEach { orb ->
-            orb.applyEffect()
+            /*orb.applyEffect()
+            orb.showParticles()*/
         }
 
         execute {

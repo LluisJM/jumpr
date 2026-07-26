@@ -88,17 +88,16 @@ fun DataPack.generatePointLogic(gameTimer: Timer) {
         fun getSourceText(source: String, block: TranslatedTextComponent.() -> Unit = {}) = getOrCreateTranslation("points.source.${source.snakeCase()}", source, block = block)
 
         context(fn: Function)
-        fun addPoints(value: Int, source: String): Function.() -> Command {
+        fun addPoints(value: Int, source: String): Function.() -> Unit {
             val msg = getPointMessage(
                 textComponent("$value"),
                 getSourceText(source).first()
             )
 
-            val block: Function.() -> Command = {
+            return {
                 fn.scoreboard.players.add(self(), points.name, value)
                 fn.tellraw(allPlayers(), msg)
             }
-            return block
         }
 
         scoreboard.players.add(lastFinishedPlayer, gameData.name, 1)

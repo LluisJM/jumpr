@@ -1,6 +1,7 @@
 package utils
 
 import game.inGamePlayers
+import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.chatcomponents.ChatComponents
 import io.github.ayfri.kore.arguments.colors.Color
 import io.github.ayfri.kore.arguments.components.Components
@@ -25,8 +26,11 @@ import io.github.ayfri.kore.data.item.builders.itemStack
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.generated.Items
+import io.github.ayfri.kore.generated.Particles
 import io.github.ayfri.kore.generated.SoundEvents
 import io.github.ayfri.kore.generated.arguments.types.MobEffectArgument
+import io.github.ayfri.kore.helpers.vfx.Shape
+import io.github.ayfri.kore.helpers.vfx.drawShape
 import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
 import io.github.ayfri.kore.utils.snakeCase
@@ -140,6 +144,7 @@ class OrbItem(
     ) : this(
         name,
         description,
+        radius,
         dummyItem,
         defaultCount,
         tags,
@@ -152,6 +157,18 @@ class OrbItem(
             }
         }
     )
+
+    context(fn: Function, dp: DataPack)
+    fun showParticles() = asAndAtOrb {
+        dp.drawShape("orb_effect") {
+            shape = Shape.SPHERE
+            particle = Particles.SOUL_FIRE_FLAME
+            radius = this@OrbItem.radius
+            points = 50
+            height = 5.0
+            turns = 4
+        }
+    }
 
     context(fn: Function)
     fun applyEffect() = asAndAtOrb(effect)

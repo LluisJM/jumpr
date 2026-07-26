@@ -137,7 +137,7 @@ class BooleanSetting(
 
 
     context(fn: Function)
-    fun executeIf(value: Boolean = true, block: Function.() -> Command): Command {
+    fun executeIf(value: Boolean = true, block: Function.() -> Unit): Command {
         val range = IntRange(if (value) 1 else null, if (value) null else 0).asRangeOrInt()
         return fn.execute {
             ifCondition {
@@ -317,7 +317,7 @@ fun Function.summonInteractionFace(pos: Vec3, interaction: Interaction): Command
 }
 
 context(fn: Function)
-fun executeIfScoreRange(setting: AbstractSetting, start: Int?, end: Int?, block: Function.() -> Command): Command {
+fun executeIfScoreRange(setting: AbstractSetting, start: Int?, end: Int?, block: Function.() -> Unit): Command {
     return fn.execute {
         ifCondition {
             score(setting.getScoreId(), setting.objective.name, IntRange(start, end).asRangeOrInt())
