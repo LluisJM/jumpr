@@ -103,6 +103,24 @@ open class BuildPhaseItem(
         KEEP_ON_GROUND("keep_on_ground"),
         CAN_PICK_UP("can_pick_up")
     }
+
+    context(fn: Function)
+    fun asAndAtItem(block: Function.() -> Unit) = fn.execute {
+        asTarget(allEntities {
+            type = EntityTypes.ITEM
+            nbt = nbt {
+                this["Item"] = nbt {
+                    this["components"] = nbt {
+                        this["minecraft:custom_data"] = nbt {
+                            this[customItemIdTag] = id
+                        }
+                    }
+                }
+            }
+        })
+        at(self())
+        run(block)
+    }
 }
 
 const val orbTag = "orb"
@@ -155,7 +173,7 @@ class OrbItem(
     )
 
     context(fn: Function, dp: DataPack)
-    fun showParticles() = asAndAtOrb {
+    fun showParticles() = asAndAtItem {
         /*
         TODO: add particle settings
         The particles ar at world spawn at the moment due to a Kore limitation.
@@ -174,23 +192,5 @@ class OrbItem(
     }
 
     context(fn: Function)
-    fun applyEffect() = asAndAtOrb(effect)
-
-    context(fn: Function)
-    private fun asAndAtOrb(block: Function.() -> Unit) = fn.execute {
-        asTarget(allEntities {
-            type = EntityTypes.ITEM
-            nbt = nbt {
-                this["Item"] = nbt {
-                    this["components"] = nbt {
-                        this["minecraft:custom_data"] = nbt {
-                            this[customItemIdTag] = id
-                        }
-                    }
-                }
-            }
-        })
-        at(self())
-        run(block)
-    }
+    fun applyEffect() = asAndAtItem(effect)
 }

@@ -72,7 +72,7 @@ interface CustomItems {
             }
         )
 
-        private fun register(item: CustomItem): CustomItem {
+        private fun <T: CustomItem> register(item: T): T {
             _all += item
             if (item is OrbItem) _orbs += item
             println("Registered custom item: ${item.name} (${item.dummyItem.name})")

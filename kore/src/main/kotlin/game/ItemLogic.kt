@@ -2,6 +2,7 @@ package game
 
 import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
+import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.numbers.ranges.IntRangeOrInt
 import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
@@ -11,6 +12,8 @@ import io.github.ayfri.kore.arguments.types.resources.FunctionArgument
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.particle.ParticleMode
+import io.github.ayfri.kore.commands.particle.particle
 import io.github.ayfri.kore.commands.randomValue
 import io.github.ayfri.kore.commands.tellraw
 import io.github.ayfri.kore.commands.tp
@@ -19,6 +22,7 @@ import io.github.ayfri.kore.functions.load
 import io.github.ayfri.kore.functions.tick
 import io.github.ayfri.kore.gamestate.GameStateManager
 import io.github.ayfri.kore.generated.EntityTypes
+import io.github.ayfri.kore.generated.Particles
 import io.github.ayfri.kore.scoreboard.Scoreboard
 import io.github.ayfri.kore.scoreboard.create
 import io.github.ayfri.kore.scoreboard.scoreboard
@@ -100,6 +104,11 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
         CustomItems.ORBS.forEach { orb ->
             orb.applyEffect()
             orb.showParticles()
+        }
+
+        CustomItems.COIN.asAndAtItem {
+            val dispersion = 0.5
+            particle(Particles.ELECTRIC_SPARK, vec3(0, 0.5, 0).relative, vec3(dispersion, dispersion, dispersion), 0.1, 1, ParticleMode.NORMAL, allPlayers())
         }
 
         execute {
