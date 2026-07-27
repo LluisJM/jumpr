@@ -2,7 +2,7 @@
 name: Game item
 about: Describe an item that should be added.
 title: "[ITEM]"
-labels: enhancement
+labels: feature
 assignees: LluisJM
 
 ---
