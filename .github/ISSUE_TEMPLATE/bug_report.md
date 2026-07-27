@@ -2,7 +2,7 @@
 name: Bug report
 about: Create a report to report an issue with the game.
 title: "[BUG]"
-labels: bug, enhancement
+labels: bug
 assignees: LluisJM
 
 ---

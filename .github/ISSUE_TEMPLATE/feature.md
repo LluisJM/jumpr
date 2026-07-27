@@ -2,7 +2,7 @@
 name: Feature
 about: A feature that needs to be added.
 title: "[FEATURE]"
-labels: enhancement
+labels: feature
 assignees: LluisJM
 
 ---
