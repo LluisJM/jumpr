@@ -1,6 +1,10 @@
 from beet import Context, Function
 from libs.debugger import debug
 
+finish_line_prot_height = 3.02
+finish_line_prot_width = 3.02
+
+# noinspection PyTypeChecker
 def beet_default(ctx: Context):
     debug(__name__, "running plugin", True, True)
 
@@ -25,6 +29,13 @@ def beet_default(ctx: Context):
                     to_return.append(this_block["pos"][i].__int__() + offset[i])
                 return to_return
 
+            lodestone_id = -1
+            lodestone_positions = []
+
+            for i, block_id in enumerate(file_data["palette"]):
+                if block_id["Name"] == "minecraft:lodestone":
+                    lodestone_id = i
+
             for block in file_data["blocks"]:
                 if "nbt" in block:
                     nbt = block["nbt"]
@@ -47,6 +58,16 @@ def beet_default(ctx: Context):
             for block in file_data["blocks"]:
                 if get_pos(block) in delete_queue:
                     file_data["blocks"].remove(block)
+
+            if lodestone_id != -1:
+                for block in file_data["blocks"]:
+                    if block["state"].__int__() == lodestone_id:
+                        lodestone_pos = get_pos(block)
+                        debug(__name__, f'found lodestone at x:{lodestone_pos[0]} y:{lodestone_pos[1]} z:{lodestone_pos[2]}')
+                        lodestone_positions.append(lodestone_pos)
+                        debug(__name__, f'lodestone positions: {lodestone_positions}')
+            else:
+                debug(__name__, f'structure contains no lodestone')
 
             if not start_pos:
                 debug(__name__, f'missing level start for "{structure}"')
@@ -72,6 +93,8 @@ def beet_default(ctx: Context):
                 f'execute at @e[type=marker, tag=level.start] run summon marker ~ ~{-start_pos[1]} ~ {{Tags:["level.bottom"], data:{{name:"level.bottom"}}}}',
                 'function jumpr:level/set_borders'
             ]
+            for pos in lodestone_positions:
+                contents.append(f'execute at @e[type=marker, tag=level.start] run summon interaction ~{pos[0] - start_pos[0]} ~{pos[1] - 0.51 - start_pos[1]} ~{pos[2] - start_pos[2]} {{Tags:["level.finish_line"], height: {finish_line_prot_height}, width: {finish_line_prot_width}}}')
 
             functions.setdefault(name, contents)
     

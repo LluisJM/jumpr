@@ -2,7 +2,6 @@ package gen
 
 import game.enemyEntities
 import io.github.ayfri.kore.DataPack
-import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.enums.Axis
 import io.github.ayfri.kore.arguments.enums.Relation
 import io.github.ayfri.kore.arguments.maths.vec3
@@ -14,7 +13,6 @@ import io.github.ayfri.kore.commands.fill
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.commands.summon
-import io.github.ayfri.kore.commands.tellraw
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.generatedFunction
@@ -23,11 +21,11 @@ import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.utils.nbtListOf
 import io.github.ayfri.kore.utils.set
 import utils.InfiniteBorder
-import utils.getOrCreateTranslation
 
 const val levelStartTag = "level.start"
 const val levelBottomTag = "level.bottom"
 const val levelLoadTag = "level.load"
+const val finishLineProtectionTag = "level.finish_line"
 
 val levelBottomBorder = InfiniteBorder("level.bottom", Axis.Y, Relation.LESS_THAN)
 val levelBottomLimitBorder = InfiniteBorder("level.bottom.limit", Axis.Z, Relation.GREATER_THAN_OR_EQUAL_TO)
@@ -73,6 +71,10 @@ fun DataPack.generateLevelLogic() {
         kill(allEntities {
             type = EntityTypes.MARKER
             tag = bottomFinderTag
+        })
+        kill(allEntities {
+            type = EntityTypes.INTERACTION
+            tag = finishLineProtectionTag
         })
 
         execute {
