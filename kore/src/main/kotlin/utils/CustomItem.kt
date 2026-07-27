@@ -8,26 +8,22 @@ import io.github.ayfri.kore.arguments.components.Components
 import io.github.ayfri.kore.arguments.components.item.customData
 import io.github.ayfri.kore.arguments.components.item.itemName
 import io.github.ayfri.kore.arguments.components.item.lore
-import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.numbers.ranges.range
 import io.github.ayfri.kore.arguments.types.EntityArgument
 import io.github.ayfri.kore.arguments.types.literals.allEntities
-import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.arguments.types.resources.ItemArgument
 import io.github.ayfri.kore.commands.Command
-import io.github.ayfri.kore.commands.PlaySoundMixer
 import io.github.ayfri.kore.commands.effect
 import io.github.ayfri.kore.commands.execute.execute
+import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.give
-import io.github.ayfri.kore.commands.playSound
 import io.github.ayfri.kore.data.item.ItemStack
 import io.github.ayfri.kore.data.item.builders.itemStack
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.generated.Items
 import io.github.ayfri.kore.generated.Particles
-import io.github.ayfri.kore.generated.SoundEvents
 import io.github.ayfri.kore.generated.arguments.types.MobEffectArgument
 import io.github.ayfri.kore.helpers.vfx.Shape
 import io.github.ayfri.kore.helpers.vfx.drawShape
@@ -160,7 +156,12 @@ class OrbItem(
 
     context(fn: Function, dp: DataPack)
     fun showParticles() = asAndAtOrb {
-        dp.drawShape("orb_effect") {
+        /*
+        TODO: add particle settings
+        The particles ar at world spawn at the moment due to a Kore limitation.
+         */
+
+        val shape = dp.drawShape("${id}_effect") {
             shape = Shape.SPHERE
             particle = Particles.SOUL_FIRE_FLAME
             radius = this@OrbItem.radius
@@ -168,15 +169,12 @@ class OrbItem(
             height = 5.0
             turns = 4
         }
+        
+        function(shape)
     }
 
     context(fn: Function)
     fun applyEffect() = asAndAtOrb(effect)
-
-    context(fn: Function)
-    fun destroy() = asAndAtOrb {
-        playSound(SoundEvents.Entity.Item.BREAK, PlaySoundMixer.MASTER, allPlayers(), vec3().relative)
-    }
 
     context(fn: Function)
     private fun asAndAtOrb(block: Function.() -> Unit) = fn.execute {
