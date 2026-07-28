@@ -14,10 +14,10 @@ import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.generatedFunction
 import io.github.ayfri.kore.functions.tick
 import registry.Settings.Companion.ALL
-import utils.AbstractSetting
-import utils.BooleanSetting
-import utils.IntSetting
-import utils.TimeSetting
+import utils.setting.AbstractSetting
+import utils.setting.BooleanSetting
+import utils.setting.IntSetting
+import utils.setting.TimeSetting
 import java.lang.Math.floorDiv
 
 interface Settings {

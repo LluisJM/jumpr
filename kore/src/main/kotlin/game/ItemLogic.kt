@@ -1,7 +1,6 @@
 package game
 
 import io.github.ayfri.kore.DataPack
-import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.numbers.ranges.IntRangeOrInt
 import io.github.ayfri.kore.arguments.types.literals.allEntities
@@ -15,7 +14,6 @@ import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.particle.ParticleMode
 import io.github.ayfri.kore.commands.particle.particle
 import io.github.ayfri.kore.commands.randomValue
-import io.github.ayfri.kore.commands.tellraw
 import io.github.ayfri.kore.commands.tp
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.load
@@ -29,11 +27,12 @@ import io.github.ayfri.kore.scoreboard.scoreboard
 import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
 import registry.CustomItems
-import utils.BuildPhaseItem
-import utils.CustomItem
-import utils.componentWithItemTag
+import utils.item.BuildPhaseItem
+import utils.item.CustomItem
+import utils.item.componentWithItemTag
 
 const val giveItemOptions = "items/give_options"
+const val giveBuildPhaseItems = "items/give_build_phase"
 
 fun DataPack.generateItemLogic(states: GameStateManager) {
     val itemsAndGiveFunc = mutableMapOf<CustomItem, FunctionArgument>()
@@ -51,7 +50,6 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
     CustomItems.ALL.forEach { item ->
         val function = function(item.giveFunctionName()) {
             item.give()
-            tellraw(allPlayers(), textComponent("Given item ${item.name}"))
         }
         itemsAndGiveFunc[item] = function
 
@@ -73,8 +71,8 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
         destroyingPoolObjective.create()
     }
 
-    function(giveItemOptions) { // TODO: Give actual options
-        fun sendOption(pool: List<CustomItem>, poolObjective: Scoreboard) {
+    function(giveBuildPhaseItems) {
+        fun giveFromPool(pool: List<CustomItem>, poolObjective: Scoreboard) {
             execute {
                 storeResult {
                     score(self(), poolObjective.name)
@@ -95,9 +93,9 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
             }
         }
 
-        sendOption(buildingPool, buildingPoolObjective)
-        sendOption(specialPool, specialPoolObjective)
-        sendOption(destroyingPool, destroyingPoolObjective)
+        giveFromPool(buildingPool, buildingPoolObjective)
+        giveFromPool(specialPool, specialPoolObjective)
+        giveFromPool(destroyingPool, destroyingPoolObjective)
     }
 
     tick("items/handle_items") {

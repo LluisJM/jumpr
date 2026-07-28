@@ -42,7 +42,6 @@ import io.github.ayfri.kore.commands.title
 import io.github.ayfri.kore.commands.tp
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
-import io.github.ayfri.kore.functions.generatedFunction
 import io.github.ayfri.kore.functions.load
 import io.github.ayfri.kore.functions.tick
 import io.github.ayfri.kore.gamestate.GameStateManager
@@ -67,10 +66,10 @@ import io.github.ayfri.kore.generated.arguments.types.SoundEventArgument
 import net.benwoodworth.knbt.addNbtCompound
 import registry.Settings
 import registry.initializeSettings
-import utils.BuildPhaseItem
+import utils.item.BuildPhaseItem
 import utils.InfiniteBorder
 import utils.Timer
-import utils.componentWithItemTag
+import utils.item.componentWithItemTag
 import utils.countdown
 import utils.getOrCreateTranslation
 import utils.timerObjective
@@ -249,7 +248,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
             execute {
                 asTarget(inGamePlayers())
                 run {
-                    function(giveItemOptions)
+                    function(giveBuildPhaseItems)
                 }
             }
 

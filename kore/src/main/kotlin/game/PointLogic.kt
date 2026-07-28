@@ -22,7 +22,6 @@ import io.github.ayfri.kore.arguments.types.EntityArgument
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.literal
 import io.github.ayfri.kore.arguments.types.literals.self
-import io.github.ayfri.kore.commands.Command
 import io.github.ayfri.kore.commands.TitleLocation
 import io.github.ayfri.kore.commands.clear
 import io.github.ayfri.kore.commands.execute.execute
@@ -44,7 +43,7 @@ import io.github.ayfri.kore.utils.set
 import io.github.ayfri.kore.utils.snakeCase
 import registry.CustomItems
 import utils.Timer
-import utils.customItemIdTag
+import utils.item.customItemIdTag
 import utils.getOrCreateTranslation
 
 const val playerFinish = "player/finish"

@@ -8,9 +8,9 @@ import io.github.ayfri.kore.generated.Effects
 import io.github.ayfri.kore.generated.ItemComponentTypes
 import io.github.ayfri.kore.generated.Items
 import io.github.ayfri.kore.generated.arguments.types.AttributeModifierArgument
-import utils.BuildPhaseItem
-import utils.CustomItem
-import utils.OrbItem
+import utils.item.BuildPhaseItem
+import utils.item.CustomItem
+import utils.item.OrbItem
 import kotlin.collections.*
 
 private const val goldenPickaxeDurability = 32
