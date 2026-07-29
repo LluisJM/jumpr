@@ -8,6 +8,8 @@ import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.utils.snakeCase
+import utils.Timer
+import utils.timerObjective
 
 class TimeSetting(
     name: String,
@@ -15,7 +17,7 @@ class TimeSetting(
     maxSeconds: Int,
     defaultSeconds: Int,
     id: String = name.snakeCase().replace(" ", "_"),
-    val timer: utils.Timer = _root_ide_package_.utils.Timer(id)
+    val timer: Timer = Timer(id)
 ): IntSetting(
     name,
     minSeconds * 20,
@@ -24,7 +26,7 @@ class TimeSetting(
     id
 ) {
     override val buttonXOffset = 0.7
-    override val objective = _root_ide_package_.utils.timerObjective
+    override val objective = timerObjective
 
     override fun getScoreId(): LiteralArgument = literal(".$id.ticks")
 

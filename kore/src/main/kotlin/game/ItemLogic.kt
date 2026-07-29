@@ -27,11 +27,10 @@ import io.github.ayfri.kore.scoreboard.scoreboard
 import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
 import registry.CustomItems
-import utils.item.BuildPhaseItem
+import utils.item.GamePhaseItem
 import utils.item.CustomItem
 import utils.item.componentWithItemTag
 
-const val giveItemOptions = "items/give_options"
 const val giveBuildPhaseItems = "items/give_build_phase"
 
 fun DataPack.generateItemLogic(states: GameStateManager) {
@@ -53,13 +52,13 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
         }
         itemsAndGiveFunc[item] = function
 
-        val phaseItem = item as? BuildPhaseItem
+        val phaseItem = item as? GamePhaseItem
         if (phaseItem != null) {
-            if (phaseItem.type == BuildPhaseItem.Type.BUILDING) {
+            if (phaseItem.type == GamePhaseItem.Type.BUILDING) {
                 buildingPool += item
-            } else if (phaseItem.type == BuildPhaseItem.Type.SPECIAL) {
+            } else if (phaseItem.type == GamePhaseItem.Type.SPECIAL) {
                 specialPool += item
-            } else if (phaseItem.type == BuildPhaseItem.Type.DESTROYING) {
+            } else if (phaseItem.type == GamePhaseItem.Type.DESTROYING) {
                 destroyingPool += item
             }
         }
@@ -98,23 +97,24 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
         giveFromPool(destroyingPool, destroyingPoolObjective)
     }
 
-    tick("items/handle_items") {
-        CustomItems.ORBS.forEach { orb ->
-            orb.applyEffect()
-            orb.showParticles()
+    tick("items/handle_behaviour") {
+        CustomItems.ALL.forEach { item ->
+            item.initializeTick()
         }
 
         CustomItems.COIN.asAndAtItem {
             val dispersion = 0.5
             particle(Particles.ELECTRIC_SPARK, vec3(0, 0.5, 0).relative, vec3(dispersion, dispersion, dispersion), 0.1, 1, ParticleMode.NORMAL, allPlayers())
         }
+    }
 
+    tick("items/handle_entities") {
         execute {
             asTarget(allEntities {
                 type = EntityTypes.ITEM
                 nbt = nbt {
                     this["Item"] = nbt {
-                        this["components"] = componentWithItemTag(BuildPhaseItem.Behaviour.LOCK_IN_INVENTORY.tag)
+                        this["components"] = componentWithItemTag(GamePhaseItem.Behaviour.LOCK_IN_INVENTORY.tag)
                     }
                 }
             })
@@ -128,12 +128,12 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
                 type = EntityTypes.ITEM
                 nbt = nbt {
                     this["Item"] = nbt {
-                        this["components"] = componentWithItemTag(BuildPhaseItem.Behaviour.KEEP_ON_GROUND.tag)
+                        this["components"] = componentWithItemTag(GamePhaseItem.Behaviour.KEEP_ON_GROUND.tag)
                     }
                 }
             })
             run {
-                data(self()).set("PickupDelay", 100)
+                data(self())["PickupDelay"] = 100
             }
         }
         states.whenState(BUILD) {
@@ -142,12 +142,12 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
                     type = EntityTypes.ITEM
                     nbt = nbt {
                         this["Item"] = nbt {
-                            this["components"] = componentWithItemTag(BuildPhaseItem.Behaviour.CAN_PICK_UP.tag)
+                            this["components"] = componentWithItemTag(GamePhaseItem.Behaviour.CAN_PICK_UP.tag)
                         }
                     }
                 })
                 run {
-                    data(self()).set("PickupDelay", buildPhaseDelaySeconds * 20)
+                    data(self())["PickupDelay"] = buildPhaseDelaySeconds * 20
                 }
             }
         }
@@ -156,7 +156,7 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
                 type = EntityTypes.ITEM
             })
             run {
-                data(self()).set("Age", 0)
+                data(self())["Age"] = 0
             }
         }
     }

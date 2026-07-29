@@ -26,6 +26,8 @@ import io.github.ayfri.kore.utils.snakeCase
 import net.benwoodworth.knbt.NbtList
 import net.benwoodworth.knbt.NbtString
 import net.benwoodworth.knbt.add
+import utils.Interaction
+import utils.getOrCreateTranslation
 import kotlin.collections.forEach
 
 const val TEXT_HEIGHT = 1.0 / 16.0 * 4.0
@@ -60,7 +62,7 @@ abstract class AbstractSetting (
 
         fn.summon(EntityTypes.TEXT_DISPLAY, pos.plus(vec3(0, TEXT_HEIGHT, 0))) {
             this["Tags"] = getEntityTags()
-            this["text"] = _root_ide_package_.utils.getOrCreateTranslation(getTranslationKey(), name) {
+            this["text"] = getOrCreateTranslation(getTranslationKey(), name) {
                 color = Color.BLUE
             }.toNbtTag()
             this["background"] = 0
@@ -95,8 +97,8 @@ abstract class AbstractSetting (
 }
 
 context(setting: AbstractSetting)
-fun createInteractionFace(name: String = "button", width: Double = 0.4): utils.Interaction {
-    val interaction = _root_ide_package_.utils.Interaction(
+fun createInteractionFace(name: String = "button", width: Double = 0.4): Interaction {
+    val interaction = Interaction(
         setting.getEntityTags(false, "jumpr.setting.${setting.id}.$name"),
         TEXT_HEIGHT,
         width
@@ -105,7 +107,7 @@ fun createInteractionFace(name: String = "button", width: Double = 0.4): utils.I
     return interaction
 }
 
-fun Function.summonInteractionFace(pos: Vec3, interaction: utils.Interaction): Command {
+fun Function.summonInteractionFace(pos: Vec3, interaction: Interaction): Command {
     return interaction.summon(pos.plus(vec3(interaction.width / 2, 0, 0)))
 }
 

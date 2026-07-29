@@ -1,17 +1,12 @@
 package utils.item
 
+import io.github.ayfri.kore.DataPack
 import io.github.ayfri.kore.arguments.colors.Color
 import io.github.ayfri.kore.arguments.components.Components
-import io.github.ayfri.kore.arguments.types.literals.allEntities
-import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.arguments.types.resources.ItemArgument
-import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.functions.Function
-import io.github.ayfri.kore.generated.EntityTypes
-import io.github.ayfri.kore.utils.nbt
-import io.github.ayfri.kore.utils.set
 
-open class BuildPhaseItem(
+open class GamePhaseItem(
     name: String,
     description: String,
     val type: Type,
@@ -29,6 +24,9 @@ open class BuildPhaseItem(
     tags.plus(behaviour.tag),
     components
 ) {
+    context(dp: DataPack, fn: Function)
+    override fun initializeTick() {}
+
     enum class Type(val color: Color) {
         BUILDING(Color.YELLOW),
         DESTROYING(Color.RED),
@@ -39,23 +37,5 @@ open class BuildPhaseItem(
         LOCK_IN_INVENTORY("lock_in_inventory"),
         KEEP_ON_GROUND("keep_on_ground"),
         CAN_PICK_UP("can_pick_up")
-    }
-
-    context(fn: Function)
-    fun asAndAtItem(block: Function.() -> Unit) = fn.execute {
-        asTarget(allEntities {
-            type = EntityTypes.ITEM
-            nbt = nbt {
-                this["Item"] = nbt {
-                    this["components"] = nbt {
-                        this["minecraft:custom_data"] = nbt {
-                            this[customItemIdTag] = id
-                        }
-                    }
-                }
-            }
-        })
-        at(self())
-        run(block)
     }
 }

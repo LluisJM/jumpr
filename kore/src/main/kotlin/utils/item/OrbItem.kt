@@ -25,7 +25,7 @@ class OrbItem(
     tags: List<String> = listOf(),
     components: Components.() -> Unit = {},
     val effect: Function.() -> Unit
-): BuildPhaseItem(
+): GamePhaseItem(
     name,
     description,
     Type.SPECIAL,
@@ -84,4 +84,10 @@ class OrbItem(
 
     context(fn: Function)
     fun applyEffect() = asAndAtItem(effect)
+
+    context(dp: DataPack, fn: Function)
+    override fun initializeTick() {
+        showParticles()
+        applyEffect()
+    }
 }

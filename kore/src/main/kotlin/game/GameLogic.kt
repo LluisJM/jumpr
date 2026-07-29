@@ -66,7 +66,7 @@ import io.github.ayfri.kore.generated.arguments.types.SoundEventArgument
 import net.benwoodworth.knbt.addNbtCompound
 import registry.Settings
 import registry.initializeSettings
-import utils.item.BuildPhaseItem
+import utils.item.GamePhaseItem
 import utils.InfiniteBorder
 import utils.Timer
 import utils.item.componentWithItemTag
@@ -452,7 +452,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
                             }
                         })
                     }
-                    BuildPhaseItem.Behaviour.entries.forEach {
+                    GamePhaseItem.Behaviour.entries.forEach {
                         tagInInventory(it.tag)
                     }
 
@@ -460,7 +460,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
                         type = EntityTypes.ITEM
                         nbt = nbt {
                             this["Item"] = nbt {
-                                this["components"] = componentWithItemTag(BuildPhaseItem.Behaviour.LOCK_IN_INVENTORY.tag)
+                                this["components"] = componentWithItemTag(GamePhaseItem.Behaviour.LOCK_IN_INVENTORY.tag)
                             }
                         }
                     })
