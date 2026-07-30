@@ -5,9 +5,12 @@ import io.github.ayfri.kore.arguments.WEAPON
 import io.github.ayfri.kore.arguments.chatcomponents.ChatComponents
 import io.github.ayfri.kore.arguments.colors.Color
 import io.github.ayfri.kore.arguments.components.Components
+import io.github.ayfri.kore.arguments.components.ItemPredicate
 import io.github.ayfri.kore.arguments.components.item.customData
 import io.github.ayfri.kore.arguments.components.item.itemName
 import io.github.ayfri.kore.arguments.components.item.lore
+import io.github.ayfri.kore.arguments.components.itemPredicate
+import io.github.ayfri.kore.arguments.components.partial
 import io.github.ayfri.kore.arguments.numbers.ranges.rangeOrIntStart
 import io.github.ayfri.kore.arguments.scores.criteriaUsed
 import io.github.ayfri.kore.arguments.types.EntityArgument
@@ -27,6 +30,7 @@ import io.github.ayfri.kore.data.item.builders.itemStack
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.load
 import io.github.ayfri.kore.generated.EntityTypes
+import io.github.ayfri.kore.generated.ItemComponentTypes
 import io.github.ayfri.kore.generated.Items
 import io.github.ayfri.kore.scoreboard.create
 import io.github.ayfri.kore.scoreboard.scoreboard
@@ -69,7 +73,7 @@ abstract class CustomItem(
         return components
     }
     context(fn: Function)
-    fun give(target: EntityArgument = self()): Command = fn.give(target, asItemStack().toItemArgument(), defaultCount)
+    fun give(target: EntityArgument = self(), count: Int = defaultCount): Command = fn.give(target, asItemStack().toItemArgument(), count)
 
     context(dp: DataPack, fn: Function)
     abstract fun initializeTick()
@@ -164,6 +168,14 @@ abstract class CustomItem(
                 }
             }
         })
+    }
+
+    fun asPredicate(block: ItemPredicate.() -> Unit = {}) = itemPredicate {
+        block()
+        customData {
+            this[customItemIdTag] = id
+        }
+        partial(ItemComponentTypes.CUSTOM_DATA)
     }
 }
 

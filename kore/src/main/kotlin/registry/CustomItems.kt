@@ -22,6 +22,8 @@ interface CustomItems {
     companion object {
         private val _all = mutableListOf<CustomItem>()
         val ALL: List<CustomItem> get() = _all
+        private val _gameItems = mutableListOf<GamePhaseItem>()
+        val GAME_ITEMS: List<GamePhaseItem> get() = _gameItems
         private val _orbs = mutableListOf<OrbItem>()
         val ORBS: List<OrbItem> get() = _orbs
 
@@ -78,8 +80,11 @@ interface CustomItems {
 
         private fun <T: CustomItem> register(item: T): T {
             _all += item
-            if (item is OrbItem) _orbs += item
-            println("Registered custom item: ${item.name} (${item.dummyItem.name})")
+            println("Registered custom item: ${item.name} (${item.dummyItem.name}) of class ${item.javaClass}")
+            if (item is GamePhaseItem) {
+                _gameItems += item
+                if (item is OrbItem) _orbs += item
+            }
             return item
         }
     }

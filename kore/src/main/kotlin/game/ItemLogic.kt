@@ -160,4 +160,9 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
             }
         }
     }
+    CustomItems.ALL.forEach { item ->
+        function(item.giveFunctionName()) {
+            item.give()
+        }
+    }
 }

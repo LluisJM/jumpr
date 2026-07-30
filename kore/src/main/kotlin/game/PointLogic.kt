@@ -163,12 +163,7 @@ fun DataPack.generatePointLogic(gameTimer: Timer) {
                 score(totalCoins, points.name)
             }
             run {
-                clear(self(), itemPredicate {
-                    customData {
-                        this[customItemIdTag] = CustomItems.COIN.id
-                    }
-                    partial(ItemComponentTypes.CUSTOM_DATA)
-                })
+                clear(self(), CustomItems.COIN.asPredicate())
             }
         }
         scoreboard.objective(points.name) {
