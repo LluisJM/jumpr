@@ -11,12 +11,14 @@ open class GamePhaseItem(
     description: String,
     dummyItem: ItemArgument,
     defaultCount: Int = 1,
+    customModel: Boolean = false,
     behaviour: Behaviour = Behaviour.LOCK_IN_INVENTORY,
     tags: List<String> = listOf(),
     components: Components.() -> Unit = {}
 ): CustomItem(
     name,
     description,
+    customModel,
     Color.YELLOW,
     dummyItem,
     defaultCount,

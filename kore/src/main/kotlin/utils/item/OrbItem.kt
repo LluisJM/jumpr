@@ -8,11 +8,9 @@ import io.github.ayfri.kore.arguments.maths.Vec3
 import io.github.ayfri.kore.arguments.maths.vec3
 import io.github.ayfri.kore.arguments.numbers.ranges.range
 import io.github.ayfri.kore.arguments.types.literals.literal
-import io.github.ayfri.kore.arguments.types.resources.ItemArgument
 import io.github.ayfri.kore.commands.command
 import io.github.ayfri.kore.commands.effect
 import io.github.ayfri.kore.functions.Function
-import io.github.ayfri.kore.generated.Items
 import io.github.ayfri.kore.generated.Particles
 import io.github.ayfri.kore.generated.arguments.types.MobEffectArgument
 import io.github.ayfri.kore.generated.arguments.types.ParticleTypeArgument
@@ -29,7 +27,6 @@ class OrbItem(
     name: String,
     description: String,
     val radius: Double,
-    dummyItem: ItemArgument = Items.GLASS_BOTTLE,
     defaultCount: Int = 1,
     tags: List<String> = listOf(),
     components: Components.() -> Unit = {},
@@ -38,8 +35,9 @@ class OrbItem(
 ): GamePhaseItem(
     name,
     description,
-    dummyItem,
+    defaultDummyItem,
     defaultCount,
+    true,
     Behaviour.KEEP_ON_GROUND,
     tags.plus(orbTag),
     components
@@ -51,7 +49,6 @@ class OrbItem(
         effect: MobEffectArgument,
         effectAmplifier: Int,
         color: RGB,
-        dummyItem: ItemArgument = Items.GLASS_BOTTLE,
         defaultCount: Int = 1,
         effectDuration: Int = 1,
         tags: List<String> = listOf(),
@@ -60,7 +57,6 @@ class OrbItem(
         name,
         description,
         radius,
-        dummyItem,
         defaultCount,
         tags,
         components,

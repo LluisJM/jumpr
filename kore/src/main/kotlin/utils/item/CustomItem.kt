@@ -7,6 +7,7 @@ import io.github.ayfri.kore.arguments.colors.Color
 import io.github.ayfri.kore.arguments.components.Components
 import io.github.ayfri.kore.arguments.components.ItemPredicate
 import io.github.ayfri.kore.arguments.components.item.customData
+import io.github.ayfri.kore.arguments.components.item.itemModel
 import io.github.ayfri.kore.arguments.components.item.itemName
 import io.github.ayfri.kore.arguments.components.item.lore
 import io.github.ayfri.kore.arguments.components.itemPredicate
@@ -41,17 +42,21 @@ import utils.getOrCreateTranslation
 import kotlin.Int
 
 const val customItemIdTag = "custom_item_id"
+val defaultDummyItem = Items.ECHO_SHARD
 
 abstract class CustomItem(
     val name: String,
     val description: String,
+    val customModel: Boolean = false,
     val nameColor: Color? = Color.WHITE,
-    val dummyItem: ItemArgument,
+    val dummyItem: ItemArgument = defaultDummyItem,
     val defaultCount: Int = 1,
     val tags: List<String> = listOf(),
     val components: Components.() -> Unit = {}
 ) {
     val id: String = name.snakeCase().replace(" ", "_")
+
+    context(dp: DataPack)
     fun asItemStack(): ItemStack = itemStack(dummyItem, defaultCount.toShort()) {
         itemName(getName())
         lore(getOrCreateTranslation("item.$id.description", description) {
@@ -64,6 +69,7 @@ abstract class CustomItem(
                 put(tag, nbt())
             }
         }
+        if (customModel) itemModel(id, dp.name)
         components()
     }
     fun getName(): ChatComponents {
@@ -72,7 +78,7 @@ abstract class CustomItem(
         }
         return components
     }
-    context(fn: Function)
+    context(fn: Function, dp: DataPack)
     fun give(target: EntityArgument = self(), count: Int = defaultCount): Command = fn.give(target, asItemStack().toItemArgument(), count)
 
     context(dp: DataPack, fn: Function)
@@ -114,7 +120,7 @@ abstract class CustomItem(
         }
     }
 
-    context(fn: Function)
+    context(fn: Function, dp: DataPack)
     fun consumeOne() {
         fn.execute {
             unlessCondition {

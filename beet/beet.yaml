@@ -24,3 +24,4 @@ resource_pack:
 
 pipeline:
   - plugins.levels
+  - plugins.item_models

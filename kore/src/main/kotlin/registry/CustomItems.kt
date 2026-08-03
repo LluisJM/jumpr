@@ -66,8 +66,9 @@ interface CustomItems {
         val SHULKER = register(GamePhaseItem("Shulker", "We're going up, up, up...",
             Items.SHULKER_SPAWN_EGG), specialPool)
 
-        val SLOWNESS_ORB = register(OrbItem("Slowness Orb", "Drop to create an area that slows down all players", 3.0, Effects.SLOWNESS, 5, color("34364e")), specialPool)
-        val SPEED_ORB = register(OrbItem("Speed Orb", "Drop to create an area that speeds up all players", 3.0, Effects.SPEED, 5, color("54dce4")), specialPool)
+        val HONEY_ORB = register(OrbItem("Honey Orb", "Drop to create an area that slows down all players.", 3.0, Effects.SLOWNESS, 5, color("#e8a32c")), specialPool)
+        val SPEED_ORB = register(OrbItem("Speed Orb", "Drop to create an area that speeds up all players.", 3.0, Effects.SPEED, 5, color("#54dce4")), specialPool)
+        val SHULKER_ORB = register(OrbItem("Shulker Orb", "Drop to create an area that makes all players levitate.", 3.0, Effects.LEVITATION, 7, color("#eeeeee")), specialPool)
 
         // Destroying Type
         val MULTITOOL = register(GamePhaseItem("Multitool", "You could break anything! Except a few things",
