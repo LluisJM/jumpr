@@ -9,7 +9,6 @@ import io.github.ayfri.kore.functions.Function
 open class GamePhaseItem(
     name: String,
     description: String,
-    val type: Type,
     dummyItem: ItemArgument,
     defaultCount: Int = 1,
     behaviour: Behaviour = Behaviour.LOCK_IN_INVENTORY,
@@ -18,7 +17,7 @@ open class GamePhaseItem(
 ): CustomItem(
     name,
     description,
-    type.color,
+    Color.YELLOW,
     dummyItem,
     defaultCount,
     tags.plus(behaviour.tag),
@@ -26,12 +25,6 @@ open class GamePhaseItem(
 ) {
     context(dp: DataPack, fn: Function)
     override fun initializeTick() {}
-
-    enum class Type(val color: Color) {
-        BUILDING(Color.YELLOW),
-        DESTROYING(Color.RED),
-        SPECIAL(Color.BLUE)
-    }
 
     enum class Behaviour(val tag: String) {
         LOCK_IN_INVENTORY("lock_in_inventory"),

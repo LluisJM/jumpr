@@ -16,7 +16,6 @@ class PowerUpItem(
 ): GamePhaseItem(
     name,
     description,
-    Type.SPECIAL,
     Items.CARROT_ON_A_STICK
 ) {
     context(dp: DataPack, fn: Function)
@@ -28,4 +27,3 @@ class PowerUpItem(
         }
     }
 }
-

@@ -34,33 +34,15 @@ import utils.item.componentWithItemTag
 const val giveBuildPhaseItems = "items/give_build_phase"
 
 fun DataPack.generateItemLogic(states: GameStateManager) {
-    val itemsAndGiveFunc = mutableMapOf<CustomItem, FunctionArgument>()
-
     val buildingPoolObjective = scoreboard("pool_1")
     val specialPoolObjective = scoreboard("pool_2")
     val destroyingPoolObjective = scoreboard("pool_3")
 
-    val buildingPool = mutableListOf<CustomItem>()
-    val specialPool = mutableListOf<CustomItem>()
-    val destroyingPool = mutableListOf<CustomItem>()
-
     fun CustomItem.giveFunctionName() = "items/give/${id}"
 
     CustomItems.ALL.forEach { item ->
-        val function = function(item.giveFunctionName()) {
+        function(item.giveFunctionName()) {
             item.give()
-        }
-        itemsAndGiveFunc[item] = function
-
-        val phaseItem = item as? GamePhaseItem
-        if (phaseItem != null) {
-            if (phaseItem.type == GamePhaseItem.Type.BUILDING) {
-                buildingPool += item
-            } else if (phaseItem.type == GamePhaseItem.Type.SPECIAL) {
-                specialPool += item
-            } else if (phaseItem.type == GamePhaseItem.Type.DESTROYING) {
-                destroyingPool += item
-            }
         }
     }
 
@@ -92,9 +74,9 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
             }
         }
 
-        giveFromPool(buildingPool, buildingPoolObjective)
-        giveFromPool(specialPool, specialPoolObjective)
-        giveFromPool(destroyingPool, destroyingPoolObjective)
+        giveFromPool(CustomItems.BUILDING_POOL, buildingPoolObjective)
+        giveFromPool(CustomItems.SPECIAL_POOL, specialPoolObjective)
+        giveFromPool(CustomItems.DESTROYING_POOL, destroyingPoolObjective)
     }
 
     tick("items/handle_behaviour") {
@@ -158,11 +140,6 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
             run {
                 data(self())["Age"] = 0
             }
-        }
-    }
-    CustomItems.ALL.forEach { item ->
-        function(item.giveFunctionName()) {
-            item.give()
         }
     }
 }
