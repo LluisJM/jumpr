@@ -25,6 +25,24 @@ open class GamePhaseItem(
     tags.plus(behaviour.tag),
     components
 ) {
+    constructor(
+        name: String,
+        description: String,
+        defaultCount: Int = 1,
+        behaviour: Behaviour = Behaviour.LOCK_IN_INVENTORY,
+        tags: List<String> = listOf(),
+        components: Components.() -> Unit = {}
+    ) : this(
+        name,
+        description,
+        defaultDummyItem,
+        defaultCount,
+        true,
+        behaviour,
+        tags,
+        components
+    )
+
     context(dp: DataPack, fn: Function)
     override fun initializeTick() {}
 

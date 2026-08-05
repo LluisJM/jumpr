@@ -59,7 +59,7 @@ interface CustomItems {
         val LAVA_BUCKET = register(GamePhaseItem("Lava Bucket", "So hot!",
             Items.LAVA_BUCKET), specialPool)
         val COIN = register(GamePhaseItem("Coin", "Bring this to the finish line to get extra points",
-            Items.GOLD_INGOT, behaviour = GamePhaseItem.Behaviour.CAN_PICK_UP), specialPool)
+            behaviour = GamePhaseItem.Behaviour.CAN_PICK_UP), specialPool)
 
         val CREEPER = register(GamePhaseItem("Creeper", "Kaboom!",
             Items.CREEPER_SPAWN_EGG), specialPool)
