@@ -77,6 +77,7 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
                     }
                 }
             })
+            at(self())
             run {
                 data(self())["PickupDelay"] = 0
                 tp(self(), nearestPlayer())
