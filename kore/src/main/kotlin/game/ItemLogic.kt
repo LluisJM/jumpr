@@ -14,6 +14,7 @@ import io.github.ayfri.kore.commands.particle.ParticleMode
 import io.github.ayfri.kore.commands.particle.particle
 import io.github.ayfri.kore.commands.randomValue
 import io.github.ayfri.kore.commands.tp
+import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.load
 import io.github.ayfri.kore.functions.tick
@@ -37,8 +38,6 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
     val specialPoolObjective = scoreboard("pool_2")
     val destroyingPoolObjective = scoreboard("pool_3")
 
-    fun CustomItem.giveFunctionName() = "items/give/${id}"
-
     CustomItems.ALL.forEach { item ->
         function(item.giveFunctionName()) {
             item.give()
@@ -52,27 +51,6 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
     }
 
     function(giveBuildPhaseItems) {
-        fun giveFromPool(pool: List<CustomItem>, poolObjective: Scoreboard) {
-            execute {
-                storeResult {
-                    score(self(), poolObjective.name)
-                }
-                run {
-                    randomValue(IntRange(0, pool.count() - 1))
-                }
-            }
-            pool.withIndex().forEach { (i, item) ->
-                execute {
-                    ifCondition {
-                        score(self(), poolObjective.name, IntRangeOrInt(null, i))
-                    }
-                    run {
-                        function(item.giveFunctionName())
-                    }
-                }
-            }
-        }
-
         giveFromPool(CustomItems.BUILDING_POOL, buildingPoolObjective)
         giveFromPool(CustomItems.SPECIAL_POOL, specialPoolObjective)
         giveFromPool(CustomItems.DESTROYING_POOL, destroyingPoolObjective)
@@ -138,6 +116,29 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
             })
             run {
                 data(self())["Age"] = 0
+            }
+        }
+    }
+}
+
+private fun CustomItem.giveFunctionName() = "items/give/${id}"
+
+private fun Function.giveFromPool(pool: List<CustomItem>, poolObjective: Scoreboard) {
+    execute {
+        storeResult {
+            score(self(), poolObjective.name)
+        }
+        run {
+            randomValue(IntRange(0, pool.count() - 1))
+        }
+    }
+    pool.withIndex().forEach { (i, item) ->
+        execute {
+            ifCondition {
+                score(self(), poolObjective.name, IntRangeOrInt(null, i))
+            }
+            run {
+                function(item.giveFunctionName())
             }
         }
     }
