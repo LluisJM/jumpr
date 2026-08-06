@@ -411,12 +411,16 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
                 execute {
                     asTarget(notFinishedPlayers)
                     run {
-                        tellraw(allPlayers(), getOrCreateTranslation("finish_fail", "%s did not finish the round!",
-                            listOf(entityComponent(self()) {
-                                color = Color.WHITE
-                            })) {
-                            color = Color.RED
-                        })
+                        tellraw(
+                            allPlayers(),
+                            getOrCreateTranslation("finish_fail", "%s did not finish the round!",
+                                listOf(entityComponent(self()) {
+                                    color = Color.WHITE
+                                })
+                            ) {
+                                color = Color.RED
+                            }
+                        )
                     }
                 }
                 function(tryStartBuildPhase)
