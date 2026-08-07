@@ -1,7 +1,10 @@
 # Jumpr
 
-![Kore Version](https://img.shields.io/badge/dynamic/toml?label=Kore&url=https%3A%2F%2Fraw.githubusercontent.com%2FLluisJM%2Fjumpr%2Frefs%2Fheads%2Fmain%2Fkore%2Fgradle%2Flibs.versions.toml&query=%24.versions.kore&style=flat-square&color=blue&labelColor=black)
-![Music Badge](https://img.shields.io/badge/Custom%20Music-By%20AlanDirt-green?style=flat-square&https%3A%2F%2Fkore.ayfri.com%2F&labelColor=black)
+<p align="center">
+ <a href="https://kore.ayfri.com/"><img src="https://github.com/LluisJM/jumpr/blob/main/assets/kore-devinsbadges/cozy_vector.svg" alt="Built with Kore" /></a>
+ <a href="https://github.com/mcbeet/beet"><img src="https://github.com/LluisJM/jumpr/blob/main/assets/beet-devinsbadges/cozy_vector.svg" alt="Built with Beet" /></a>
+ <a href="https://github.com/LluisJM/jumpr/releases"><img src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/github_vector.svg" alt="GitHub Releases" /></a>
+</p>
 
 Welcome to Jumpr, a Minecraft mini game inspired by [Ultimate Chicken Horse](https://store.steampowered.com/app/386940/Ultimate_Chicken_Horse/). Earn points by reaching the finish line, and then you must use the items given to you to build obstacles along the way to make sure you can reach the end before your friends.
 
