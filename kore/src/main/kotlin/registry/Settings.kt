@@ -27,6 +27,7 @@ interface Settings {
 
         val MAX_ROUNDS = register(IntSetting("Maximum Rounds", 1, 100, 5, "max_rounds"))
         val ROUND_LENGTH = register(TimeSetting("Round Length", 15, 60 * 10, 45))
+        val BUILD_PHASE_LENGTH = register(TimeSetting("Build Phase Length", 15, 60 * 10, 60))
         val PVP = register(BooleanSetting("PvP", true, "pvp"))
 
         private fun <T: AbstractSetting> register(setting: T): T {

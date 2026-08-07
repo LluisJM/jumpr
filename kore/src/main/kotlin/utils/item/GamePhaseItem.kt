@@ -6,6 +6,8 @@ import io.github.ayfri.kore.arguments.components.Components
 import io.github.ayfri.kore.arguments.types.resources.ItemArgument
 import io.github.ayfri.kore.functions.Function
 
+const val buildPhaseItemTag = "build_phase"
+
 open class GamePhaseItem(
     name: String,
     description: String,
@@ -22,7 +24,7 @@ open class GamePhaseItem(
     Color.YELLOW,
     dummyItem,
     defaultCount,
-    tags.plus(behaviour.tag),
+    tags.plus(buildPhaseItemTag).plus(behaviour.tag),
     components
 ) {
     constructor(

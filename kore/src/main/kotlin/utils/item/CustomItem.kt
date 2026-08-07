@@ -190,3 +190,13 @@ fun componentWithItemTag(tag: String) = nbt {
         this[tag] = nbt()
     }
 }
+
+fun itemWithTags(vararg tags: String, block: ItemPredicate.() -> Unit = {}) = itemPredicate {
+    block()
+    customData {
+        tags.forEach { tag ->
+            this[tag] = nbt()
+        }
+    }
+    partial(ItemComponentTypes.CUSTOM_DATA)
+}

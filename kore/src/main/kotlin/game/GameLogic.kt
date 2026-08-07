@@ -59,6 +59,7 @@ import io.github.ayfri.kore.utils.set
 import gen.levelStartTag
 import io.github.ayfri.kore.arguments.numbers.ranges.IntRangeOrInt
 import io.github.ayfri.kore.commands.PlaySoundMixer
+import io.github.ayfri.kore.commands.clear
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.generated.arguments.types.EntityTypeArgument
 import io.github.ayfri.kore.generated.arguments.types.SoundEventArgument
@@ -72,6 +73,8 @@ import utils.Timer
 import utils.item.componentWithItemTag
 import utils.countdown
 import utils.getOrCreateTranslation
+import utils.item.buildPhaseItemTag
+import utils.item.itemWithTags
 import utils.timerObjective
 
 const val IDLE = "idle"
@@ -237,6 +240,8 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
     }
     val startBuildPhase = function("game/phase/build") {
         val actualPhase = function("${this.name}_actual") {
+            Settings.BUILD_PHASE_LENGTH.copyTo(gameTimer.ticks, timerObjective.name)
+
             states.transitionTo(BUILD)
             // Show title "Build Phase"
             title(
@@ -317,6 +322,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
     tick("game/loop") {
         fun Function.runPhase() {
             gamemode(Gamemode.ADVENTURE, inGamePlayers())
+            clear(inGamePlayers(), itemWithTags(buildPhaseItemTag))
         }
 
         fun Function.buildPhase() {
@@ -380,11 +386,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
         states.whenState(RUN) {
             runPhase()
 
-            gameTimer.withComponent { timerComponent ->
-                {
-                    title(allPlayers(), TitleLocation.ACTIONBAR, timerComponent)
-                }
-            }
+            displayTimer(gameTimer)
 
             val notFinishedPlayers = inGamePlayers {
                 tag = !finishedTag
@@ -433,6 +435,12 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
 
         states.whenState(BUILD) {
             buildPhase()
+
+            displayTimer(gameTimer)
+
+            gameTimer.onFinish {
+                clear(inGamePlayers(), itemWithTags(buildPhaseItemTag))
+            }
 
             execute {
                 unlessCondition {
@@ -483,6 +491,14 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
     }
 
     return states
+}
+
+private fun Function.displayTimer(timer: Timer) {
+    timer.withComponent { timerComponent ->
+        {
+            title(allPlayers(), TitleLocation.ACTIONBAR, timerComponent)
+        }
+    }
 }
 
 fun inGamePlayers(data: SelectorArguments.() -> Unit = {}): SelectorArgument {
