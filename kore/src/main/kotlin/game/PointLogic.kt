@@ -10,9 +10,6 @@ import io.github.ayfri.kore.arguments.chatcomponents.scoreComponent
 import io.github.ayfri.kore.arguments.chatcomponents.text
 import io.github.ayfri.kore.arguments.chatcomponents.textComponent
 import io.github.ayfri.kore.arguments.colors.Color
-import io.github.ayfri.kore.arguments.components.item.customData
-import io.github.ayfri.kore.arguments.components.itemPredicate
-import io.github.ayfri.kore.arguments.components.partial
 import io.github.ayfri.kore.arguments.enums.Relation
 import io.github.ayfri.kore.arguments.numbers.ranges.IntRange
 import io.github.ayfri.kore.arguments.numbers.ranges.IntRangeOrInt
@@ -34,16 +31,13 @@ import io.github.ayfri.kore.commands.title
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.load
-import io.github.ayfri.kore.generated.ItemComponentTypes
 import io.github.ayfri.kore.scoreboard.create
 import io.github.ayfri.kore.scoreboard.scoreboard
 import io.github.ayfri.kore.scoreboard.setDisplayName
 import io.github.ayfri.kore.scoreboard.setDisplaySlot
-import io.github.ayfri.kore.utils.set
 import io.github.ayfri.kore.utils.snakeCase
 import registry.CustomItems
 import utils.Timer
-import utils.item.customItemIdTag
 import utils.getOrCreateTranslation
 
 const val playerFinish = "player/finish"
