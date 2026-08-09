@@ -5,6 +5,7 @@ import io.github.ayfri.kore.arguments.components.data.EquipmentSlot
 import io.github.ayfri.kore.arguments.components.item.*
 import io.github.ayfri.kore.commands.AttributeModifierOperation
 import io.github.ayfri.kore.generated.Attributes
+import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.Effects
 import io.github.ayfri.kore.generated.ItemComponentTypes
 import io.github.ayfri.kore.generated.Items
@@ -17,6 +18,7 @@ import kotlin.collections.*
 
 private const val goldenPickaxeDurability = 32
 private const val multitoolUses = 3
+val jumpBoostBlock = Blocks.RED_MUSHROOM_BLOCK
 
 interface CustomItems {
     @Suppress("unused")

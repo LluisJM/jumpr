@@ -8,6 +8,7 @@ import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.nearestPlayer
 import io.github.ayfri.kore.arguments.types.literals.self
 import io.github.ayfri.kore.commands.data
+import io.github.ayfri.kore.commands.effect
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.particle.ParticleMode
@@ -19,6 +20,7 @@ import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.load
 import io.github.ayfri.kore.functions.tick
 import io.github.ayfri.kore.gamestate.GameStateManager
+import io.github.ayfri.kore.generated.Effects
 import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.generated.Particles
 import io.github.ayfri.kore.scoreboard.Scoreboard
@@ -27,6 +29,7 @@ import io.github.ayfri.kore.scoreboard.scoreboard
 import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.set
 import registry.CustomItems
+import registry.jumpBoostBlock
 import utils.item.GamePhaseItem
 import utils.item.CustomItem
 import utils.item.componentWithItemTag
@@ -64,6 +67,19 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
         CustomItems.COIN.asAndAtItem {
             val dispersion = 0.5
             particle(Particles.ELECTRIC_SPARK, vec3(0, 0.5, 0).relative, vec3(dispersion, dispersion, dispersion), 0.1, 1, ParticleMode.NORMAL, allPlayers())
+        }
+
+        execute {
+            asTarget(allPlayers())
+            at(self())
+            ifCondition {
+                block(vec3(0, -1, 0).relative, jumpBoostBlock)
+            }
+            run {
+                effect(self()) {
+                    give(Effects.JUMP_BOOST, 1, 8)
+                }
+            }
         }
     }
 
