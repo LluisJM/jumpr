@@ -7,26 +7,34 @@ import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.nearestPlayer
 import io.github.ayfri.kore.arguments.types.literals.self
+import io.github.ayfri.kore.commands.PlaySoundMixer
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.effect
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.function
+import io.github.ayfri.kore.commands.kill
 import io.github.ayfri.kore.commands.particle.ParticleMode
 import io.github.ayfri.kore.commands.particle.particle
+import io.github.ayfri.kore.commands.playSound
 import io.github.ayfri.kore.commands.randomValue
+import io.github.ayfri.kore.commands.setBlock
+import io.github.ayfri.kore.commands.summon
 import io.github.ayfri.kore.commands.tp
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.load
 import io.github.ayfri.kore.functions.tick
 import io.github.ayfri.kore.gamestate.GameStateManager
+import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.Effects
 import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.generated.Particles
+import io.github.ayfri.kore.generated.SoundEvents
 import io.github.ayfri.kore.scoreboard.Scoreboard
 import io.github.ayfri.kore.scoreboard.create
 import io.github.ayfri.kore.scoreboard.scoreboard
 import io.github.ayfri.kore.utils.nbt
+import io.github.ayfri.kore.utils.nbtListOf
 import io.github.ayfri.kore.utils.set
 import registry.CustomItems
 import registry.jumpBoostBlock
@@ -35,6 +43,8 @@ import utils.item.CustomItem
 import utils.item.componentWithItemTag
 
 const val giveBuildPhaseItems = "items/give_build_phase"
+
+val indestructibleBlocks = listOf(Blocks.LODESTONE)
 
 fun DataPack.generateItemLogic(states: GameStateManager) {
     val buildingPoolObjective = scoreboard("pool_1")
@@ -81,6 +91,62 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
                 }
             }
         }
+
+        for (x in -1..1) for (y in -1..1) for (z in -1..1) {
+            execute {
+                asTarget(allEntities {
+                    type = EntityTypes.MARKER
+                    tag = "tnt_anchor"
+                })
+                at(self())
+                run {
+                    summon(EntityTypes.MARKER, vec3(x, y, z).relative) {
+                        this["Tags"] = nbtListOf("tnt_point")
+                    }
+                }
+            }
+        }
+        indestructibleBlocks.forEach {
+            execute {
+                asTarget(allEntities {
+                    type = EntityTypes.MARKER
+                    tag = "tnt_point"
+                })
+                at(self())
+                ifCondition {
+                    block(vec3().relative, it)
+                }
+                run {
+                    kill(self())
+                }
+            }
+        }
+        execute {
+            asTarget(allEntities {
+                type = EntityTypes.MARKER
+                tag = "tnt_point"
+            })
+            at(self())
+            run {
+                setBlock(vec3(), Blocks.AIR)
+                kill(self())
+            }
+        }
+        execute {
+            asTarget(allEntities {
+                type = EntityTypes.MARKER
+                tag = "tnt_anchor"
+            })
+            at(self())
+            run {
+                particle(Particles.EXPLOSION_EMITTER, vec3().relative)
+                playSound(SoundEvents.Entity.Generic.EXPLODE, PlaySoundMixer.BLOCK, allPlayers(), vec3().relative)
+            }
+        }
+        kill(allEntities {
+            type = EntityTypes.MARKER
+            tag = "tnt_anchor"
+        })
     }
 
     tick("items/handle_entities") {

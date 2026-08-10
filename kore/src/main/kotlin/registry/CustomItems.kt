@@ -1,9 +1,14 @@
 package registry
 
 import io.github.ayfri.kore.arguments.colors.color
+import io.github.ayfri.kore.arguments.components.item.entityData
+import io.github.ayfri.kore.arguments.components.item.itemModel
 import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.Effects
+import io.github.ayfri.kore.generated.EntityTypes
 import io.github.ayfri.kore.generated.Items
+import io.github.ayfri.kore.utils.nbtListOf
+import io.github.ayfri.kore.utils.set
 import utils.item.CustomItem
 import utils.item.GamePhaseItem
 import utils.item.OrbItem
@@ -52,7 +57,7 @@ interface CustomItems {
             Items.SOUL_SAND, 2), specialPool)
         val LAVA_BUCKET = register(GamePhaseItem("Lava Bucket", "So hot!",
             Items.LAVA_BUCKET), specialPool)
-        val COIN = register(GamePhaseItem("Coin", "Bring this to the finish line to get extra points",
+        val COIN = register(GamePhaseItem("Coin", "Bring this to the finish line to get extra points, drop to place in the map",
             behaviour = GamePhaseItem.Behaviour.CAN_PICK_UP), specialPool)
 
         val CREEPER = register(GamePhaseItem("Creeper", "Kaboom!",
@@ -65,6 +70,13 @@ interface CustomItems {
         val SHULKER_ORB = register(OrbItem("Shulker Orb", "Drop to create an area that makes all players levitate.", 3.0, Effects.LEVITATION, 7, color("#eeeeee")), specialPool)
 
         // Destroying Type
+        val TNT = register(GamePhaseItem("TNT", "Destroys an 3x3x3 area around it.", dummyItem = Items.ARMADILLO_SPAWN_EGG) {
+            itemModel(Items.TNT)
+            entityData {
+                this["id"] = EntityTypes.MARKER.asId()
+                this["Tags"] = nbtListOf("tnt_anchor")
+            }
+        }, destroyingPool)
 
         // Run phase
         val SPEED_POWERUP = register(PowerUpItem("Speed Power Up", "Use to give yourself momentary speed", Effects.SPEED), runPhasePool)
