@@ -25,7 +25,8 @@ import utils.InfiniteBorder
 const val levelStartTag = "level.start"
 const val levelBottomTag = "level.bottom"
 const val levelLoadTag = "level.load"
-const val finishLineProtectionTag = "level.finish_line"
+private const val finishLineProtectionTag = "level.finish_line"
+private const val balloonTag = "level.balloon"
 
 val levelBottomBorder = InfiniteBorder("level.bottom", Axis.Y, Relation.LESS_THAN)
 val levelBottomLimitBorder = InfiniteBorder("level.bottom.limit", Axis.Z, Relation.GREATER_THAN_OR_EQUAL_TO)
@@ -75,6 +76,10 @@ fun DataPack.generateLevelLogic() {
         kill(allEntities {
             type = EntityTypes.INTERACTION
             tag = finishLineProtectionTag
+        })
+        kill(allEntities {
+            type = EntityTypes.ITEM_DISPLAY
+            tag = balloonTag
         })
 
         execute {

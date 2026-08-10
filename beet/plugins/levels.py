@@ -4,6 +4,8 @@ from libs.debugger import debug
 finish_line_prot_height = 3.02
 finish_line_prot_width = 3.02
 
+ballon_height = 12.0
+
 # noinspection PyTypeChecker
 def beet_default(ctx: Context):
     debug(__name__, "running plugin", True, True)
@@ -30,6 +32,7 @@ def beet_default(ctx: Context):
                 return to_return
 
             lodestone_id = -1
+            balloon_positions = []
             lodestone_positions = []
 
             for i, block_id in enumerate(file_data["palette"]):
@@ -43,17 +46,21 @@ def beet_default(ctx: Context):
                         for line in nbt["front_text"]["messages"]:
                             if line:
                                 debug(__name__, f'sign line -> {line}')
-                            split = line.split(":")
-                            if split[0] == "level_start":
-                                start_pos = get_pos(block)
-                                debug(__name__, f'found level start at x:{start_pos[0]} y:{start_pos[1]} z:{start_pos[2]}')
-                                if split.__len__() == 4:
-                                    start_pos = get_pos(block, [-int(split[1]), -int(split[2]), -int(split[3])])
-                                    debug(__name__, f'applying offset to level start: x:{start_pos[0]} y:{start_pos[1]} z:{start_pos[2]}')
-                            elif line == "remove_support":
-                                delete_queue.append(get_pos(block, [0, -1, 0]))
-                            elif line == "remove":
-                                delete_queue.append(get_pos(block))
+                                split = line.split(":")
+                                if line == "balloon":
+                                    balloon_pos = get_pos(block)
+                                    balloon_positions.append(balloon_pos)
+                                    debug(__name__, f'found balloon anchor at x:{balloon_pos[0]} y:{balloon_pos[1]} z:{balloon_pos[2]}')
+                                if split[0] == "level_start":
+                                    start_pos = get_pos(block)
+                                    debug(__name__, f'found level start at x:{start_pos[0]} y:{start_pos[1]} z:{start_pos[2]}')
+                                    if split.__len__() == 4:
+                                        start_pos = get_pos(block, [-int(split[1]), -int(split[2]), -int(split[3])])
+                                        debug(__name__, f'applying offset to level start: x:{start_pos[0]} y:{start_pos[1]} z:{start_pos[2]}')
+                                elif line == "remove_support":
+                                    delete_queue.append(get_pos(block, [0, -1, 0]))
+                                elif line == "remove":
+                                    delete_queue.append(get_pos(block))
 
             for block in file_data["blocks"]:
                 if get_pos(block) in delete_queue:
@@ -95,6 +102,8 @@ def beet_default(ctx: Context):
             ]
             for pos in lodestone_positions:
                 contents.append(f'execute at @e[type=marker, tag=level.start] run summon interaction ~{pos[0] - start_pos[0]} ~{pos[1] - 0.51 - start_pos[1]} ~{pos[2] - start_pos[2]} {{Tags:["level.finish_line"], height: {finish_line_prot_height}, width: {finish_line_prot_width}}}')
+            for pos in balloon_positions:
+                contents.append(f'execute at @e[type=marker, tag=level.start] run summon item_display ~{pos[0] - start_pos[0]} ~{pos[1] - start_pos[1] + ballon_height} ~{pos[2] - start_pos[2]} {{Tags:["level.balloon"], view_range:5.0, transformation:{{translation:[0.0f, 0.0f, 0.0f], scale:[2.5f, 2.5f, 2.5f], right_rotation:[0.0f, 0.0f, 0.0f, 1.0f], left_rotation:[0.0f, 0.0f, 0.0f, 1.0f]}}, item:{{id:"minecraft:echo_shard", components: {{item_model:"jumpr:hot_air_balloon"}}}}}}')
 
             functions.setdefault(name, contents)
     
