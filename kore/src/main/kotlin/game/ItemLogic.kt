@@ -86,7 +86,7 @@ fun DataPack.generateItemLogic() {
             }
             run {
                 effect(self()) {
-                    give(Effects.JUMP_BOOST, 1, 8)
+                    give(Effects.JUMP_BOOST, 1, 8, true)
                 }
             }
         }
