@@ -290,6 +290,8 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
     function(gameStart) {
         function(gameStop)
 
+        gamerule(Gamerules.SEND_COMMAND_FEEDBACK, false)
+
         kill(allEntities {
             type = EntityTypes.ITEM
         })
@@ -304,6 +306,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
     function(gameStop) {
         setPhase(GamePhase.IDLE)
 
+        gamerule(Gamerules.SEND_COMMAND_FEEDBACK, true)
         gamerule(Gamerules.PVP, false)
 
         function(stopRunPhaseMusic)
