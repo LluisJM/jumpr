@@ -95,6 +95,8 @@ fun DataPack.generatePointLogic(gameTimer: Timer) {
 
         scoreboard.players.add(lastFinishedPlayer, gameData.name, 1)
 
+        tellraw(allPlayers(), textComponent(""))
+
         gameTimer.withComponent { timerComponent ->
             {
                 tellraw(
@@ -181,6 +183,8 @@ fun DataPack.generatePointLogic(gameTimer: Timer) {
                 ))
             }
         }
+
+        tellraw(allPlayers(), textComponent(""))
 
         // Add tag for finishing
         tag(self()) {
