@@ -296,6 +296,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
         scoreboard.players {
             // Reset current round
             set(currentRound, gameData.name, -1)
+            reset(literal("*"), points.name)
         }
 
         function(startRunPhase)
