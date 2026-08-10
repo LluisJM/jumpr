@@ -1,23 +1,15 @@
 package registry
 
 import io.github.ayfri.kore.arguments.colors.color
-import io.github.ayfri.kore.arguments.components.data.EquipmentSlot
-import io.github.ayfri.kore.arguments.components.item.*
-import io.github.ayfri.kore.commands.AttributeModifierOperation
-import io.github.ayfri.kore.generated.Attributes
 import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.Effects
-import io.github.ayfri.kore.generated.ItemComponentTypes
 import io.github.ayfri.kore.generated.Items
-import io.github.ayfri.kore.generated.arguments.types.AttributeModifierArgument
 import utils.item.CustomItem
 import utils.item.GamePhaseItem
 import utils.item.OrbItem
 import utils.item.PowerUpItem
 import kotlin.collections.*
 
-private const val goldenPickaxeDurability = 32
-private const val multitoolUses = 3
 val jumpBoostBlock = Blocks.RED_MUSHROOM_BLOCK
 
 interface CustomItems {
@@ -73,22 +65,6 @@ interface CustomItems {
         val SHULKER_ORB = register(OrbItem("Shulker Orb", "Drop to create an area that makes all players levitate.", 3.0, Effects.LEVITATION, 7, color("#eeeeee")), specialPool)
 
         // Destroying Type
-        val MULTITOOL = register(GamePhaseItem("Multitool", "You could break anything! Except a few things",
-            Items.GOLDEN_PICKAXE) {
-                attributeModifiers {
-                    modifier(
-                        Attributes.BLOCK_BREAK_SPEED,
-                        amount = 1.0,
-                        id = AttributeModifierArgument("allow_breaking"),
-                        operation = AttributeModifierOperation.ADD_VALUE,
-                        slot = EquipmentSlot.MAINHAND
-                    )
-                }
-                tooltipDisplay(false, ItemComponentTypes.ATTRIBUTE_MODIFIERS)
-                damage(goldenPickaxeDurability - multitoolUses)
-            },
-            destroyingPool
-        )
 
         // Run phase
         val SPEED_POWERUP = register(PowerUpItem("Speed Power Up", "Use to give yourself momentary speed", Effects.SPEED), runPhasePool)
