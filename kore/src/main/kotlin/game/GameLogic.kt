@@ -44,8 +44,6 @@ import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.load
 import io.github.ayfri.kore.functions.tick
-import io.github.ayfri.kore.gamestate.GameStateManager
-import io.github.ayfri.kore.gamestate.registerGameStates
 import io.github.ayfri.kore.generated.Attributes
 import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.Effects
@@ -58,6 +56,7 @@ import io.github.ayfri.kore.utils.nbtList
 import io.github.ayfri.kore.utils.set
 import gen.levelStartTag
 import io.github.ayfri.kore.arguments.numbers.ranges.IntRangeOrInt
+import io.github.ayfri.kore.arguments.numbers.ranges.asRangeOrInt
 import io.github.ayfri.kore.commands.PlaySoundMixer
 import io.github.ayfri.kore.commands.clear
 import io.github.ayfri.kore.commands.data
@@ -77,11 +76,13 @@ import utils.item.buildPhaseItemTag
 import utils.item.itemWithTags
 import utils.timerObjective
 
-const val IDLE = "idle"
-const val PRE_RUN = "pre_run"
-const val RUN = "run"
-const val PRE_BUILD = "pre_build"
-const val BUILD = "build"
+enum class GamePhase {
+    IDLE,
+    PRE_RUN,
+    RUN,
+    PRE_BUILD,
+    BUILD
+}
 
 val FINISH_LINE = Blocks.LODESTONE
 
@@ -90,6 +91,7 @@ val settings = scoreboard("settings")
 
 // Game data
 val currentRound = literal(".round")
+val currentPhase = literal(".phase")
 
 const val gameStart = "game/start"
 const val gameStop = "game/stop"
@@ -106,15 +108,7 @@ val enemyEntities = listOf(
     EntityTypes.CREEPER
 )
 
-fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
-    val states = registerGameStates {
-        state(IDLE)
-        state(PRE_RUN)
-        state(RUN)
-        state(PRE_BUILD)
-        state(BUILD)
-    }
-
+fun DataPack.generateGameLogic(gameTimer: Timer) {
     val startBorder = InfiniteBorder("start", Axis.Z, Relation.GREATER_THAN_OR_EQUAL_TO)
 
     initializeSettings()
@@ -160,7 +154,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
 
             Settings.ROUND_LENGTH.copyTo(gameTimer.ticks, timerObjective.name)
 
-            states.transitionTo(RUN)
+            setPhase(GamePhase.RUN)
 
             // Show title
             title(allPlayers(), 0.seconds, 1.seconds, 0.2.seconds)
@@ -183,7 +177,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
         schedules {
             append(playRunPhaseMusic.asFunction(), 8.seconds)
         }
-        states.transitionTo(PRE_RUN)
+        setPhase(GamePhase.PRE_RUN)
 
         // Show title "Round X"
         scoreboard.players {
@@ -242,7 +236,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
         val actualPhase = function("${this.name}_actual") {
             Settings.BUILD_PHASE_LENGTH.copyTo(gameTimer.ticks, timerObjective.name)
 
-            states.transitionTo(BUILD)
+            setPhase(GamePhase.BUILD)
             // Show title "Build Phase"
             title(
                 allPlayers(), TitleLocation.TITLE,
@@ -263,7 +257,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
         clearShulkerBullets()
 
         function(stopRunPhaseMusic)
-        states.transitionTo(PRE_BUILD)
+        setPhase(GamePhase.PRE_BUILD)
 
         schedules.replace(actualPhase, buildPhaseDelaySeconds.seconds)
         gamerule(Gamerules.PVP, false)
@@ -307,7 +301,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
         function(startRunPhase)
     }
     function(gameStop) {
-        states.transitionTo(IDLE)
+        setPhase(GamePhase.IDLE)
 
         gamerule(Gamerules.PVP, false)
 
@@ -349,7 +343,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
             giveInfinite(Effects.SATURATION, 0, true)
         }
 
-        states.whenState(IDLE) {
+        whenPhase(GamePhase.IDLE) {
             val willPlay: ExecuteCondition.() -> Unit = {
                 entity(self {
                     tag = playingTag
@@ -375,7 +369,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
             }
         }
 
-        states.whenState(PRE_RUN) {
+        whenPhase(GamePhase.PRE_RUN) {
             runPhase()
             startBorder.ifOutside(inGamePlayers()) {
                 tp(self(), vec3(0, 0, -1).relative)
@@ -383,7 +377,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
         }
 
 
-        states.whenState(RUN) {
+        whenPhase(GamePhase.RUN) {
             runPhase()
 
             displayTimer(gameTimer)
@@ -429,11 +423,11 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
             }
         }
 
-        states.whenState(PRE_BUILD) {
+        whenPhase(GamePhase.PRE_BUILD) {
             buildPhase()
         }
 
-        states.whenState(BUILD) {
+        whenPhase(GamePhase.BUILD) {
             buildPhase()
 
             displayTimer(gameTimer)
@@ -489,8 +483,6 @@ fun DataPack.generateGameLogic(gameTimer: Timer): GameStateManager {
             give(Effects.WEAKNESS, 1, 9, true)
         }
     }
-
-    return states
 }
 
 private fun Function.displayTimer(timer: Timer) {
@@ -526,4 +518,15 @@ private fun Function.setAI(type: EntityTypeArgument, enabled: Boolean) {
             }
         }
     }
+}
+
+fun Function.setPhase(state: GamePhase) = scoreboard.player(currentPhase) {
+    set(gameData.name, state.ordinal)
+}
+
+fun Function.whenPhase(state: GamePhase, block: Function.() -> Unit) = execute {
+    ifCondition {
+        score(currentPhase, gameData.name, state.ordinal.asRangeOrInt())
+    }
+    run(block)
 }

@@ -33,8 +33,8 @@ fun main() {
 			generateLevelLogic()
 
 			generatePointLogic(gameTimer)
-			val states = generateGameLogic(gameTimer)
-			generateItemLogic(states)
+			generateGameLogic(gameTimer)
+			generateItemLogic()
 
 			registerInteractions()
 			generateDebugging()

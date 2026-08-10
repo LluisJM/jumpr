@@ -24,7 +24,6 @@ import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.load
 import io.github.ayfri.kore.functions.tick
-import io.github.ayfri.kore.gamestate.GameStateManager
 import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.Effects
 import io.github.ayfri.kore.generated.EntityTypes
@@ -46,7 +45,7 @@ const val giveBuildPhaseItems = "items/give_build_phase"
 
 val indestructibleBlocks = listOf(Blocks.LODESTONE)
 
-fun DataPack.generateItemLogic(states: GameStateManager) {
+fun DataPack.generateItemLogic() {
     val buildingPoolObjective = scoreboard("pool_1")
     val specialPoolObjective = scoreboard("pool_2")
     val destroyingPoolObjective = scoreboard("pool_3")
@@ -178,7 +177,7 @@ fun DataPack.generateItemLogic(states: GameStateManager) {
                 data(self())["PickupDelay"] = 100
             }
         }
-        states.whenState(BUILD) {
+        whenPhase(GamePhase.BUILD) {
             execute {
                 asTarget(allEntities {
                     type = EntityTypes.ITEM
