@@ -29,6 +29,7 @@ private const val finishLineProtectionTag = "level.finish_line"
 private const val balloonTag = "level.balloon"
 
 val levelBottomBorder = InfiniteBorder("level.bottom", Axis.Y, Relation.LESS_THAN)
+val lobbyBottomBorder = InfiniteBorder("lobby.bottom", Axis.Y, Relation.LESS_THAN)
 val levelBottomLimitBorder = InfiniteBorder("level.bottom.limit", Axis.Z, Relation.GREATER_THAN_OR_EQUAL_TO)
 
 fun DataPack.generateLevelLogic() {
@@ -127,6 +128,7 @@ fun DataPack.generateLevelLogic() {
             at(self())
             run {
                 levelBottomLimitBorder.summonMarker(vec3(0, 0, -1).relative)
+                lobbyBottomBorder.summonMarker(vec3(0, 0, 0).relative)
             }
         }
     }

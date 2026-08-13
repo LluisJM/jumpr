@@ -9,7 +9,6 @@ import io.github.ayfri.kore.arguments.types.literals.allEntities
 import io.github.ayfri.kore.arguments.types.literals.allPlayers
 import io.github.ayfri.kore.arguments.types.literals.nearestEntity
 import io.github.ayfri.kore.arguments.types.literals.self
-import io.github.ayfri.kore.commands.Command
 import io.github.ayfri.kore.commands.data
 import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.kill
@@ -33,6 +32,10 @@ class InfiniteBorder(
     val axis: Axis,
     val relation: Relation
 ) {
+    init {
+        if (relation == Relation.EQUAL_TO) error("Relation for InfiniteBorder can't be EQUAL_TO")
+    }
+
     fun markerTag() = "border.$name"
 
     context(fn: Function)
@@ -49,7 +52,12 @@ class InfiniteBorder(
         })
 
     context(fn: Function)
-    fun ifOutside(target: EntityArgument, block: Function.() -> Unit) {
+    fun ifOutside(target: EntityArgument, block: Function.() -> Unit) = ifRelation(target, relation, block)
+    context(fn: Function)
+    fun ifInside(target: EntityArgument, block: Function.() -> Unit) = ifRelation(target, relation.excluded(), block)
+
+    context(fn: Function)
+    private fun ifRelation(target: EntityArgument, relation: Relation, block: Function.() -> Unit) {
         fn.execute {
             asTarget(allEntities {
                 type = EntityTypes.MARKER
@@ -114,4 +122,12 @@ fun DataPack.initializeInfiniteBorders() {
         storeInto(1, yPos)
         storeInto(2, zPos)
     }
+}
+
+private fun Relation.excluded(): Relation = when (this) {
+    Relation.LESS_THAN -> Relation.GREATER_THAN_OR_EQUAL_TO
+    Relation.LESS_THAN_OR_EQUAL_TO -> Relation.GREATER_THAN
+    Relation.EQUAL_TO -> error("${Relation.EQUAL_TO} has no Relation that excludes it")
+    Relation.GREATER_THAN_OR_EQUAL_TO -> Relation.LESS_THAN
+    Relation.GREATER_THAN -> Relation.LESS_THAN_OR_EQUAL_TO
 }

@@ -55,6 +55,7 @@ import io.github.ayfri.kore.utils.nbt
 import io.github.ayfri.kore.utils.nbtList
 import io.github.ayfri.kore.utils.set
 import gen.levelStartTag
+import gen.lobbyBottomBorder
 import io.github.ayfri.kore.arguments.numbers.ranges.IntRangeOrInt
 import io.github.ayfri.kore.arguments.numbers.ranges.asRangeOrInt
 import io.github.ayfri.kore.commands.PlaySoundMixer
@@ -337,8 +338,13 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
         }
 
         // Deal with bottom border
-        levelBottomBorder.ifOutside(inGamePlayers()) {
+        levelBottomBorder.ifOutside(allPlayers()) {
             levelBottomLimitBorder.ifOutside(self()) {
+                kill(self())
+            }
+        }
+        lobbyBottomBorder.ifOutside(allPlayers()) {
+            levelBottomLimitBorder.ifInside(self()) {
                 kill(self())
             }
         }
