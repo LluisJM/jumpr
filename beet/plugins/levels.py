@@ -102,6 +102,7 @@ def beet_default(ctx: Context):
             ]
             for pos in lodestone_positions:
                 contents.append(f'execute at @e[type=marker, tag=level.start] run summon interaction ~{pos[0] - start_pos[0]} ~{pos[1] - 0.51 - start_pos[1]} ~{pos[2] - start_pos[2]} {{Tags:["level.finish_line"], height: {finish_line_prot_height}, width: {finish_line_prot_width}}}')
+                contents.append(f'execute at @e[type=marker, tag=level.start] run fill ~{pos[0] - start_pos[0] -1} ~{pos[1] - start_pos[1]} ~{pos[2] - start_pos[2] -1} ~{pos[0] - start_pos[0] +1} ~{pos[1] - start_pos[1] +2} ~{pos[2] - start_pos[2] +1} minecraft:structure_void replace minecraft:air')
             for pos in balloon_positions:
                 contents.append(f'execute at @e[type=marker, tag=level.start] run summon item_display ~{pos[0] - start_pos[0]} ~{pos[1] - start_pos[1] + ballon_height} ~{pos[2] - start_pos[2]} {{Tags:["level.balloon"], view_range:5.0, transformation:{{translation:[0.0f, 0.0f, 0.0f], scale:[2.5f, 2.5f, 2.5f], right_rotation:[0.0f, 0.0f, 0.0f, 1.0f], left_rotation:[0.0f, 0.0f, 0.0f, 1.0f]}}, item:{{id:"minecraft:echo_shard", components: {{item_model:"jumpr:hot_air_balloon"}}}}}}')
 

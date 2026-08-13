@@ -12,12 +12,14 @@ import io.github.ayfri.kore.commands.execute.execute
 import io.github.ayfri.kore.commands.fill
 import io.github.ayfri.kore.commands.function
 import io.github.ayfri.kore.commands.kill
+import io.github.ayfri.kore.commands.particle.particle
 import io.github.ayfri.kore.commands.summon
 import io.github.ayfri.kore.functions.Function
 import io.github.ayfri.kore.functions.function
 import io.github.ayfri.kore.functions.generatedFunction
 import io.github.ayfri.kore.generated.Blocks
 import io.github.ayfri.kore.generated.EntityTypes
+import io.github.ayfri.kore.generated.Particles
 import io.github.ayfri.kore.utils.nbtListOf
 import io.github.ayfri.kore.utils.set
 import utils.InfiniteBorder
@@ -127,6 +129,18 @@ fun DataPack.generateLevelLogic() {
             run {
                 levelBottomLimitBorder.moveMarker(vec3(0, 0, -1).relative)
                 lobbyBottomBorder.moveMarker(vec3(0, 0, 0).relative)
+            }
+        }
+
+        execute {
+            asTarget(allEntities {
+                type = EntityTypes.MARKER
+                tag = levelStartTag
+            })
+            at(self())
+            run {
+                particle(Particles.LAVA, vec3().relative)
+                fill(vec3(-1, 1, -1).relative, vec3(1, 2, 1).relative, Blocks.STRUCTURE_VOID, Blocks.AIR)
             }
         }
     }
