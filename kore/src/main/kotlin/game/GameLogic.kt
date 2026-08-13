@@ -61,6 +61,7 @@ import io.github.ayfri.kore.arguments.numbers.ranges.asRangeOrInt
 import io.github.ayfri.kore.commands.PlaySoundMixer
 import io.github.ayfri.kore.commands.clear
 import io.github.ayfri.kore.commands.data
+import io.github.ayfri.kore.generated.Items
 import io.github.ayfri.kore.generated.arguments.types.EntityTypeArgument
 import io.github.ayfri.kore.generated.arguments.types.SoundEventArgument
 
@@ -336,6 +337,9 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
                 }
             }
         }
+
+        // Clear empty buckets from players
+        clear(inGamePlayers(), Items.BUCKET)
 
         // Deal with bottom border
         levelBottomBorder.ifOutside(allPlayers()) {
