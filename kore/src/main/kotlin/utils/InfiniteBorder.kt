@@ -39,17 +39,15 @@ class InfiniteBorder(
     fun markerTag() = "border.$name"
 
     context(fn: Function)
-    fun summonMarker(pos: Vec3) =
-        fn.summon(EntityTypes.MARKER, pos) {
-            this["Tags"] = nbtListOf(markerTag())
-        }
-
-    context(fn: Function)
-    fun killMarkers() =
+    fun moveMarker(pos: Vec3) {
         fn.kill(allEntities {
             type = EntityTypes.MARKER
             tag = markerTag()
         })
+        fn.summon(EntityTypes.MARKER, pos) {
+            this["Tags"] = nbtListOf(markerTag())
+        }
+    }
 
     context(fn: Function)
     fun ifOutside(target: EntityArgument, block: Function.() -> Unit) = ifRelation(target, relation, block)

@@ -139,7 +139,7 @@ fun DataPack.generateGameLogic(gameTimer: Timer) {
                         type = EntityTypes.MARKER
                         tag = startBorder.markerTag()
                     })
-                    startBorder.summonMarker(vec3(0, 0, distance).relative)
+                    startBorder.moveMarker(vec3(0, 0, distance).relative)
                 }
             }
         }

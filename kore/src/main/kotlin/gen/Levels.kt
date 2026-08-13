@@ -67,8 +67,6 @@ fun DataPack.generateLevelLogic() {
     }
 
     function("level/set_borders") {
-        levelBottomBorder.killMarkers()
-        levelBottomLimitBorder.killMarkers()
         val bottomFinderTag = "bottom_finder"
         kill(allEntities {
             type = EntityTypes.MARKER
@@ -111,7 +109,7 @@ fun DataPack.generateLevelLogic() {
                             sort = Sort.FURTHEST
                         })
                         run {
-                            levelBottomBorder.summonMarker(vec3(0, -2, 0).relative)
+                            levelBottomBorder.moveMarker(vec3(0, -2, 0).relative)
                         }
                     }
                 }
@@ -127,8 +125,8 @@ fun DataPack.generateLevelLogic() {
             })
             at(self())
             run {
-                levelBottomLimitBorder.summonMarker(vec3(0, 0, -1).relative)
-                lobbyBottomBorder.summonMarker(vec3(0, 0, 0).relative)
+                levelBottomLimitBorder.moveMarker(vec3(0, 0, -1).relative)
+                lobbyBottomBorder.moveMarker(vec3(0, 0, 0).relative)
             }
         }
     }
